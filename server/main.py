@@ -19,7 +19,7 @@ def fetch_games(search_term):
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
-    body = f'fields id, name, cover; search "{search_term}";'
+    body = f'fields id, name, cover; limit 500; search "{search_term}";'
     
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     
@@ -28,6 +28,7 @@ def fetch_games(search_term):
     else:
         response.raise_for_status()
 
+#create more routes for different end points
 @app.route('/games', methods=['GET'])
 def get_games():
     search_term = request.args.get('search_term', default='zelda', type=str)
@@ -38,4 +39,4 @@ def get_games():
         return jsonify({"error": str(err)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8080)
