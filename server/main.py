@@ -2,11 +2,13 @@ from flask import Flask, jsonify, request
 import os
 import requests
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 # Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
+cors = CORS(app, origins="*")
 
 client_id = os.getenv('CLIENT_ID')
 access_token = os.getenv('ACCESS_TOKEN')
@@ -29,6 +31,10 @@ def fetch_games(search_term):
         response.raise_for_status()
 
 #create more routes for different end points
+@app.route('/', methods=['GET'])
+def latest():
+    return "Latest Games"
+
 @app.route('/games', methods=['GET'])
 def get_games():
     search_term = request.args.get('search_term', default='zelda', type=str)
@@ -37,6 +43,10 @@ def get_games():
         return jsonify(games)
     except requests.exceptions.HTTPError as err:
         return jsonify({"error": str(err)}), 500
+    
+@app.route('/genres', methods=['GET'])
+def get_genres():
+    return "Display Genres"
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
