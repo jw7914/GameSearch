@@ -1,7 +1,23 @@
-import { Link } from "react-router-dom";
+import { Link, resolvePath } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 function Navbar() {
-  return (
+    const [genres, setGenres] = useState([]);
+    const fetchGenres = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/genres");
+            const data = response.data;
+            setGenres(data);
+        } catch (error) {
+            console.error("Error fetching genres:", error);
+        }
+    };
+    
+    useEffect(()=> {
+        fetchGenres();
+    }, [])
+    return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid">
@@ -90,24 +106,25 @@ function Navbar() {
           ></button>
         </div>
         <div className="offcanvas-body">
-          <div>Some placeholder content for the offcanvas.</div>
-          <ul className="list-unstyled">
-            <li>
-              <a href="#" className="text-decoration-none">
-                Link 1
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-decoration-none">
-                Link 2
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-decoration-none">
-                Link 3
-              </a>
-            </li>
-          </ul>
+            <ul>
+                {genres.map((el) => (
+                <li
+                    key={el.id}
+                    className="list-group-item bg-dark"
+                    style={{
+                    borderColor: "black",
+                    borderWidth: "2px",
+                    marginTop: "0.5rem",
+                    textAlign: "center",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2), 0 -1px 2px rgba(0, 0, 0, 0.1) inset",
+                    }}
+                >
+                    <Link to={`/genre-${el.name}`} style={{ color: "white", textDecoration: "none" }}>
+                    {el.name}
+                    </Link>
+                </li>
+                ))}
+            </ul>
         </div>
       </div>
     </>
