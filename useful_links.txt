@@ -1,0 +1,1 @@
+https://github.com/marcreichel/igdb-laravel/issues/2 -> Just replace t_thumb with t_cover_big of the cover url i.e. via str_replace or preg_replace

@@ -1,7 +1,7 @@
 function Home() {
     return (
     <>
-        <h1>Latest Games</h1>
+        <h1>Latest Games</h1>    
     </>
     );
   }
