@@ -63,5 +63,10 @@ def get_genres():
     genres = fetch_genres()
     return jsonify(genres)
 
+@app.route('/test', methods=['GET'])
+def test():
+    search_term = request.args.get('search_term', default="test", type=str)
+    return search_term
+
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
