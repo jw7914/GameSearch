@@ -1,5 +1,5 @@
 import GameCard from "../GameCard";
-import VirtualizedList from "../Listgroup";
+import VirtualizedList from "../test_components/Listgroup";
 
 function Home() {
     return (
