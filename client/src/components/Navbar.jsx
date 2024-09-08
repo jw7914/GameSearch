@@ -1,6 +1,24 @@
 import { Link, resolvePath } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import { styled } from '@mui/material/styles';
+
+
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: 'grey',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+  ...theme.applyStyles('dark', {
+    backgroundColor: '#1A2027',
+  }),
+}));
 
 function Navbar() {
     const [genres, setGenres] = useState([]);
@@ -35,7 +53,7 @@ function Navbar() {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <form className="container-fluid mt-2">
+          <form className="container-fluid mt-2" action="http://localhost:8080/test" method="GET">
             <div
               className="input-group"
               style={{ paddingLeft: "5vw", paddingRight: "5vw" }}
@@ -105,26 +123,18 @@ function Navbar() {
             aria-label="Close"
           ></button>
         </div>
-        <div className="offcanvas-body">
-            <ul>
-                {genres.map((el) => (
-                <li
-                    key={el.id}
-                    className="list-group-item bg-dark"
-                    style={{
-                    borderColor: "black",
-                    borderWidth: "2px",
-                    marginTop: "0.5rem",
-                    textAlign: "center",
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2), 0 -1px 2px rgba(0, 0, 0, 0.1) inset",
-                    }}
-                >
-                    <Link to={`/genre-${el.name}`} style={{ color: "white", textDecoration: "none" }}>
-                    {el.name}
-                    </Link>
-                </li>
-                ))}
-            </ul>
+        <div className="offcanvas-body" style={{ overflowY: 'scroll', height: '200px', scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+          <Box sx={{ width: '100%' }}>
+            <Stack spacing={2}>
+              {genres.map((el) => (
+                <Link to={`/genre-${el.name}`} style={{ textDecoration: "none" }}>
+                  <Item key={el.id} style={{ color: "#E8E8E8" }}>      
+                    <b>{el.name}</b>
+                  </Item>
+                </Link>
+              ))}
+            </Stack>
+          </Box>
         </div>
       </div>
     </>
