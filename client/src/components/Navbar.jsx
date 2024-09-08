@@ -112,17 +112,18 @@ function Navbar() {
         id="offcanvasRight"
         aria-labelledby="offcanvasRightLabel"
       >
-        <div className="offcanvas-header">
-          <h5 className="offcanvas-title" id="offcanvasExampleLabel">
-            Genres
-          </h5>
-          <button
-            type="button"
-            className="btn-close"
-            data-bs-dismiss="offcanvas"
-            aria-label="Close"
-          ></button>
-        </div>
+       <div className="offcanvas-header" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <h3 className="offcanvas-title" id="offcanvasExampleLabel">
+          Genres
+        </h3>
+        <button
+          type="button"
+          className="btn-close"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+          style={{ position: 'absolute', right: '1.1rem', filter: 'invert(100%)', fontSize:"20px" }}
+        ></button>
+      </div>
         <div className="offcanvas-body" style={{ overflowY: 'scroll', height: '200px', scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
           <Box sx={{ width: '100%' }}>
             <Stack spacing={2}>
