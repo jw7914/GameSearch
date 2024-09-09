@@ -10,7 +10,7 @@ import { styled } from '@mui/material/styles';
 
 
 const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: 'grey',
+  backgroundColor: '#60737F',
   ...theme.typography.body2,
   padding: theme.spacing(1.05),
   textAlign: 'center',
@@ -129,7 +129,10 @@ function Navbar() {
             <Stack spacing={2}>
               {genres.map((el) => (
                 <Link to={`/genre-${el.name}`} style={{ textDecoration: "none" }}>
-                  <Item key={el.id} style={{ color: "#E8E8E8", fontSize: "20px" }}>      
+                  <Item key={el.id} sx={{ 
+                    color: "#E8E8E8", 
+                    fontSize: "20px",
+                    ":hover": { bgcolor: "#A0ABB2"} }} >      
                     <b>{el.name}</b>
                   </Item>
                 </Link>
