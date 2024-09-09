@@ -53,7 +53,6 @@ function Navbar() {
           </div>
         </div>
       </nav>
-
       <div
         className="offcanvas offcanvas-end bg-dark text-white"
         id="offcanvasRight"

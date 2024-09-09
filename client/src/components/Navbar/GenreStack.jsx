@@ -20,14 +20,19 @@ const Item = styled(Paper)(({ theme }) => ({
 
 function GenreStack() {
   const [genres, setGenres] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchGenres = async () => {
     try {
+      setLoading(true);
       const response = await axios.get("http://localhost:8080/genres");
       const data = response.data;
       setGenres(data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching genres:", error);
+      setError("Failed to load genres");
     }
   };
 
@@ -37,6 +42,8 @@ function GenreStack() {
 
   return (
     <Box sx={{ width: "100%" }}>
+      {loading && <p>Loading games...</p>}
+      {error && <p>{error}</p>}
       <Stack spacing={2.5}>
         {genres.map((el) => (
           <Link

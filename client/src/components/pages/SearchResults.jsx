@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { Container } from "@mui/material";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -39,7 +40,7 @@ function SearchResults() {
   }, [searchTerm]); // Run when searchTerm changes
 
   return (
-    <div>
+    <Container sx={{ marginTop: "50px" }}>
       <h2>Search Results for: {searchTerm}</h2>
 
       {loading && <p>Loading games...</p>}
@@ -49,7 +50,7 @@ function SearchResults() {
       {!loading && games.length > 0
         ? games.map((name, index) => <p key={index}>{name}</p>)
         : !loading && <p>No results found</p>}
-    </div>
+    </Container>
   );
 }
 
