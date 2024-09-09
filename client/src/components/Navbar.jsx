@@ -1,41 +1,40 @@
 import { Link, resolvePath } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import { styled } from '@mui/material/styles';
-
-
+import * as React from "react";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import { styled } from "@mui/material/styles";
+import SearchBar from "./SearchBar";
 
 const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#60737F',
+  backgroundColor: "#60737F",
   ...theme.typography.body2,
   padding: theme.spacing(1.05),
-  textAlign: 'center',
+  textAlign: "center",
   color: theme.palette.text.secondary,
-  ...theme.applyStyles('dark', {
-    backgroundColor: '#1A2027',
+  ...theme.applyStyles("dark", {
+    backgroundColor: "#1A2027",
   }),
 }));
 
 function Navbar() {
-    const [genres, setGenres] = useState([]);
-    const fetchGenres = async () => {
-        try {
-            const response = await axios.get("http://localhost:8080/genres");
-            const data = response.data;
-            setGenres(data);
-        } catch (error) {
-            console.error("Error fetching genres:", error);
-        }
-    };
-    
-    useEffect(()=> {
-        fetchGenres();
-    }, [])
-    return (
+  const [genres, setGenres] = useState([]);
+  const fetchGenres = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/genres");
+      const data = response.data;
+      setGenres(data);
+    } catch (error) {
+      console.error("Error fetching genres:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchGenres();
+  }, []);
+  return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid">
@@ -53,28 +52,7 @@ function Navbar() {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <form className="container-fluid mt-2" action="http://localhost:8080/test" method="GET">
-            <div
-              className="input-group"
-              style={{ paddingLeft: "5vw", paddingRight: "5vw" }}
-            >
-              <input
-                type="text"
-                className="form-control bg-dark-subtle"
-                placeholder="Search"
-                aria-label="Username"
-                aria-describedby="basic-addon1"
-              />
-              <span
-                className="input-group-text bg-body-secondary"
-                id="basic-addon1"
-              >
-                <Link to={"/result"} style={{ color: "black" }}>
-                  <i className="fa fa-search"></i>
-                </Link>
-              </span>
-            </div>
-          </form>
+          <SearchBar />
           <div
             className="collapse navbar-collapse"
             id="navbarNav"
@@ -112,27 +90,54 @@ function Navbar() {
         id="offcanvasRight"
         aria-labelledby="offcanvasRightLabel"
       >
-       <div className="offcanvas-header" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <h3 className="offcanvas-title" id="offcanvasExampleLabel">
-          Genres
-        </h3>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="offcanvas"
-          aria-label="Close"
-          style={{ position: 'absolute', right: '1.1rem', filter: 'invert(100%)', fontSize:"20px" }}
-        ></button>
-      </div>
-        <div className="offcanvas-body" style={{ overflowY: 'scroll', height: '200px', scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
-          <Box sx={{ width: '100%' }}>
+        <div
+          className="offcanvas-header"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <h3 className="offcanvas-title" id="offcanvasExampleLabel">
+            Genres
+          </h3>
+          <button
+            type="button"
+            className="btn-close"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+            style={{
+              position: "absolute",
+              right: "1.1rem",
+              filter: "invert(100%)",
+              fontSize: "20px",
+            }}
+          ></button>
+        </div>
+        <div
+          className="offcanvas-body"
+          style={{
+            overflowY: "scroll",
+            height: "200px",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+        >
+          <Box sx={{ width: "100%" }}>
             <Stack spacing={2}>
               {genres.map((el) => (
-                <Link to={`/genre-${el.name}`} style={{ textDecoration: "none" }}>
-                  <Item key={el.id} sx={{ 
-                    color: "#E8E8E8", 
-                    fontSize: "20px",
-                    ":hover": { bgcolor: "#A0ABB2"} }} >      
+                <Link
+                  to={`/genre-${el.name}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Item
+                    key={el.id}
+                    sx={{
+                      color: "#E8E8E8",
+                      fontSize: "20px",
+                      ":hover": { bgcolor: "#A0ABB2" },
+                    }}
+                  >
                     <b>{el.name}</b>
                   </Item>
                 </Link>

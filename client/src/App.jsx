@@ -1,21 +1,24 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Navbar from './components/Navbar'
-import Home from './components/pages/Home'
-import Result from './components/pages/Result'
-import TBS from './components/pages/TBS'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./components/pages/Home";
+import Result from "./components/pages/Result";
+import TBS from "./components/pages/TBS";
+import SearchResults from "./components/pages/SearchResults"; // Import the SearchResults component
 
 function App() {
   return (
     <BrowserRouter>
-      <Navbar></Navbar>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/result" element={<Result />} />
-        <Route path="/genre-Turn-based strategy (TBS)" element={<TBS></TBS>} /> {/* For links that have spaces dont need %20 characters in the route can just put the direct versions with spaces */}
-      </Routes>
-    </BrowserRouter>     
+        <Route path="/genre-Turn-based strategy (TBS)" element={<TBS />} />
 
-  )
+        {/* Route for displaying search results */}
+        <Route path="/search" element={<SearchResults />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
