@@ -1,21 +1,23 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Replace useHistory with useNavigate
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function SearchBar() {
   const [input, setInput] = useState("");
-  const navigate = useNavigate(); // Replace useHistory with useNavigate
+  const navigate = useNavigate();
 
   const handleSearch = (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
     if (input) {
-      // Navigate to the search results page with the query in the URL
       navigate(`/search?query=${input}`);
     }
   };
 
   return (
-    <form className="container-fluid mt-2" onSubmit={handleSearch}>
+    <form
+      className="container-fluid mt-2"
+      onSubmit={handleSearch}
+      name="searchBar"
+    >
       <div
         className="input-group"
         style={{ paddingLeft: "5vw", paddingRight: "5vw" }}
