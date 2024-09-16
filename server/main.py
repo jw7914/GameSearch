@@ -12,6 +12,7 @@ cors = CORS(app, origins="*")
 
 client_id = os.getenv('CLIENT_ID')
 access_token = os.getenv('ACCESS_TOKEN')
+
 base_url = "https://api.igdb.com/v4"
 headers = {
         'Client-ID': client_id,
@@ -51,7 +52,7 @@ def latest():
 
 @app.route('/games', methods=['GET'])
 def get_games():
-    search_term = request.args.get('search_term', default='zelda', type=str)
+    search_term = request.args.get('search_term', type=str)
     try:
         games = fetch_games(search_term)
         return jsonify(games)
