@@ -19,7 +19,7 @@ function SearchResults() {
       try {
         setLoading(true); // Set loading state
         const response = await axios.get(
-          `http://localhost:8080/games?search_term=${searchTerm}`
+          `http://localhost:8080/games/${searchTerm}`
         );
         const data = response.data;
 
