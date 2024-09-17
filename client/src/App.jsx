@@ -1,9 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Redirect from "./components/pages/Redirect";
 import Navbar from "./components/Navbar/Navbar";
 import Home from "./components/pages/Home";
 import Result from "./components/pages/Result";
-import TBS from "./components/pages/TBS";
 import SearchResults from "./components/pages/SearchResults";
+import GenreResults from "./components/pages/GenreResults";
 
 function App() {
   return (
@@ -12,9 +13,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/result" element={<Result />} />
-        <Route path="/genre-Turn-based strategy (TBS)" element={<TBS />} />{" "}
-        {/* Don't need %20 (space characters in paths) route auto handles it */}
-        <Route path="/search" element={<SearchResults />} />
+        <Route
+          path="/search"
+          element={<Redirect element={<SearchResults />} />}
+        />
+        <Route path="/genre" element={<GenreResults />} />
       </Routes>
     </BrowserRouter>
   );

@@ -40,11 +40,17 @@ def fetch_searched_games(search_term):
     else:
         response.raise_for_status()
 
-def create_list_of_games(specificGame):
-    if specificGame != "":
-        games = fetch_searched_games(specificGame)
+def fetch_searched_genres(genre):
+    body = f'fields id, name, cover.url, summary, rating_count, genres.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; where genres.name = "{genre}";'
+    
+    response = requests.post(f'{base_url}/games', headers=headers, data=body)
+    
+    if response.status_code == 200:
+        return response.json()
     else:
-        games = fetch_games()
+        response.raise_for_status()
+
+def create_list_of_games(games):
     games_with_all_fields = []
     required_keys = ["name", "cover", "summary", "genres", "screenshots"]
     
@@ -64,8 +70,10 @@ def clean_data(listFromJSON, listName, keyName):
     if isinstance(listFromJSON, list):
         for item in listFromJSON:
             if "t_thumb" in item[keyName]:
+                # Replace 't_thumb' with 't_cover_big' for cover URLs
                 result.append("https:" + item[keyName].replace("t_thumb", "t_cover_big"))
             elif listName == "videos":
+                # Build YouTube video link
                 result.append("https://www.youtube.com/watch?v=" + item[keyName])
             else:
                 result.append(item[keyName])
@@ -103,7 +111,8 @@ def latest():
 def get_games(gameName):
     search_term = gameName
     try:
-        games = create_list_of_games(search_term)
+        games_data = fetch_searched_games(search_term)
+        games = create_list_of_games(games_data)
         return jsonify(games)
     except requests.exceptions.HTTPError as err:
         return jsonify({"error": str(err)}), 500
@@ -112,6 +121,13 @@ def get_games(gameName):
 def get_genres():
     genres = fetch_genres()
     return jsonify(genres)
+
+# Route to get games by genre
+@app.route('/genres/<genre>', methods=['GET'])
+def get_genres_games(genre):
+    genres_data = fetch_searched_genres(genre)
+    genres_games = create_list_of_games(genres_data)
+    return jsonify(genres_games)
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
