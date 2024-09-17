@@ -1,21 +1,22 @@
-function GameCard() {
+function GameCard({ cover, gameName }) {
   return (
     <div className="container" style={{ marginTop: "2rem" }}>
-      <div className="card">
+      <div
+        className="card"
+        style={{ boxShadow: "1px 4px 20px rgba(0, 0, 0, 0.15)" }}
+      >
         <img
-          src="https://images.igdb.com/igdb/image/upload/t_cover_big/co1uje.jpg"
+          src={cover}
           className="card-img-top"
-          alt="..."
+          alt={`Cover of ${gameName}`}
           style={{ width: "100%", height: "100%" }}
         />
         <div className="card-body">
-          <h5 className="card-title">Card title</h5>
-          <p className="card-text">
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
-          </p>
-          <a href="#" className="btn btn-primary">
-            Go somewhere
+          <h5 className="card-title">{gameName}</h5>{" "}
+          {/* Use gameName as the title */}
+          <p className="card-text">Some quick details about the game here.</p>
+          <a href={`/games/${gameName}`} className="btn btn-primary">
+            Learn more
           </a>
         </div>
       </div>

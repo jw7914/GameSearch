@@ -64,14 +64,14 @@ def clean_data(listFromJSON, listName, keyName):
     if isinstance(listFromJSON, list):
         for item in listFromJSON:
             if "t_thumb" in item[keyName]:
-                result.append(item[keyName].replace("t_thumb", "t_cover_big"))
+                result.append("https:" + item[keyName].replace("t_thumb", "t_cover_big"))
             elif listName == "videos":
                 result.append("https://www.youtube.com/watch?v=" + item[keyName])
             else:
                 result.append(item[keyName])
     else:
         if "t_thumb" in listFromJSON[keyName]:
-            result.append(listFromJSON[keyName].replace("t_thumb", "t_cover_big"))
+            result.append("https:" + listFromJSON[keyName].replace("t_thumb", "t_cover_big"))
         elif listName == "videos":
             result.append("https://www.youtube.com/watch?v=" + listFromJSON[keyName])
         else:

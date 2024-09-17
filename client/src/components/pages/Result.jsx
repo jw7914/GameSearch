@@ -1,4 +1,4 @@
-import GameCard from "../GameCard";
+import GameCard from "../Gamecard";
 function Result() {
   return (
     <>
