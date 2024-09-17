@@ -12,7 +12,6 @@ cors = CORS(app, origins="*")
 
 client_id = os.getenv('CLIENT_ID')
 access_token = os.getenv('ACCESS_TOKEN')
-
 base_url = "https://api.igdb.com/v4"
 headers = {
         'Client-ID': client_id,
@@ -113,11 +112,6 @@ def get_games(gameName):
 def get_genres():
     genres = fetch_genres()
     return jsonify(genres)
-
-@app.route('/test', methods=['GET'])
-def test():
-    search_term = request.args.get('search_term', default="test", type=str)
-    return search_term
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
