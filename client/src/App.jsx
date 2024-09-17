@@ -17,7 +17,10 @@ function App() {
           path="/search"
           element={<Redirect element={<SearchResults />} />}
         />
-        <Route path="/genre" element={<GenreResults />} />
+        <Route
+          path="/genre"
+          element={<Redirect element={<GenreResults />} />}
+        />
       </Routes>
     </BrowserRouter>
   );

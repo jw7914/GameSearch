@@ -10,8 +10,8 @@ function useQuery() {
 
 function SearchResults() {
   const [games, setGames] = useState([]);
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [covers, setCovers] = useState([]);
   const query = useQuery();
   const searchTerm = query.get("query");
@@ -27,7 +27,7 @@ function SearchResults() {
 
         // Update state with the game names and covers
         const gameNames = data.map((el) => el.name);
-        const gameCovers = data.map((el) => el.cover || "defaultCover.jpg"); // Handle missing covers
+        const gameCovers = data.map((el) => el.cover); // Handle missing covers
         setGames(gameNames);
         setCovers(gameCovers);
         setLoading(false); // End loading
@@ -67,11 +67,7 @@ function SearchResults() {
               elevation={25}
               key={index}
               gameName={name}
-              cover={covers[index] || "fallbackCover.jpg"}
-              style={{
-                height: "300px", // Set a fixed height for the cards
-                width: "100%", // Make sure it takes up the full width of the grid cell
-              }}
+              cover={covers[index]}
             />
           ))}
         </div>
