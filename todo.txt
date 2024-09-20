@@ -1,4 +1,3 @@
-Fix special charcters in with / in genres
-Make an axios api file for front end api calls
 Fix sizing of gamecards
 Fix break points for mobile viewing
+?? make static genre pages so query is not based on url params
