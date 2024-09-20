@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
-import { Container } from "@mui/material";
+import { handleSearch } from "../../../api/api";
 import GameCard from "../Gamecard";
+import CircularProgress from "@mui/material/CircularProgress";
+import { Container } from "@mui/material";
+import Box from "@mui/material/Box";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -17,38 +19,22 @@ function SearchResults() {
   const searchTerm = query.get("query");
 
   useEffect(() => {
-    const handleSearch = async (searchTerm) => {
-      try {
-        setLoading(true); // Set loading state
-        const response = await axios.get(
-          `http://localhost:8080/games/${searchTerm}`
-        );
-        const data = response.data;
-
-        // Update state with the game names and covers
-        const gameNames = data.map((el) => el.name);
-        const gameCovers = data.map((el) => el.cover); // Handle missing covers
-        setGames(gameNames);
-        setCovers(gameCovers);
-        setLoading(false); // End loading
-      } catch (error) {
-        console.error("Error fetching games:", error);
-        setError("Failed to load games");
-        setLoading(false);
-      }
-    };
-
     if (searchTerm && searchTerm.trim()) {
-      handleSearch(searchTerm); // Trigger search based on the URL query parameter
+      handleSearch(searchTerm, setLoading, setGames, setCovers, setError); // Trigger search based on the URL query parameter
     }
   }, [searchTerm]);
 
   return (
     <Container sx={{ marginTop: "50px" }}>
-      <h2>Search Results for: {searchTerm}</h2>
+      <h2 style={{ display: "flex", justifyContent: "center", margin: "auto" }}>
+        Search Results for: {searchTerm}
+      </h2>
 
-      {loading && <p>Loading games...</p>}
-
+      {loading && (
+        <Box display="flex" justifyContent="center" alignItems="center" my={4}>
+          <CircularProgress size={50} />
+        </Box>
+      )}
       {error && <p>{error}</p>}
 
       {!loading && games.length > 0 ? (

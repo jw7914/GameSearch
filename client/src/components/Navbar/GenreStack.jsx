@@ -3,9 +3,10 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
-import axios from "axios";
+import CircularProgress from "@mui/material/CircularProgress";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { fetchGenres } from "../../../api/api";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#60737F",
@@ -23,33 +24,38 @@ function GenreStack() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchGenres = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get("http://localhost:8080/genres");
-      const data = response.data;
-      setGenres(data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching genres:", error);
-      setError("Failed to load genres");
-    }
-  };
-
   useEffect(() => {
-    fetchGenres();
+    fetchGenres(setLoading, setGenres, setError);
   }, []);
 
   return (
     <Box sx={{ width: "100%" }}>
-      {loading && <p>Loading games...</p>}
-      {error && <p>{error}</p>}
+      {/* Loading Spinner */}
+      {loading && (
+        <Box display="flex" justifyContent="center" alignItems="center" my={4}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <Box display="flex" justifyContent="center" alignItems="center" my={2}>
+          <Paper
+            elevation={3}
+            sx={{ padding: 2, backgroundColor: "#f44336", color: "#fff" }}
+          >
+            {error}
+          </Paper>
+        </Box>
+      )}
+
       <Stack spacing={2.5}>
         {genres.map((el) => (
           <Link
             to={`/genre?genre=${el.name}`}
             style={{ textDecoration: "none" }}
             key={el.id} // Move key prop here
+            aria-label={`View games in ${el.name} genre`}
           >
             <Item
               sx={{

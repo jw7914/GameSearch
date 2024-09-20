@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import { handleGenreSearch } from "../../../api/api";
 import { Container } from "@mui/material";
 import GameCard from "../Gamecard";
 
@@ -17,39 +19,21 @@ function GenreResults() {
   const genre = query.get("genre");
 
   useEffect(() => {
-    const handleSearch = async (genre) => {
-      console.log(genre);
-      try {
-        setLoading(true); // Set loading state
-        const response = await axios.get(
-          `http://localhost:8080/genres/${genre}`
-        );
-        const data = response.data;
-
-        // Update state with the game names and covers
-        const gameNames = data.map((el) => el.name);
-        const gameCovers = data.map((el) => el.cover);
-        setGames(gameNames);
-        setCovers(gameCovers);
-        setLoading(false); // End loading
-      } catch (error) {
-        console.error("Error fetching games:", error);
-        setError("Failed to load games");
-        setLoading(false);
-      }
-    };
-
     if (genre && genre.trim()) {
-      handleSearch(genre); // Trigger search based on the URL query parameter
+      handleGenreSearch(genre, setLoading, setGames, setCovers, setError); // Trigger search based on the URL query parameter
     }
   }, [genre]);
 
   return (
     <Container sx={{ marginTop: "50px" }}>
-      <h2>Search Results for: {genre}</h2>
-
-      {loading && <p>Loading games...</p>}
-
+      <h2 style={{ display: "flex", justifyContent: "center", margin: "auto" }}>
+        Search Results for: {genre}
+      </h2>
+      {loading && (
+        <Box display="flex" justifyContent="center" alignItems="center" my={4}>
+          <CircularProgress size={50} />
+        </Box>
+      )}
       {error && <p>{error}</p>}
 
       {!loading && games.length > 0 ? (
