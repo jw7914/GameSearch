@@ -3,6 +3,7 @@ import os
 import requests
 from dotenv import load_dotenv
 from flask_cors import CORS
+import urllib.parse
 
 # Load environment variables from .env file
 load_dotenv()
@@ -107,9 +108,12 @@ def latest():
     games = create_list_of_games("")
     return jsonify(games)
 
-@app.route('/games/<gameName>', methods=['GET'])
-def get_games(gameName):
-    search_term = gameName
+@app.route('/games', methods=['GET'])
+def get_games():
+    search_term = request.args.get('search_term', type=str)
+    print(search_term)
+    search_term = urllib.parse.unquote(search_term)
+    print(search_term)
     try:
         games_data = fetch_searched_games(search_term)
         games = create_list_of_games(games_data)
@@ -117,17 +121,18 @@ def get_games(gameName):
     except requests.exceptions.HTTPError as err:
         return jsonify({"error": str(err)}), 500
     
-@app.route('/genres', methods=['GET'])
-def get_genres():
-    genres = fetch_genres()
-    return jsonify(genres)
-
 # Route to get games by genre
-@app.route('/genres/<genre>', methods=['GET'])
-def get_genres_games(genre):
-    genres_data = fetch_searched_genres(genre)
-    genres_games = create_list_of_games(genres_data)
-    return jsonify(genres_games)
+@app.route('/genres', methods=['GET'])
+def get_genres_games():
+    genre = request.args.get('genre', type=str)
+    genre = urllib.parse.unquote(genre)
+    print(genre)
+    if genre == "":
+        genres_data = fetch_genres()
+    else:
+        genre_games = fetch_searched_genres(genre)
+        genres_data = create_list_of_games(genre_games)
+    return jsonify(genres_data)
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)

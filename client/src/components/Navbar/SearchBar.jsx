@@ -8,7 +8,7 @@ function SearchBar() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (input) {
-      navigate(`/search?query=${input}`);
+      navigate(`/search?query=${encodeURIComponent(input)}`);
     }
   };
 

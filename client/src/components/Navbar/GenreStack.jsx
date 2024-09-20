@@ -52,9 +52,9 @@ function GenreStack() {
       <Stack spacing={2.5}>
         {genres.map((el) => (
           <Link
-            to={`/genre?genre=${el.name}`}
+            to={`/genre?genre=${encodeURIComponent(el.name)}`}
             style={{ textDecoration: "none" }}
-            key={el.id} // Move key prop here
+            key={el.id}
             aria-label={`View games in ${el.name} genre`}
           >
             <Item

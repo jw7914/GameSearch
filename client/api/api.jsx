@@ -8,7 +8,7 @@ export const fetchGenres = async (setLoading, setGenres, setError) => {
   try {
     setError("");
     setLoading(true);
-    const response = await api.get("/genres");
+    const response = await api.get("/genres?genre");
     const data = response.data;
     setGenres(data);
     setLoading(false);
@@ -29,10 +29,10 @@ export const handleSearch = async (
   try {
     setLoading(true);
     setError("");
-    const response = await api.get(`/games/${search_term}`);
+    const response = await api.get(
+      `/games?search_term=${encodeURIComponent(search_term)}`
+    );
     const data = response.data;
-
-    // Update state with the game names and covers
     const gameNames = data.map((el) => el.name);
     const gameCovers = data.map((el) => el.cover);
     setGames(gameNames);
@@ -55,10 +55,10 @@ export const handleGenreSearch = async (
   try {
     setLoading(true);
     setError("");
-    const response = await api.get(`/genres/${genre}`);
+    const response = await api.get(
+      `/genres?genre=${encodeURIComponent(genre)}`
+    );
     const data = response.data;
-
-    // Update state with the game names and covers
     const gameNames = data.map((el) => el.name);
     const gameCovers = data.map((el) => el.cover);
     setGames(gameNames);
