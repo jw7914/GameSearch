@@ -53,6 +53,7 @@ function GenreResults() {
               key={index}
               gameName={name}
               cover={covers[index]}
+              cardId={index}
             />
           ))}
         </div>

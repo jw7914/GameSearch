@@ -43,14 +43,11 @@ function Navbar() {
               </li>
               <li className="nav-item mx-1">
                 {" "}
-                {/* Increased margin */}
                 <a className="nav-link" href="#">
                   Features
                 </a>
               </li>
               <li className="nav-item mx-1">
-                {" "}
-                {/* Increased margin */}
                 <AccountDropDown />
               </li>
             </ul>
