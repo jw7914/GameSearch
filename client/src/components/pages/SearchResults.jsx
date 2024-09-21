@@ -26,7 +26,14 @@ function SearchResults() {
 
   return (
     <Container sx={{ marginTop: "50px" }}>
-      <h2 style={{ display: "flex", justifyContent: "center", margin: "auto" }}>
+      <h2
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          margin: "auto",
+          fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+        }}
+      >
         Search Results for: {searchTerm}
       </h2>
 

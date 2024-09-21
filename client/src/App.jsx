@@ -5,6 +5,7 @@ import Home from "./components/pages/Home";
 import Result from "./components/pages/Result";
 import SearchResults from "./components/pages/SearchResults";
 import GenreResults from "./components/pages/GenreResults";
+import NotFoundPage from "./components/pages/NotFound";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           path="/genre"
           element={<Redirect element={<GenreResults />} />}
         />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );

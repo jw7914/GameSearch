@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import GenreStack from "./GenreStack";
+import AccountDropDown from "./AccountDropDown";
 
 function Navbar() {
   return (
@@ -23,31 +24,34 @@ function Navbar() {
           </button>
           <SearchBar />
           <div
-            className="collapse navbar-collapse"
+            className="collapse navbar-collapse justify-content-end"
             id="navbarNav"
             style={{ paddingRight: "5vw" }}
           >
             <ul className="navbar-nav">
-              <li className="nav-item">
+              <li className="nav-item mx-1">
                 <a
-                  className="nav-link dropdown-toggle"
+                  className="nav-link d-flex align-items-center"
                   href="#"
                   data-bs-toggle="offcanvas"
                   data-bs-target="#offcanvasRight"
                   aria-controls="offcanvasRight"
                 >
-                  Genres
+                  <i className="fa fa-arrow-left me-2" aria-hidden="true"></i>
+                  <span>Genres</span>
                 </a>
               </li>
-              <li className="nav-item">
+              <li className="nav-item mx-1">
+                {" "}
+                {/* Increased margin */}
                 <a className="nav-link" href="#">
                   Features
                 </a>
               </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#">
-                  Pricing
-                </a>
+              <li className="nav-item mx-1">
+                {" "}
+                {/* Increased margin */}
+                <AccountDropDown />
               </li>
             </ul>
           </div>
