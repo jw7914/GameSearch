@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { handleSearch } from "../../../api/api";
-import GameCard from "../Gamecard";
+import MUIcard from "../MUIcard";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Container } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -49,14 +49,14 @@ function SearchResults() {
           className="grid-container"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)", // 4 equal columns
-            gap: "1rem", // Space between grid items
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "3rem",
             margin: "1rem",
             marginBottom: "-2rem",
           }}
         >
           {games.map((name, index) => (
-            <GameCard
+            <MUIcard
               elevation={25}
               key={index}
               gameName={name}
