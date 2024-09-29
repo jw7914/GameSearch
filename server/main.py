@@ -22,7 +22,7 @@ headers = {
     }
 
 def fetch_games():
-    body = f'fields id, name, cover.url, summary, rating_count, genres.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500;'
+    body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game, screenshots.url, total_rating, storyline, videos.video_id; limit 500;'
     
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     
@@ -32,7 +32,7 @@ def fetch_games():
         response.raise_for_status()
 
 def fetch_searched_games(search_term):
-    body = f'fields id, name, cover.url, summary, rating_count, genres.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; search "{search_term}";'
+    body = f'fields id, name, cover.url, summary, rating_count, parent_game, genres.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; search "{search_term}";'
     
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     
@@ -51,11 +51,28 @@ def fetch_searched_genres(genre):
     else:
         response.raise_for_status()
 
+def get_parent_game_detail(gameID):
+    body = f'fields id, name, cover.url, summary, rating_count, genres.name, screenshots.url, total_rating, storyline, videos.video_id; where id = "{gameID}";'
+    
+    response = requests.post(f'{base_url}/games', headers=headers, data=body)
+    
+    if response.status_code == 200:
+        return response.json()
+    else:
+        response.raise_for_status()
+
 def create_list_of_games(games):
     games_with_all_fields = []
+    uniqueGames = []
+    for game in games:
+        if game.get("parent_game", -1) == -1:
+            uniqueGames.append(game)
+        elif game.get("parent_game", -1) != -1 and game["parent_game"] not in uniqueGames:
+            uniqueGames.append(get_parent_game_detail(game['parent_game']))
+    
     required_keys = ["name", "cover", "summary", "genres", "screenshots"]
     
-    for game in games:
+    for game in uniqueGames:
         if all(key in game for key in required_keys):
             game["screenshots"] = clean_data(game["screenshots"], "screenshots", "url")
             game["cover"] = clean_data(game["cover"], "cover", "url")
@@ -105,7 +122,8 @@ def fetch_genres():
 #create more routes for different end points
 @app.route('/', methods=['GET'])
 def latest():
-    games = create_list_of_games("")
+    game_data = fetch_games()
+    games = create_list_of_games(game_data)
     return jsonify(games)
 
 @app.route('/games', methods=['GET'])
