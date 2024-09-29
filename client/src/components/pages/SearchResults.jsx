@@ -1,41 +1,53 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { handleSearch } from "../../../api/api";
+import { handleSearch, handleGenreSearch } from "../../../api/api"; // Ensure handleGenreSearch is imported
 import MUIcard from "../MUIcard";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Container } from "@mui/material";
 import Box from "@mui/material/Box";
-import "./SearchResults.css"; // Correct import statement
+import "./SearchResults.css";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-function SearchResults() {
+function SearchResults({ type }) {
+  // Destructure the 'type' prop
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [covers, setCovers] = useState([]);
   const query = useQuery();
-  const searchTerm = query.get("query");
+
+  let queryTerm = "";
+  if (type === "search") {
+    queryTerm = query.get("query");
+  } else if (type === "genre") {
+    queryTerm = query.get("genre");
+  }
 
   useEffect(() => {
-    if (searchTerm && searchTerm.trim()) {
-      handleSearch(searchTerm, setLoading, setGames, setCovers, setError); // Trigger search based on the URL query parameter
+    if (queryTerm && queryTerm.trim()) {
+      if (type === "search") {
+        handleSearch(queryTerm, setLoading, setGames, setCovers, setError);
+      } else if (type === "genre") {
+        handleGenreSearch(queryTerm, setLoading, setGames, setCovers, setError);
+      }
     }
-  }, [searchTerm]);
+  }, [queryTerm, type]); // Added 'type' to dependencies
 
   return (
-    <Container sx={{ marginTop: "50px" }}>
+    <Container sx={{ marginTop: "2rem", marginBottom: "5rem" }}>
       <h2
         style={{
           display: "flex",
           justifyContent: "center",
           margin: "auto",
           fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+          marginBottom: "30px",
         }}
       >
-        Search Results for: {searchTerm}
+        Search Results for: {queryTerm}
       </h2>
 
       {loading && (
@@ -47,8 +59,6 @@ function SearchResults() {
 
       {!loading && games.length > 0 ? (
         <div className="grid-container">
-          {" "}
-          {/* Use the class for the grid */}
           {games.map((name, index) => (
             <MUIcard
               elevation={25}

@@ -16,11 +16,11 @@ function App() {
         <Route path="/result" element={<Result />} />
         <Route
           path="/search"
-          element={<Redirect element={<SearchResults />} />}
+          element={<Redirect element={<SearchResults type="search" />} />}
         />
         <Route
           path="/genre"
-          element={<Redirect element={<GenreResults />} />}
+          element={<Redirect element={<SearchResults type="genre" />} />}
         />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
