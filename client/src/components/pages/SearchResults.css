@@ -1,0 +1,28 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr); /* Default for small screens */
+  gap: 3rem;
+  margin: 1rem;
+  margin-bottom: -2rem;
+}
+
+@media (min-width: 576px) {
+  /* Small devices (≥576px) */
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  /* Medium devices (≥768px) */
+  .grid-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 992px) {
+  /* Large devices (≥992px) */
+  .grid-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

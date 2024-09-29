@@ -6,7 +6,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
-export default function MUIcard({ gameName, cover, cardID }) {
+export default function MUIcard({ gameName, cover }) {
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardMedia
@@ -15,6 +15,7 @@ export default function MUIcard({ gameName, cover, cardID }) {
           height: 200,
           backgroundPosition: "center",
         }}
+        elevation={24}
         image={cover}
         title={gameName}
       />

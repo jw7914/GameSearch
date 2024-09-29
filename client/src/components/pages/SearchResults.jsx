@@ -5,6 +5,7 @@ import MUIcard from "../MUIcard";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Container } from "@mui/material";
 import Box from "@mui/material/Box";
+import "./SearchResults.css"; // Correct import statement
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -45,16 +46,9 @@ function SearchResults() {
       {error && <p>{error}</p>}
 
       {!loading && games.length > 0 ? (
-        <div
-          className="grid-container"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: "3rem",
-            margin: "1rem",
-            marginBottom: "-2rem",
-          }}
-        >
+        <div className="grid-container">
+          {" "}
+          {/* Use the class for the grid */}
           {games.map((name, index) => (
             <MUIcard
               elevation={25}
