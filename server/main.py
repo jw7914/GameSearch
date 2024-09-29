@@ -64,11 +64,13 @@ def get_parent_game_detail(gameName):
 def create_list_of_games(games):
     games_with_all_fields = []
     uniqueGames = []
+    uniqueGameNames = set()
     for game in games:
         if game.get("parent_game", "") == "":
             uniqueGames.append(game)
-        elif game.get("parent_game", "") != "" and game["parent_game"] not in uniqueGames:
+        elif game.get("parent_game", "") != "" and game['parent_game']['name'] in uniqueGameNames:
             uniqueGames.append(get_parent_game_detail((game['parent_game']['name'])))
+            uniqueGameNames.add(game['parent_game']['name'])
     
     required_keys = ["name", "cover", "summary", "genres", "screenshots"]
     
