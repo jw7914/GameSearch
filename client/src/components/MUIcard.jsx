@@ -14,12 +14,6 @@ export default function MUIcard({
   releaseDate,
   summary,
 }) {
-  const release = new Date(releaseDate * 1000);
-
-  const formattedReleaseDate = `${
-    release.getMonth() + 1
-  }/${release.getDate()}/${release.getFullYear()}`;
-
   return (
     <Card
       sx={{
@@ -48,8 +42,7 @@ export default function MUIcard({
         <Rating name="read-only" value={rating} readOnly precision={0.1} />
 
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          <b>Release Date: </b> {formattedReleaseDate}{" "}
-          {/* Use the formatted date */}
+          <b>Release Date: </b> {releaseDate}
         </Typography>
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
           <b>Summary:</b>
