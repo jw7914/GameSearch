@@ -32,11 +32,13 @@ export const handleSearch = async (
       `/games?search_term=${encodeURIComponent(search_term)}`
     );
     const data = response.data;
+
     const gamesWithDetails = data.map((el) => ({
       name: el.name,
       cover: el.cover,
       summary: el.summary,
-      release: el.first_release_date,
+      release: el.first_release_date ?? "N/A",
+      rating: el.total_rating ?? 0,
     }));
 
     setGames(gamesWithDetails);
@@ -66,7 +68,8 @@ export const handleGenreSearch = async (
       name: el.name,
       cover: el.cover,
       summary: el.summary,
-      release: el.first_release_date,
+      release: el.first_release_date ?? "N/A",
+      rating: el.total_rating ?? 0,
     }));
 
     setGames(gamesWithDetails);

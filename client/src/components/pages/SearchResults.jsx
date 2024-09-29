@@ -65,6 +65,7 @@ function SearchResults({ type }) {
               cover={game.cover}
               summary={game.summary}
               releaseDate={game.release}
+              rating={game.rating}
               cardId={index}
             />
           ))}

@@ -77,9 +77,11 @@ def create_list_of_games(games):
     required_keys = ["name", "cover", "summary", "genres", "screenshots"]
     
     for game in uniqueGames:
-        timestamp_in_seconds =  game["first_release_date"] 
-        date = datetime.datetime.fromtimestamp(timestamp_in_seconds)
-        game["first_release_date"] = date.strftime("%m/%d/%Y")
+        if game.get("first_release_date"):
+            timestamp_in_seconds = game["first_release_date"]
+            date = datetime.datetime.fromtimestamp(timestamp_in_seconds)
+            game["first_release_date"] = date.strftime("%m/%d/%Y")
+       
         if all(key in game for key in required_keys):
             game["screenshots"] = clean_data(game["screenshots"], "screenshots", "url")
             game["cover"] = clean_data(game["cover"], "cover", "url")

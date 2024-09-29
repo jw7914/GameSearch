@@ -14,6 +14,9 @@ export default function MUIcard({
   releaseDate,
   summary,
 }) {
+  // Convert the rating from 1-100 to a 5-star scale
+  const convertedRating = rating / 10 / 2;
+
   return (
     <Card
       sx={{
@@ -39,7 +42,30 @@ export default function MUIcard({
           {gameName}
         </Typography>
 
-        <Rating name="read-only" value={rating} readOnly precision={0.1} />
+        {convertedRating > 0 ? (
+          <Rating
+            name="read-only"
+            value={convertedRating}
+            readOnly
+            precision={0.1}
+            max={5}
+          />
+        ) : (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Typography
+              variant="body2"
+              sx={{ color: "text.secondary", paddingRight: "8px" }}
+            >
+              <b>N/A</b>
+            </Typography>
+            <Rating
+              name="empty-rating"
+              value={0} // This will render empty stars
+              readOnly
+              max={5}
+            />
+          </div>
+        )}
 
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
           <b>Release Date: </b> {releaseDate}
