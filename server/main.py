@@ -23,9 +23,17 @@ headers = {
         'Content-Type': 'application/json'
     }
 
-def fetch_games():
-    body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500;'
+def fetch_lastest_games():
+    body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; sort release_dates.date desc;'
+    response = requests.post(f'{base_url}/games', headers=headers, data=body)
     
+    if response.status_code == 200:
+        return response.json()
+    else:
+        response.raise_for_status()
+
+def fetch_popular_games():
+    body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; sort total_rating desc;'
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     
     if response.status_code == 200:
@@ -131,7 +139,13 @@ def fetch_genres():
 #create more routes for different end points
 @app.route('/', methods=['GET'])
 def latest():
-    game_data = fetch_games()
+    game_data = fetch_lastest_games()
+    games = create_list_of_games(game_data)
+    return jsonify(games)
+
+@app.route('/popular', methods=['GET'])
+def popular():
+    game_data = fetch_popular_games()
     games = create_list_of_games(game_data)
     return jsonify(games)
 
