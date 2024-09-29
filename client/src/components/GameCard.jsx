@@ -1,100 +1,101 @@
-import Divider from "@mui/material/Divider";
-import { useState } from "react";
+import * as React from "react";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import { Rating } from "@mui/material";
 
-function GameCard({ cover, gameName, cardId }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleAccordion = () => {
-    setIsOpen(!isOpen);
-  };
+export default function GameCard({
+  gameName,
+  cover,
+  rating,
+  releaseDate,
+  summary,
+}) {
+  // Convert the rating from 1-100 to a 5-star scale
+  const convertedRating = rating / 10 / 2;
 
   return (
-    <div
-      className="container"
-      style={{
-        marginTop: "2rem",
-        maxWidth: "300px", // Set consistent card width
-        minHeight: "450px", // Set consistent card height
+    <Card
+      sx={{
+        maxWidth: 345,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        paddingBottom: "2rem",
       }}
     >
-      <div
-        className="card"
-        style={{
-          boxShadow: "1px 4px 20px rgba(0, 0, 0, 0.15)",
-          display: "flex",
-          flexDirection: "column",
-          height: "100%", // Ensure card takes full height
+      <CardMedia
+        sx={{
+          objectFit: "cover",
+          height: 200,
+          backgroundPosition: "center",
         }}
-      >
-        <img
-          src={cover}
-          className="card-img-top"
-          alt={`Cover of ${gameName}`}
-          style={{
-            width: "100%",
-            height: "200px",
-            objectFit: "cover", // Maintain image aspect ratio
+        elevation={24}
+        image={cover}
+        title={gameName}
+      />
+      <CardContent sx={{ flexGrow: 1 }}>
+        <Typography gutterBottom variant="h5" component="div">
+          {gameName}
+        </Typography>
+
+        {convertedRating > 0 ? (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Typography
+              variant="body2"
+              sx={{ color: "text.secondary", paddingRight: "8px" }}
+            >
+              <b>Rating:</b>
+            </Typography>
+            <Rating
+              name="read-only"
+              value={convertedRating}
+              readOnly
+              precision={0.1}
+              max={5}
+            />
+          </div>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Typography
+              variant="body2"
+              sx={{ color: "text.secondary", paddingRight: "8px" }}
+            >
+              <b>Rating:</b> N/A
+            </Typography>
+          </div>
+        )}
+
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          <b>Release Date: </b> {releaseDate}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          <b>Summary:</b>
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            maxHeight: "150px",
+            overflowY: "auto",
+            overflowX: "hidden",
+            paddingTop: "8px",
           }}
-        />
-        <div
-          className="card-body d-flex flex-column"
-          style={{ flexGrow: 1, overflow: "hidden" }}
         >
-          <h5 className="card-title">{gameName}</h5>
-          <Divider sx={{ backgroundColor: "#424242" }} />
-
-          {/* Accordion section */}
-          <div className="accordion" id={`accordion-${cardId}`}>
-            <div className="accordion-item" style={{ border: "none" }}>
-              <h2 className="accordion-header" style={{ border: "none" }}>
-                <button
-                  className={`accordion-button ${isOpen ? "" : "collapsed"}`}
-                  type="button"
-                  onClick={toggleAccordion}
-                  aria-expanded={isOpen}
-                  aria-controls={`collapse-${cardId}`}
-                  style={{
-                    padding: "0.5rem",
-                    fontSize: "1rem",
-                    backgroundColor: "transparent",
-                    border: "none",
-                    boxShadow: "none",
-                  }}
-                >
-                  More Details
-                </button>
-              </h2>
-              <div
-                id={`collapse-${cardId}`}
-                className={`accordion-collapse collapse ${
-                  isOpen ? "show" : ""
-                }`}
-              >
-                <div
-                  className="accordion-body"
-                  style={{
-                    padding: "1rem",
-                    maxHeight: "100px",
-                    overflowY: "auto",
-                  }}
-                >
-                  <strong>Game Description:</strong> Lorem ipsum dolor sit amet,
-                  consectetur adipiscing elit. This is the game's details, and
-                  you can customize this content as needed.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-auto">
-            <a href={`/games/${gameName}`} className="btn btn-primary w-100">
-              Learn more
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
+          {summary}
+        </Typography>
+      </CardContent>
+      <CardActions>
+        <Button size="small" variant="contained">
+          Share
+        </Button>
+        <Button size="small" variant="contained">
+          Learn More
+        </Button>
+      </CardActions>
+    </Card>
   );
 }
-
-export default GameCard;
