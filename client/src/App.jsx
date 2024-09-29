@@ -2,10 +2,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Redirect from "./components/pages/Redirect";
 import Navbar from "./components/Navbar/Navbar";
 import Home from "./components/pages/Home";
-import Result from "./components/pages/Result";
-import SearchResults from "./components/pages/SearchResults";
-import GenreResults from "./components/pages/GenreResults";
 import NotFoundPage from "./components/pages/NotFound";
+import SearchResults from "./components/pages/SearchResults";
 
 function App() {
   return (
@@ -13,7 +11,6 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/result" element={<Result />} />
         <Route
           path="/search"
           element={<Redirect element={<SearchResults type="search" />} />}
