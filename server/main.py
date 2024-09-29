@@ -52,7 +52,7 @@ def fetch_searched_genres(genre):
         response.raise_for_status()
 
 def get_parent_game_detail(gameID):
-    body = f'fields id, name, cover.url, summary, rating_count, genres.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500;'
+    body = f'fields id, name, cover.url, summary, rating_count, genres.name, screenshots.url, total_rating, storyline, videos.video_id; where id = "{gameID}";'
     
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     
