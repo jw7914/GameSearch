@@ -124,7 +124,7 @@ def fetch_genres():
 #create more routes for different end points
 @app.route('/', methods=['GET'])
 def latest():
-    game_data = fetch_searched_games("Genshin")
+    game_data = fetch_games()
     games = create_list_of_games(game_data)
     return jsonify(games)
 
