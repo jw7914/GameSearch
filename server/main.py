@@ -4,6 +4,8 @@ import requests
 from dotenv import load_dotenv
 from flask_cors import CORS
 import urllib.parse
+import datetime
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -32,7 +34,7 @@ def fetch_games():
         response.raise_for_status()
 
 def fetch_searched_games(search_term):
-    body = f'fields id, name, cover.url, summary, rating_count, parent_game.name, genres.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; search "{search_term}";'
+    body = f'fields id, name, cover.url, summary, rating_count, first_release_date, parent_game.name, genres.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; search "{search_term}";'
     
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     
@@ -42,7 +44,7 @@ def fetch_searched_games(search_term):
         response.raise_for_status()
 
 def fetch_searched_genres(genre):
-    body = f'fields id, name, cover.url, summary, rating_count, genres.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; where genres.name = "{genre}";'
+    body = f'fields id, name, cover.url, summary, rating_count, first_release_date, genres.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; where genres.name = "{genre}";'
     
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     
@@ -52,7 +54,7 @@ def fetch_searched_genres(genre):
         response.raise_for_status()
 
 def get_parent_game_detail(gameName):
-    body = f'fields id, name, cover.url, summary, rating_count, genres.name, screenshots.url, total_rating, storyline, videos.video_id; where name = "{gameName}";'
+    body = f'fields id, name, cover.url, summary, rating_count, genres.name, first_release_date, screenshots.url, total_rating, storyline, videos.video_id; where name = "{gameName}";'
     
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     

@@ -5,10 +5,31 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { Rating } from "@mui/material";
 
-export default function MUIcard({ gameName, cover }) {
+export default function MUIcard({
+  gameName,
+  cover,
+  rating,
+  releaseDate,
+  summary,
+}) {
+  const release = new Date(releaseDate * 1000);
+
+  const formattedReleaseDate = `${
+    release.getMonth() + 1
+  }/${release.getDate()}/${release.getFullYear()}`;
+
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card
+      sx={{
+        maxWidth: 345,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        paddingBottom: "2rem",
+      }}
+    >
       <CardMedia
         sx={{
           objectFit: "cover",
@@ -19,18 +40,40 @@ export default function MUIcard({ gameName, cover }) {
         image={cover}
         title={gameName}
       />
-      <CardContent>
+      <CardContent sx={{ flexGrow: 1 }}>
         <Typography gutterBottom variant="h5" component="div">
           {gameName}
         </Typography>
+
+        <Rating name="read-only" value={rating} readOnly precision={0.1} />
+
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Lizards are a widespread group of squamate reptiles, with over 6,000
-          species, ranging across all continents except Antarctica
+          <b>Release Date: </b> {formattedReleaseDate}{" "}
+          {/* Use the formatted date */}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          <b>Summary:</b>
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            maxHeight: "150px",
+            overflowY: "auto",
+            overflowX: "hidden",
+            paddingTop: "8px",
+          }}
+        >
+          {summary}
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small">Share</Button>
-        <Button size="small">Learn More</Button>
+        <Button size="small" variant="contained">
+          Share
+        </Button>
+        <Button size="small" variant="contained">
+          Learn More
+        </Button>
       </CardActions>
     </Card>
   );

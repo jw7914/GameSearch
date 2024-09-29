@@ -3,7 +3,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"; // Use one consistent icon
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 export default function GameAccordion({ title, content }) {
   return (

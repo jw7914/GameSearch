@@ -23,7 +23,6 @@ export const handleSearch = async (
   search_term,
   setLoading,
   setGames,
-  setCovers,
   setError
 ) => {
   try {
@@ -33,10 +32,14 @@ export const handleSearch = async (
       `/games?search_term=${encodeURIComponent(search_term)}`
     );
     const data = response.data;
-    const gameNames = data.map((el) => el.name);
-    const gameCovers = data.map((el) => el.cover);
-    setGames(gameNames);
-    setCovers(gameCovers);
+    const gamesWithDetails = data.map((el) => ({
+      name: el.name,
+      cover: el.cover,
+      summary: el.summary,
+      release: el.first_release_date,
+    }));
+
+    setGames(gamesWithDetails);
     setLoading(false);
   } catch (error) {
     console.error("Error fetching games:", error);
@@ -49,7 +52,6 @@ export const handleGenreSearch = async (
   genre,
   setLoading,
   setGames,
-  setCovers,
   setError
 ) => {
   try {
@@ -59,10 +61,15 @@ export const handleGenreSearch = async (
       `/genres?genre=${encodeURIComponent(genre)}`
     );
     const data = response.data;
-    const gameNames = data.map((el) => el.name);
-    const gameCovers = data.map((el) => el.cover);
-    setGames(gameNames);
-    setCovers(gameCovers);
+
+    const gamesWithDetails = data.map((el) => ({
+      name: el.name,
+      cover: el.cover,
+      summary: el.summary,
+      release: el.first_release_date,
+    }));
+
+    setGames(gamesWithDetails);
     setLoading(false);
   } catch (error) {
     console.error("Error fetching games:", error);

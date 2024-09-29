@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { handleSearch, handleGenreSearch } from "../../../api/api"; // Ensure handleGenreSearch is imported
+import { handleSearch, handleGenreSearch } from "../../../api/api";
 import MUIcard from "../MUIcard";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Container } from "@mui/material";
@@ -12,11 +12,9 @@ function useQuery() {
 }
 
 function SearchResults({ type }) {
-  // Destructure the 'type' prop
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [covers, setCovers] = useState([]);
   const query = useQuery();
 
   let queryTerm = "";
@@ -29,12 +27,12 @@ function SearchResults({ type }) {
   useEffect(() => {
     if (queryTerm && queryTerm.trim()) {
       if (type === "search") {
-        handleSearch(queryTerm, setLoading, setGames, setCovers, setError);
+        handleSearch(queryTerm, setLoading, setGames, setError);
       } else if (type === "genre") {
-        handleGenreSearch(queryTerm, setLoading, setGames, setCovers, setError);
+        handleGenreSearch(queryTerm, setLoading, setGames, setError);
       }
     }
-  }, [queryTerm, type]); // Added 'type' to dependencies
+  }, [queryTerm, type]);
 
   return (
     <Container sx={{ marginTop: "2rem", marginBottom: "5rem" }}>
@@ -59,12 +57,14 @@ function SearchResults({ type }) {
 
       {!loading && games.length > 0 ? (
         <div className="grid-container">
-          {games.map((name, index) => (
+          {games.map((game, index) => (
             <MUIcard
               elevation={25}
               key={index}
-              gameName={name}
-              cover={covers[index]}
+              gameName={game.name}
+              cover={game.cover}
+              summary={game.summary}
+              releaseDate={game.release}
               cardId={index}
             />
           ))}
