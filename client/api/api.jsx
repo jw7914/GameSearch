@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: "https://gamesearch-jw7914-jason-wus-projects-2697620a.vercel.app",
 });
 
 export const fetchGenres = async (setLoading, setGenres, setError) => {

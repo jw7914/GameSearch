@@ -55,7 +55,13 @@ function SearchResults({ type }) {
           <CircularProgress size={50} />
         </Box>
       )}
-      {error && <p>{error}</p>}
+      {error && (
+        <Stack sx={{ width: "100%", marginBottom: "2rem" }} spacing={2}>
+          <Alert variant="filled" severity="error">
+            {error}
+          </Alert>
+        </Stack>
+      )}
 
       {!loading && games.length > 0 ? (
         <div className="grid-container">
@@ -72,7 +78,8 @@ function SearchResults({ type }) {
           ))}
         </div>
       ) : (
-        !loading && (
+        !loading &&
+        !error && (
           <Stack sx={{ width: "100%" }} spacing={2}>
             <Alert variant="filled" severity="error">
               No Results Found

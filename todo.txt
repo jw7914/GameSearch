@@ -1,4 +1,3 @@
-Fix sizing of gamecards
-Fix break points for mobile viewing
+Figure out rendering lastest games
 ?? make static genre pages so query is not based on url params
 Potentially remove learn more button and make whole game card clickable to view full details about game
