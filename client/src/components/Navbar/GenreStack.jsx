@@ -51,7 +51,7 @@ function GenreStack() {
 
       <Stack spacing={2.5}>
         {genres.map((el) => (
-          <div data-bs-dismiss="offcanvas">
+          <span data-bs-dismiss="offcanvas">
             <Link
               to={`/genre?genre=${encodeURIComponent(el.name)}`}
               style={{ textDecoration: "none" }}
@@ -68,7 +68,7 @@ function GenreStack() {
                 <b>{el.name}</b>
               </Item>
             </Link>
-          </div>
+          </span>
         ))}
       </Stack>
     </Box>
