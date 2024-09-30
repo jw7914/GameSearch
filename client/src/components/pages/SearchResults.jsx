@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import "./SearchResults.css";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
-import GameCard from "../GameCard";
+import GameCard from "../Gamecard";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);

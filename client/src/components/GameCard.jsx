@@ -6,7 +6,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Rating } from "@mui/material";
-function GameCard({ gameName, cover, rating, releaseDate, summary }) {
+function Gamecard({ gameName, cover, rating, releaseDate, summary }) {
   // Convert the rating from 1-100 to a 5-star scale
   const convertedRating = rating / 10 / 2;
 
@@ -93,4 +93,4 @@ function GameCard({ gameName, cover, rating, releaseDate, summary }) {
   );
 }
 
-export default GameCard;
+export default Gamecard;
