@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import "./SearchResults.css";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
-import Gamecard from "../Gamecard";
+import GamesCard from "../GamesCard";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -66,7 +66,7 @@ function SearchResults({ type }) {
       {!loading && games.length > 0 ? (
         <div className="grid-container">
           {games.map((game, index) => (
-            <Gamecard
+            <GamesCard
               key={index}
               gameName={game.name}
               cover={game.cover}
