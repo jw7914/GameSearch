@@ -51,22 +51,24 @@ function GenreStack() {
 
       <Stack spacing={2.5}>
         {genres.map((el) => (
-          <Link
-            to={`/genre?genre=${encodeURIComponent(el.name)}`}
-            style={{ textDecoration: "none" }}
-            key={el.id}
-            aria-label={`View games in ${el.name} genre`}
-          >
-            <Item
-              sx={{
-                color: "#E8E8E8",
-                fontSize: "20px",
-                ":hover": { bgcolor: "#A0ABB2" },
-              }}
+          <div data-bs-dismiss="offcanvas">
+            <Link
+              to={`/genre?genre=${encodeURIComponent(el.name)}`}
+              style={{ textDecoration: "none" }}
+              key={el.id}
+              aria-label={`View games in ${el.name} genre`}
             >
-              <b>{el.name}</b>
-            </Item>
-          </Link>
+              <Item
+                sx={{
+                  color: "#E8E8E8",
+                  fontSize: "20px",
+                  ":hover": { bgcolor: "#A0ABB2" },
+                }}
+              >
+                <b>{el.name}</b>
+              </Item>
+            </Link>
+          </div>
         ))}
       </Stack>
     </Box>
