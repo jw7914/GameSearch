@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { handleSearch, handleGenreSearch } from "../../../api/api";
-import GameCard from "../Gamecard";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Container } from "@mui/material";
 import Box from "@mui/material/Box";
 import "./SearchResults.css";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
+import GamesCard from "../GamesCard";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -66,7 +66,7 @@ function SearchResults({ type }) {
       {!loading && games.length > 0 ? (
         <div className="grid-container">
           {games.map((game, index) => (
-            <GameCard
+            <GamesCard
               key={index}
               gameName={game.name}
               cover={game.cover}
