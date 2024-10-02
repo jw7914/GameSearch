@@ -43,14 +43,17 @@ function SearchResults({ type }) {
   const indexOfFirstGame = indexOfLastGame - gamesPerPage;
   const currentGames = games.slice(indexOfFirstGame, indexOfLastGame);
 
-  //Change page and scroll to top of page
+  // Change page and scroll to top of page
   const handlePageChange = (event, page) => {
     setCurrentPage(page);
     window.scrollTo(0, 0);
   };
 
   return (
-    <Container sx={{ marginTop: "2rem", marginBottom: "5rem" }}>
+    <Container
+      sx={{ marginTop: "2rem", marginBottom: "5rem" }}
+      alignItems="center"
+    >
       <h2
         style={{
           display: "flex",
