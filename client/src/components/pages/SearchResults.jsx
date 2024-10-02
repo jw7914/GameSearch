@@ -4,7 +4,6 @@ import { handleSearch, handleGenreSearch } from "../../../api/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Container } from "@mui/material";
 import Box from "@mui/material/Box";
-import "./SearchResults.css";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import GamesCard from "../GamesCard";
