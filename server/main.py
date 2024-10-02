@@ -152,9 +152,7 @@ def popular():
 @app.route('/games', methods=['GET'])
 def get_games():
     search_term = request.args.get('search_term', type=str)
-    print(search_term)
     search_term = urllib.parse.unquote(search_term)
-    print(search_term)
     try:
         games_data = fetch_searched_games(search_term)
         games = create_list_of_games(games_data)

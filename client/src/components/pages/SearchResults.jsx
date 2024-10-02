@@ -4,10 +4,10 @@ import { handleSearch, handleGenreSearch } from "../../../api/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Container } from "@mui/material";
 import Box from "@mui/material/Box";
-import "./SearchResults.css";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import GamesCard from "../GamesCard";
+import Pagination from "@mui/material/Pagination";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -37,7 +37,10 @@ function SearchResults({ type }) {
   }, [queryTerm, type]);
 
   return (
-    <Container sx={{ marginTop: "2rem", marginBottom: "5rem" }}>
+    <Container
+      sx={{ marginTop: "2rem", marginBottom: "5rem" }}
+      alignItems="center"
+    >
       <h2
         style={{
           display: "flex",
@@ -62,20 +65,25 @@ function SearchResults({ type }) {
           </Alert>
         </Stack>
       )}
-
       {!loading && games.length > 0 ? (
-        <div className="grid-container">
-          {games.map((game, index) => (
-            <GamesCard
-              key={index}
-              gameName={game.name}
-              cover={game.cover}
-              summary={game.summary}
-              releaseDate={game.release}
-              rating={game.rating}
-              cardId={index}
-            />
-          ))}
+        <div className="container">
+          <div className="row">
+            {games.map((game, index) => (
+              <div
+                className="col-12 col-sm-6 col-md-4 col-lg-3 mb-5"
+                key={game.id}
+              >
+                <GamesCard
+                  gameName={game.name}
+                  cover={game.cover}
+                  summary={game.summary}
+                  releaseDate={game.release}
+                  rating={game.rating}
+                  cardId={index}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         !loading &&

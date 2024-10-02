@@ -19,6 +19,7 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary }) {
         flexDirection: "column",
         height: "100%",
         paddingBottom: "2rem",
+        marginX: "0.75rem",
       }}
     >
       <CardMedia
