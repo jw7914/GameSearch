@@ -2,9 +2,9 @@ import axios from "axios";
 
 export const api = axios.create({
   //Use for deployment
-  // baseURL: "https://game-rho-seven.vercel.app/",
+  baseURL: "https://game-rho-seven.vercel.app/",
   //Use for local testing
-  baseURL: "http://localhost:8080",
+  // baseURL: "http://localhost:8080",
 });
 
 export const fetchGenres = async (setLoading, setGenres, setError) => {
