@@ -1,7 +1,7 @@
 import React from "react";
 
-function GameProfile() {
-  return <div>GameProfile</div>;
+function GameProfile({ game }) {
+  return <>{game}</>;
 }
 
 export default GameProfile;

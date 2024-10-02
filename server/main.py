@@ -23,6 +23,9 @@ headers = {
         'Content-Type': 'application/json'
     }
 
+def fetch_gameid(id):
+    pass
+
 def fetch_lastest_games():
     body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; sort release_dates.date desc;'
     response = requests.post(f'{base_url}/games', headers=headers, data=body)

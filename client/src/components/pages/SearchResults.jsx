@@ -89,7 +89,7 @@ function SearchResults({ type }) {
                   {currentGames.map((game, index) => (
                     <div
                       className="col-12 col-sm-6 col-md-4 col-lg-3 mb-5"
-                      key={game.id}
+                      key={index}
                     >
                       <GamesCard
                         gameName={game.name}
@@ -97,7 +97,7 @@ function SearchResults({ type }) {
                         summary={game.summary}
                         releaseDate={game.release}
                         rating={game.rating}
-                        cardId={index}
+                        cardID={game.id}
                       />
                     </div>
                   ))}

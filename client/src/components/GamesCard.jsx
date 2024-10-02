@@ -6,8 +6,9 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Rating } from "@mui/material";
+import { Link } from "react-router-dom";
 
-function GamesCard({ gameName, cover, rating, releaseDate, summary }) {
+function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
   // Convert the rating from 1-100 to a 5-star scale
   const convertedRating = rating / 10 / 2;
 
@@ -88,7 +89,12 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary }) {
           Share
         </Button>
         <Button size="small" variant="contained">
-          Learn More
+          <Link
+            to={`/gameprofile/${cardID}`}
+            style={{ textDecoration: "none", color: "white" }}
+          >
+            Learn More
+          </Link>
         </Button>
       </CardActions>
     </Card>
