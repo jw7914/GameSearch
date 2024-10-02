@@ -51,11 +51,10 @@ function GenreStack() {
 
       <Stack spacing={2.5}>
         {genres.map((el) => (
-          <span data-bs-dismiss="offcanvas">
+          <span data-bs-dismiss="offcanvas" key={el.id}>
             <Link
               to={`/genre?genre=${encodeURIComponent(el.name)}`}
               style={{ textDecoration: "none" }}
-              key={el.id}
               aria-label={`View games in ${el.name} genre`}
             >
               <Item

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { handleSearch, handleGenreSearch } from "../../../api/api";
+import { handleGameSearch } from "../../../api/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Container } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -21,28 +21,17 @@ function SearchResults({ type }) {
   const gamesPerPage = 16;
   const query = useQuery();
 
-  let queryTerm = "";
-  if (type === "search") {
-    queryTerm = query.get("query");
-  } else if (type === "genre") {
-    queryTerm = query.get("genre");
-  }
-
-  //Change page and scroll to top of page
-  const handlePageChange = (event, page) => {
-    setCurrentPage(page);
-    window.scrollTo(0, 0);
+  const typeMap = {
+    search: query.get("query"),
+    genre: query.get("genre"),
   };
+
+  let queryTerm = typeMap[type];
 
   useEffect(() => {
     if (queryTerm && queryTerm.trim()) {
-      if (type === "search") {
-        handleSearch(queryTerm, setLoading, setGames, setError);
-        setCurrentPage(1); //Always reset page when making a new api request (number of games might differ)
-      } else if (type === "genre") {
-        handleGenreSearch(queryTerm, setLoading, setGames, setError);
-        setCurrentPage(1);
-      }
+      handleGameSearch(queryTerm, type, setLoading, setGames, setError);
+      setCurrentPage(1); // Always reset page when making a new API request
     }
   }, [queryTerm, type]);
 
@@ -54,11 +43,14 @@ function SearchResults({ type }) {
   const indexOfFirstGame = indexOfLastGame - gamesPerPage;
   const currentGames = games.slice(indexOfFirstGame, indexOfLastGame);
 
+  //Change page and scroll to top of page
+  const handlePageChange = (event, page) => {
+    setCurrentPage(page);
+    window.scrollTo(0, 0);
+  };
+
   return (
-    <Container
-      sx={{ marginTop: "2rem", marginBottom: "5rem" }}
-      alignItems="center"
-    >
+    <Container sx={{ marginTop: "2rem", marginBottom: "5rem" }}>
       <h2
         style={{
           display: "flex",
