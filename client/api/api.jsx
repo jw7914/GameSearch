@@ -28,6 +28,25 @@ export const fetchGenres = async (setLoading, setGenres, setError) => {
   }
 };
 
+export const getSpecificGame = async (
+  gameID,
+  setLoading,
+  setError,
+  setGameData
+) => {
+  try {
+    setError("");
+    setLoading(true);
+    const response = await api.get(`${gameID}`);
+    const data = response.data;
+    setGameData(data);
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching game:", error);
+    setError("Failed to load game");
+    setLoading(false);
+  }
+};
 export const handleGameSearch = async (
   queryTerm,
   type,

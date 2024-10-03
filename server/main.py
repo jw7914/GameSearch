@@ -24,7 +24,13 @@ headers = {
     }
 
 def fetch_gameid(id):
-    pass
+    id = 10
+    body = f'fields *; where id = {id};'
+    response = requests.post(f'{base_url}/games', headers=headers, data=body)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        response.raise_for_status()
 
 def fetch_lastest_games():
     body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; sort release_dates.date desc;'
@@ -168,13 +174,21 @@ def get_games():
 def get_genres_games():
     genre = request.args.get('genre', type=str)
     genre = urllib.parse.unquote(genre)
-    print(genre)
     if genre == "":
         genres_data = fetch_genres()
     else:
         genre_games = fetch_searched_genres(genre)
         genres_data = create_list_of_games(genre_games)
     return jsonify(genres_data)
+
+@app.route('/<id>', methods=['GET'])
+def get_game_id(id):
+    try:
+        games_data = fetch_gameid(id)
+        return jsonify(games_data)
+    except requests.exceptions.HTTPError as err:
+        return jsonify({"error": str(err)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
