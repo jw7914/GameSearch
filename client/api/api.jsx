@@ -51,7 +51,6 @@ export const handleGameSearch = async (
 
     const gamesWithDetails = data.map((el) => ({
       id: el.id,
-      id: el.id,
       name: el.name,
       cover: el.cover,
       summary: el.summary,
