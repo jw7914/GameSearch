@@ -24,8 +24,7 @@ headers = {
     }
 
 def fetch_gameid(id):
-    id = 10
-    body = f'fields *; where id = {id};'
+    body = f'fields *, cover.url, platforms.platform_logo.url, player_perspectives.name, themes.name; exclude checksum, created_at, updated_at; where id = {id};'
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     if response.status_code == 200:
         return response.json()
