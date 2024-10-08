@@ -73,7 +73,7 @@ function SearchResults({ type }) {
         </h2>
         <Stack sx={{ width: "100%" }} spacing={2}>
           <Alert variant="filled" severity="error">
-            Page not found. Please select a valid page.
+            Page not found.
           </Alert>
         </Stack>
       </Container>
