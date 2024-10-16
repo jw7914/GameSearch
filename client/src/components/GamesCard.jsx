@@ -12,20 +12,19 @@ import Modal from "@mui/material/Modal";
 
 const style = {
   position: "absolute",
-  top: 0, // Position the modal at the top
+  top: 0,
   left: "50%",
-  transform: "translateX(-50%)", // Center horizontally
-  width: 250, // Make the modal slimmer
+  transform: "translateX(-50%)",
+  width: 350,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
-  p: 2, // Reduce padding for a slimmer appearance
+  p: 2,
 };
 
 function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
   const convertedRating = rating / 10 / 2;
   const [openShareModal, setOpenShareModal] = React.useState(false);
-  const [openDetailsModal, setOpenDetailsModal] = React.useState(false);
 
   const handleShareOpen = () => {
     setOpenShareModal(true);
@@ -126,7 +125,6 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
           </Link>
         </Button>
 
-        {/* Share Modal */}
         <Modal
           open={openShareModal}
           onClose={handleShareClose}
@@ -134,38 +132,8 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
           aria-describedby="share-modal-description"
         >
           <Box sx={style}>
-            <Typography
-              id="share-modal-title"
-              variant="h6"
-              component="h2"
-              sx={{ mb: 1 }}
-            >
-              Share {gameName}
-            </Typography>
             <Typography id="share-modal-description" sx={{ mt: 0 }}>
               The link has been copied to your clipboard!
-            </Typography>
-          </Box>
-        </Modal>
-
-        {/* Details Modal */}
-        <Modal
-          open={openDetailsModal}
-          onClose={handleDetailsClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <Typography
-              id="modal-modal-title"
-              variant="h6"
-              component="h2"
-              sx={{ mb: 1 }}
-            >
-              {gameName}
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 0 }}>
-              {summary}
             </Typography>
           </Box>
         </Modal>
