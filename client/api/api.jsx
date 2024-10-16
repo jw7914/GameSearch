@@ -2,9 +2,9 @@ import axios from "axios";
 
 export const api = axios.create({
   // Use for deployment
-  baseURL: "https://game-rho-seven.vercel.app/",
+  // baseURL: "https://game-rho-seven.vercel.app/",
   // Use for local testing
-  // baseURL: "http://localhost:8080",
+  baseURL: "http://localhost:8080",
 });
 
 const endpointMap = {
@@ -28,6 +28,25 @@ export const fetchGenres = async (setLoading, setGenres, setError) => {
   }
 };
 
+export const getSpecificGame = async (
+  gameID,
+  setLoading,
+  setError,
+  setGameData
+) => {
+  try {
+    setError("");
+    setLoading(true);
+    const response = await api.get(`${gameID}`);
+    const data = response.data;
+    setGameData(data);
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching game:", error);
+    setError("Failed to load game");
+    setLoading(false);
+  }
+};
 export const handleGameSearch = async (
   queryTerm,
   type,
@@ -57,7 +76,6 @@ export const handleGameSearch = async (
       release: el.first_release_date ?? "N/A",
       rating: el.total_rating ?? 0,
     }));
-
     setGames(gamesWithDetails);
     setLoading(false);
   } catch (error) {

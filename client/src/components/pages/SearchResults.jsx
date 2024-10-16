@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import * as React from "react";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { handleGameSearch } from "../../../api/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Container } from "@mui/material";
@@ -8,6 +9,7 @@ import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import GamesCard from "../GamesCard";
 import Pagination from "@mui/material/Pagination";
+import PaginationItem from "@mui/material/PaginationItem";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -17,37 +19,66 @@ function SearchResults({ type }) {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const gamesPerPage = 16;
+  const [pageError, setPageError] = useState(false);
   const query = useQuery();
+  const currentPage = parseInt(query.get("page") || "1");
+  const [page, setPage] = useState(currentPage);
+  const gamesPerPage = 16;
+  const totalPages = Math.ceil(games.length / gamesPerPage);
+  const indexOfLastGame = page * gamesPerPage;
+  const indexOfFirstGame = indexOfLastGame - gamesPerPage;
+  const currentGames = games.slice(indexOfFirstGame, indexOfLastGame);
 
   const typeMap = {
     search: query.get("query"),
     genre: query.get("genre"),
   };
-
-  let queryTerm = typeMap[type];
+  const queryTerm = typeMap[type];
 
   useEffect(() => {
     if (queryTerm && queryTerm.trim()) {
       handleGameSearch(queryTerm, type, setLoading, setGames, setError);
-      setCurrentPage(1); // Always reset page when making a new API request
     }
   }, [queryTerm, type]);
 
-  // Calculate the total number of pages (always round up to show all games)
-  const totalPages = Math.ceil(games.length / gamesPerPage);
-
-  // Get the games for the current page
-  const indexOfLastGame = currentPage * gamesPerPage;
-  const indexOfFirstGame = indexOfLastGame - gamesPerPage;
-  const currentGames = games.slice(indexOfFirstGame, indexOfLastGame);
-
-  // Change page and scroll to top of page
-  const handlePageChange = (event, page) => {
-    setCurrentPage(page);
+  const handlePageChange = (event, newPage) => {
+    const params = new URLSearchParams(query);
+    params.set("page", newPage);
+    setPage(newPage);
     window.scrollTo(0, 0);
   };
+
+  // Error checking if url is used to go to an page outside of bounds
+  useEffect(() => {
+    if (currentPage > totalPages && !loading) {
+      setPageError(true);
+    } else {
+      setPageError(false);
+    }
+  }, [currentPage, totalPages, loading]);
+
+  if (pageError) {
+    return (
+      <Container sx={{ marginTop: "2rem", marginBottom: "5rem" }}>
+        <h2
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            margin: "auto",
+            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+            marginBottom: "30px",
+          }}
+        >
+          Search Results for: {queryTerm}
+        </h2>
+        <Stack sx={{ width: "100%" }} spacing={2}>
+          <Alert variant="filled" severity="error">
+            Page not found.
+          </Alert>
+        </Stack>
+      </Container>
+    );
+  }
 
   return (
     <Container
@@ -89,7 +120,7 @@ function SearchResults({ type }) {
                   {currentGames.map((game, index) => (
                     <div
                       className="col-12 col-sm-6 col-md-4 col-lg-3 mb-5"
-                      key={game.id}
+                      key={index}
                     >
                       <GamesCard
                         gameName={game.name}
@@ -97,7 +128,7 @@ function SearchResults({ type }) {
                         summary={game.summary}
                         releaseDate={game.release}
                         rating={game.rating}
-                        cardId={index}
+                        cardID={game.id}
                       />
                     </div>
                   ))}
@@ -105,12 +136,18 @@ function SearchResults({ type }) {
               </div>
               <Box display="flex" justifyContent="center" my={4}>
                 <Pagination
-                  count={totalPages}
-                  page={currentPage}
-                  onChange={handlePageChange}
                   siblingCount={0}
-                  defaultPage={1}
                   size="large"
+                  count={totalPages}
+                  page={page}
+                  onChange={handlePageChange}
+                  renderItem={(item) => (
+                    <PaginationItem
+                      component={Link}
+                      to={`?${type}=${queryTerm}&page=${item.page}`}
+                      {...item}
+                    />
+                  )}
                 />
               </Box>
             </>
