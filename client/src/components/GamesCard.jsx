@@ -7,10 +7,45 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Rating } from "@mui/material";
 import { Link } from "react-router-dom";
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+
+const style = {
+  position: "absolute",
+  top: 0, // Position the modal at the top
+  left: "50%",
+  transform: "translateX(-50%)", // Center horizontally
+  width: 250, // Make the modal slimmer
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 2, // Reduce padding for a slimmer appearance
+};
 
 function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
-  // Convert the rating from 1-100 to a 5-star scale
   const convertedRating = rating / 10 / 2;
+  const [openShareModal, setOpenShareModal] = React.useState(false);
+  const [openDetailsModal, setOpenDetailsModal] = React.useState(false);
+
+  const handleShareOpen = () => {
+    setOpenShareModal(true);
+    const shareLink = `${window.location.origin}/gameprofile/${cardID}`;
+    navigator.clipboard
+      .writeText(shareLink)
+      .then(() => {
+        console.log("Link copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
+    setTimeout(() => {
+      setOpenShareModal(false);
+    }, 3000);
+  };
+
+  const handleShareClose = () => setOpenShareModal(false);
+  const handleDetailsOpen = () => setOpenDetailsModal(true);
+  const handleDetailsClose = () => setOpenDetailsModal(false);
 
   return (
     <Card
@@ -29,7 +64,6 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
           height: 200,
           backgroundPosition: "center",
         }}
-        elevation={24}
         image={cover}
         title={gameName}
       />
@@ -38,14 +72,14 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
           {gameName}
         </Typography>
 
-        {convertedRating > 0 ? (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Typography
-              variant="body2"
-              sx={{ color: "text.secondary", paddingRight: "8px" }}
-            >
-              <b>Rating:</b>
-            </Typography>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Typography
+            variant="body2"
+            sx={{ color: "text.secondary", paddingRight: "8px" }}
+          >
+            <b>Rating:</b>
+          </Typography>
+          {convertedRating > 0 ? (
             <Rating
               name="read-only"
               value={convertedRating}
@@ -53,17 +87,12 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
               precision={0.1}
               max={5}
             />
-          </div>
-        ) : (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Typography
-              variant="body2"
-              sx={{ color: "text.secondary", paddingRight: "8px" }}
-            >
-              <b>Rating:</b> N/A
+          ) : (
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              N/A
             </Typography>
-          </div>
-        )}
+          )}
+        </div>
 
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
           <b>Release Date: </b> {releaseDate}
@@ -85,10 +114,10 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" variant="contained">
+        <Button size="small" variant="contained" onClick={handleShareOpen}>
           Share
         </Button>
-        <Button size="small" variant="contained">
+        <Button size="small" variant="contained" onClick={handleDetailsOpen}>
           <Link
             to={`/gameprofile/${cardID}`}
             style={{ textDecoration: "none", color: "white" }}
@@ -96,6 +125,50 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
             Learn More
           </Link>
         </Button>
+
+        {/* Share Modal */}
+        <Modal
+          open={openShareModal}
+          onClose={handleShareClose}
+          aria-labelledby="share-modal-title"
+          aria-describedby="share-modal-description"
+        >
+          <Box sx={style}>
+            <Typography
+              id="share-modal-title"
+              variant="h6"
+              component="h2"
+              sx={{ mb: 1 }}
+            >
+              Share {gameName}
+            </Typography>
+            <Typography id="share-modal-description" sx={{ mt: 0 }}>
+              The link has been copied to your clipboard!
+            </Typography>
+          </Box>
+        </Modal>
+
+        {/* Details Modal */}
+        <Modal
+          open={openDetailsModal}
+          onClose={handleDetailsClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography
+              id="modal-modal-title"
+              variant="h6"
+              component="h2"
+              sx={{ mb: 1 }}
+            >
+              {gameName}
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 0 }}>
+              {summary}
+            </Typography>
+          </Box>
+        </Modal>
       </CardActions>
     </Card>
   );
