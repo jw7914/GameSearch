@@ -113,9 +113,11 @@ def clean_data(listFromJSON, listName, keyName):
     result = []
     if isinstance(listFromJSON, list):
         for item in listFromJSON:
-            if "t_thumb" in item[keyName]:
+            if "t_thumb" in item[keyName] and listName == "cover":
                 # Replace 't_thumb' with 't_cover_big' for cover URLs
                 result.append("https:" + item[keyName].replace("t_thumb", "t_cover_big"))
+            elif "t_thumb" in item[keyName] and listName == "screenshots":
+                result.append("https:" + item[keyName].replace("t_thumb", "t_screenshot_big"))
             elif listName == "videos":
                 # Build YouTube video link
                 result.append("https://www.youtube.com/embed/" + item[keyName])
