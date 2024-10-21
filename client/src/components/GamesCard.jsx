@@ -43,8 +43,6 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
   };
 
   const handleShareClose = () => setOpenShareModal(false);
-  const handleDetailsOpen = () => setOpenDetailsModal(true);
-  const handleDetailsClose = () => setOpenDetailsModal(false);
 
   return (
     <Card
@@ -116,7 +114,7 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
         <Button size="small" variant="contained" onClick={handleShareOpen}>
           Share
         </Button>
-        <Button size="small" variant="contained" onClick={handleDetailsOpen}>
+        <Button size="small" variant="contained">
           <Link
             to={`/gameprofile/${cardID}`}
             style={{ textDecoration: "none", color: "white" }}
