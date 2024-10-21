@@ -9,6 +9,11 @@ import Stack from "@mui/material/Stack";
 import { getSpecificGame } from "../../../api/api";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation, Scrollbar } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -27,42 +32,86 @@ function GameProfile() {
   useEffect(() => {
     const fetchGameData = async () => {
       if (id) {
-        await getSpecificGame(id, setLoading, setError, setGameData);
+        try {
+          await getSpecificGame(id, setLoading, setError, setGameData);
+        } catch (err) {
+          setError("Failed to fetch game data");
+        }
       }
     };
     fetchGameData();
   }, [id]);
 
-  return (
-    <Container>
-      {loading && (
-        <Box display="flex" justifyContent="center" alignItems="center" my={4}>
-          <CircularProgress size={50} />
-        </Box>
-      )}
-
-      {error && (
-        <Stack
-          sx={{ width: "100%", marginBottom: "2rem", marginTop: "2rem" }}
-          spacing={2}
-        >
+  if (error) {
+    return (
+      <Container>
+        <Stack sx={{ width: "100%", marginTop: "2rem" }} spacing={2}>
           <Alert variant="filled" severity="error">
             {error}
           </Alert>
         </Stack>
+      </Container>
+    );
+  }
+
+  return (
+    <Container>
+      {loading ? (
+        <Box display="flex" justifyContent="center" alignItems="center" my={4}>
+          <CircularProgress size={50} />
+        </Box>
+      ) : (
+        <>
+          <Typography variant="h4" component="h1" align="center" mt={4}>
+            Screenshots
+          </Typography>
+          {gameData && gameData.screenshots && (
+            <Box
+              sx={{
+                maxWidth: "60%",
+                margin: "0 auto",
+                marginTop: "2rem",
+              }}
+            >
+              <Swiper
+                spaceBetween={30}
+                centeredSlides={true}
+                pagination={{
+                  clickable: true,
+                }}
+                scrollbar={{ draggable: true }}
+                navigation={true}
+                modules={[Pagination, Navigation, Scrollbar]}
+                className="swiper"
+              >
+                {gameData.screenshots.map((screenshot, index) => (
+                  <SwiperSlide key={index}>
+                    <img
+                      src={screenshot}
+                      alt={`Screenshot ${index + 1}`}
+                      style={{
+                        width: "100%", // Keep the width 100% of the container
+                        height: "auto", // Maintain aspect ratio
+                        objectFit: "cover", // Ensures no stretching or compression
+                        borderRadius: "8px",
+                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                      }}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </Box>
+          )}
+        </>
       )}
+    </Container>
+  );
+}
 
-      {
-        !loading && !error
+export default GameProfile;
 
-        /* //  error ? (
-      //   <Stack sx={{ width: "100%", marginTop: "2rem" }} spacing={2}>
-      //     <Alert variant="filled" severity="error">
-      //       {error}
-      //     </Alert>
-      //   </Stack> */
-      }
-      {/* ) : gameData ? (
+{
+  /* ) : gameData ? (
         <>
           <Typography variant="h4" component="h1" align="center" mt={4}>
             {gameData.name}
@@ -131,9 +180,10 @@ function GameProfile() {
           </Typography>
           <pre>{JSON.stringify(gameData, null, 2)}</pre>
         </>
-      ) : null */}
-    </Container>
-  );
+      ) : null */
 }
+// </Container>
+//   );
+// }
 
-export default GameProfile;
+// export default GameProfile;
