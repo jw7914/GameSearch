@@ -24,7 +24,8 @@ headers = {
     }
 
 def fetch_gameid(id):
-    body = f'fields *, cover.url, platforms.platform_logo.url, player_perspectives.name, themes.name; exclude checksum, created_at, updated_at; age_ratings.rating; where id = {id};'
+    body = f'fields id, name, cover.url, summary, rating_count, platforms.platform_logo.url, genres.name, player_perspectives.name, themes.name, screenshots.url, total_rating, storyline, videos.video_id; where id = {id};'
+
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     if response.status_code == 200:
         return response.json()
@@ -112,19 +113,21 @@ def clean_data(listFromJSON, listName, keyName):
     result = []
     if isinstance(listFromJSON, list):
         for item in listFromJSON:
-            if "t_thumb" in item[keyName]:
+            if "t_thumb" in item[keyName] and listName == "cover":
                 # Replace 't_thumb' with 't_cover_big' for cover URLs
                 result.append("https:" + item[keyName].replace("t_thumb", "t_cover_big"))
+            elif "t_thumb" in item[keyName] and listName == "screenshots":
+                result.append("https:" + item[keyName].replace("t_thumb", "t_screenshot_big"))
             elif listName == "videos":
                 # Build YouTube video link
-                result.append("https://www.youtube.com/watch?v=" + item[keyName])
+                result.append("https://www.youtube.com/embed/" + item[keyName])
             else:
                 result.append(item[keyName])
     else:
         if "t_thumb" in listFromJSON[keyName]:
             result.append("https:" + listFromJSON[keyName].replace("t_thumb", "t_cover_big"))
         elif listName == "videos":
-            result.append("https://www.youtube.com/watch?v=" + listFromJSON[keyName])
+            result.append("https://www.youtube.com/embed/" + listFromJSON[keyName])
         else:
             result.append(listFromJSON[keyName])
     
@@ -183,7 +186,10 @@ def get_genres_games():
 @app.route('/<id>', methods=['GET'])
 def get_game_id(id):
     try:
-        games_data = fetch_gameid(id)
+        games = fetch_gameid(id)
+        games_data = create_list_of_games(games)
+        print(games_data[0]['platforms'][0]['platform_logo'])
+        games_data[0]['platforms'] = ["https:" + ((games_data[0]['platforms'][0]['platform_logo']['url']).replace("t_thumb", "t_cover_big"))]
         return jsonify(games_data)
     except requests.exceptions.HTTPError as err:
         return jsonify({"error": str(err)}), 500

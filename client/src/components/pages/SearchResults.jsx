@@ -22,6 +22,7 @@ function SearchResults({ type }) {
   const [pageError, setPageError] = useState(false);
   const query = useQuery();
   const currentPage = parseInt(query.get("page") || "1");
+  console.log(currentPage);
   const [page, setPage] = useState(currentPage);
   const gamesPerPage = 16;
   const totalPages = Math.ceil(games.length / gamesPerPage);
@@ -50,14 +51,13 @@ function SearchResults({ type }) {
 
   // Error checking if url is used to go to an page outside of bounds
   useEffect(() => {
-    if (currentPage > totalPages && !loading) {
+    if (currentPage > totalPages && !loading && totalPages !== 0) {
       setPageError(true);
     } else {
       setPageError(false);
     }
   }, [currentPage, totalPages, loading]);
-
-  if (pageError) {
+  if (pageError || error) {
     return (
       <Container sx={{ marginTop: "2rem", marginBottom: "5rem" }}>
         <h2
@@ -71,11 +71,22 @@ function SearchResults({ type }) {
         >
           Search Results for: {queryTerm}
         </h2>
-        <Stack sx={{ width: "100%" }} spacing={2}>
-          <Alert variant="filled" severity="error">
-            Page not found.
-          </Alert>
-        </Stack>
+
+        {pageError && (
+          <Stack sx={{ width: "100%" }} spacing={2}>
+            <Alert variant="filled" severity="error">
+              Page not found.
+            </Alert>
+          </Stack>
+        )}
+
+        {error && (
+          <Stack sx={{ width: "100%", marginTop: "2rem" }} spacing={2}>
+            <Alert variant="filled" severity="error">
+              {error}
+            </Alert>
+          </Stack>
+        )}
       </Container>
     );
   }
