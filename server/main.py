@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from token_util import get_access_token
 import os
 import requests
 from dotenv import load_dotenv
@@ -14,7 +15,7 @@ app = Flask(__name__)
 cors = CORS(app, origins="*")
 
 client_id = os.getenv('CLIENT_ID')
-access_token = os.getenv('ACCESS_TOKEN')
+access_token = get_access_token()
 base_url = "https://api.igdb.com/v4"
 headers = {
         'Client-ID': client_id,

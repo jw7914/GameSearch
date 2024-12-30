@@ -81,7 +81,7 @@ function GameProfile() {
                   alt="Game Cover"
                   style={{
                     marginRight: "2rem",
-                    width: "100%",
+                    maxWidth: "100%",
                     height: "auto",
                   }}
                 />
@@ -123,12 +123,18 @@ function GameProfile() {
 
       {gameData && gameData.genres && (
         <>
-          <Typography variant="h4" component="h1" align="center" mt={4}>
+          <Typography variant="h4" component="h1" align="center" my={4} mx={2}>
             Genres
           </Typography>
-          <Stack spacing={4} justifyContent="center" alignItems="center" mt={2}>
-            {gameData.genres.map((genre, index) => (
-              <Item key={index} sx={{ margin: "auto" }}>
+          <Stack
+            spacing={4}
+            justifyContent="center"
+            alignItems="center"
+            mt={2}
+            direction={{ xs: "column", sm: "row" }}
+          >
+            {gameData.genres.map((genre) => (
+              <Item key={genre} sx={{ margin: "auto" }}>
                 {genre}
               </Item>
             ))}
