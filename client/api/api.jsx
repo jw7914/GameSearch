@@ -1,10 +1,11 @@
 import axios from "axios";
 
+const isLocal = window.location.hostname === "localhost";
+
 export const api = axios.create({
-  // Use for deployment
-  // baseURL: "https://game-rho-seven.vercel.app/",
-  // Use for local testing
-  baseURL: "http://localhost:8080",
+  baseURL: isLocal
+    ? "http://localhost:8080" // Local URL
+    : "https://game-rho-seven.vercel.app/", // Vercel URL
 });
 
 const endpointMap = {

@@ -119,7 +119,7 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
             to={`/gameprofile/${cardID}`}
             style={{ textDecoration: "none", color: "white" }}
           >
-            Learn More
+            View
           </Link>
         </Button>
 

@@ -63,45 +63,82 @@ function GameProfile() {
       ) : (
         <>
           <Typography variant="h4" component="h1" align="center" mt={4}>
-            Screenshots
+            {gameData.name}
           </Typography>
-          {gameData && gameData.screenshots && (
+          {gameData && (
             <Box
               sx={{
-                maxWidth: "60%",
+                display: "flex",
+                maxWidth: "100%",
                 margin: "0 auto",
-                marginTop: "2rem",
+                marginTop: "0.5rem",
               }}
             >
-              <Swiper
-                spaceBetween={30}
-                centeredSlides={true}
-                pagination={{
-                  clickable: true,
-                }}
-                scrollbar={{ draggable: true }}
-                navigation={true}
-                modules={[Pagination, Navigation, Scrollbar]}
-                className="swiper"
-              >
-                {gameData.screenshots.map((screenshot, index) => (
-                  <SwiperSlide key={index}>
-                    <img
-                      src={screenshot}
-                      alt={`Screenshot ${index + 1}`}
-                      style={{
-                        width: "100%", // Keep the width 100% of the container
-                        height: "auto", // Maintain aspect ratio
-                        objectFit: "cover", // Ensures no stretching or compression
-                        borderRadius: "8px",
-                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-                      }}
-                    />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
+              {gameData.cover && (
+                <img
+                  className="img-fluid rounded shadow"
+                  src={gameData.cover}
+                  alt="Game Cover"
+                  style={{
+                    marginRight: "2rem",
+                    maxWidth: "100%",
+                    height: "auto",
+                  }}
+                />
+              )}
+
+              {gameData.screenshots && (
+                <Swiper
+                  spaceBetween={30}
+                  centeredSlides={true}
+                  pagination={{
+                    clickable: true,
+                  }}
+                  scrollbar={{ draggable: true }}
+                  navigation={true}
+                  modules={[Pagination, Navigation, Scrollbar]}
+                  className="swiper"
+                >
+                  {gameData.screenshots.map((screenshot, index) => (
+                    <SwiperSlide key={index}>
+                      <img
+                        src={screenshot}
+                        alt={`Screenshot ${index + 1}`}
+                        style={{
+                          width: "100%", // Keep the width 100% of the container
+                          height: "auto", // Maintain aspect ratio
+                          objectFit: "cover", // Ensures no stretching or compression
+                          borderRadius: "8px",
+                          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                        }}
+                      />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              )}
             </Box>
           )}
+        </>
+      )}
+
+      {gameData && gameData.genres && (
+        <>
+          <Typography variant="h4" component="h1" align="center" my={4} mx={2}>
+            Genres
+          </Typography>
+          <Stack
+            spacing={4}
+            justifyContent="center"
+            alignItems="center"
+            mt={2}
+            direction={{ xs: "column", sm: "row" }}
+          >
+            {gameData.genres.map((genre) => (
+              <Item key={genre} sx={{ margin: "auto" }}>
+                {genre}
+              </Item>
+            ))}
+          </Stack>
         </>
       )}
     </Container>
