@@ -1,26 +1,46 @@
-import * as React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import {
+  Container,
+  Typography,
+  Box,
+  Chip,
+  Stack,
+  Paper,
+  Button,
+  Collapse,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
-import { Container, Typography } from "@mui/material";
 import Alert from "@mui/material/Alert";
-import Stack from "@mui/material/Stack";
-import { getSpecificGame } from "../../../api/api";
-import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation, Scrollbar } from "swiper/modules";
+import { Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import { getSpecificGame } from "../../../api/api";
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
+// Styled components for the game profile
+const CoverImage = styled("img")(({ theme }) => ({
+  width: "100%",
+  height: "auto",
+  maxWidth: "350px",
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[3],
+}));
+
+const InfoPanel = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  margin: theme.spacing(2, 0),
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.background.paper,
+}));
+
+const GameSummaryContainer = styled(Box)(({ theme }) => ({
+  maxHeight: "200px", // Limit height for overflow
+  overflowY: "auto", // Scroll when content exceeds height
 }));
 
 function GameProfile() {
@@ -28,199 +48,178 @@ function GameProfile() {
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [storylineOpen, setStorylineOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setIsExpanded((prev) => !prev);
+  };
+
+  const toggleStoryline = () => {
+    setStorylineOpen((prev) => !prev);
+  };
 
   useEffect(() => {
     const fetchGameData = async () => {
       if (id) {
         try {
           await getSpecificGame(id, setLoading, setError, setGameData);
-        } catch (err) {
-          setError("Failed to fetch game data");
+        } catch {
+          setError("Failed to fetch game data.");
         }
       }
     };
     fetchGameData();
   }, [id]);
 
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      >
+        <CircularProgress size={50} />
+      </Box>
+    );
+  }
+
   if (error) {
     return (
       <Container>
-        <Stack sx={{ width: "100%", marginTop: "2rem" }} spacing={2}>
-          <Alert variant="filled" severity="error">
-            {error}
-          </Alert>
-        </Stack>
+        <Box mt={4}>
+          <Alert severity="error">{error}</Alert>
+        </Box>
       </Container>
     );
   }
 
   return (
     <Container>
-      {loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" my={4}>
-          <CircularProgress size={50} />
+      <Typography variant="h4" align="center" mt={4} gutterBottom>
+        {gameData.name}
+      </Typography>
+      <Box
+        display="flex"
+        flexDirection={{ xs: "column", md: "row" }}
+        gap={3}
+        mt={3}
+      >
+        <Box flexShrink={0}>
+          <CoverImage src={gameData.cover} alt="Game Cover" />
         </Box>
-      ) : (
-        <>
-          <Typography variant="h4" component="h1" align="center" mt={4}>
-            {gameData.name}
+        <Box flexGrow={1}>
+          <InfoPanel elevation={3} isExpanded={isExpanded}>
+            <Typography variant="h6" gutterBottom>
+              Game Summary
+            </Typography>
+            <GameSummaryContainer>
+              <Typography variant="body1" gutterBottom>
+                {gameData.summary || "No description available."}
+              </Typography>
+            </GameSummaryContainer>
+
+            <Typography variant="h6" mt={2} gutterBottom>
+              Genres
+            </Typography>
+            <Stack direction="row" spacing={1} flexWrap="wrap" mb={2}>
+              {gameData.genres.map((genre) => (
+                <Chip key={genre} label={genre} variant="outlined" />
+              ))}
+            </Stack>
+            <Box display="flex" alignItems="center" mb={2}>
+              <Button
+                onClick={toggleExpand}
+                startIcon={isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              >
+                {isExpanded ? "Hide Storyline" : "View Storyline"}
+              </Button>
+            </Box>
+            <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+              <Typography variant="h6" gutterBottom>
+                Storyline
+              </Typography>
+              <Typography variant="body1">
+                {gameData.storyline || "No storyline available."}
+              </Typography>
+            </Collapse>
+          </InfoPanel>
+        </Box>
+      </Box>
+      {gameData.screenshots?.length > 0 && (
+        <Box mt={4}>
+          <Typography variant="h6" align="center" gutterBottom>
+            Screenshots
           </Typography>
-          {gameData && (
-            <Box
-              sx={{
-                display: "flex",
-                maxWidth: "100%",
-                margin: "0 auto",
-                marginTop: "0.5rem",
+          <Box position="relative">
+            <Swiper
+              modules={[Pagination, Navigation]}
+              spaceBetween={20}
+              slidesPerView={1}
+              pagination={{ clickable: true }}
+              navigation
+              breakpoints={{
+                640: { slidesPerView: 1 },
+                768: { slidesPerView: 2 },
+                1024: { slidesPerView: 3 },
               }}
             >
-              {gameData.cover && (
-                <img
-                  className="img-fluid rounded shadow"
-                  src={gameData.cover}
-                  alt="Game Cover"
-                  style={{
-                    marginRight: "2rem",
-                    maxWidth: "100%",
-                    height: "auto",
-                  }}
-                />
-              )}
-
-              {gameData.screenshots && (
-                <Swiper
-                  spaceBetween={30}
-                  centeredSlides={true}
-                  pagination={{
-                    clickable: true,
-                  }}
-                  scrollbar={{ draggable: true }}
-                  navigation={true}
-                  modules={[Pagination, Navigation, Scrollbar]}
-                  className="swiper"
-                >
-                  {gameData.screenshots.map((screenshot, index) => (
-                    <SwiperSlide key={index}>
-                      <img
-                        src={screenshot}
-                        alt={`Screenshot ${index + 1}`}
-                        style={{
-                          width: "100%", // Keep the width 100% of the container
-                          height: "auto", // Maintain aspect ratio
-                          objectFit: "cover", // Ensures no stretching or compression
-                          borderRadius: "8px",
-                          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-                        }}
-                      />
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-              )}
-            </Box>
-          )}
-        </>
+              {gameData.screenshots.map((screenshot, index) => (
+                <SwiperSlide key={index}>
+                  <img
+                    src={screenshot}
+                    alt={`Screenshot ${index + 1}`}
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      borderRadius: "8px",
+                      boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                    }}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </Box>
+        </Box>
       )}
-
-      {gameData && gameData.genres && (
-        <>
-          <Typography variant="h4" component="h1" align="center" my={4} mx={2}>
-            Genres
+      {gameData.videos && gameData.videos.length > 0 && gameData.videos[0] ? (
+        <Box mt={4}>
+          <Typography variant="h6" align="center" gutterBottom>
+            Trailer
           </Typography>
-          <Stack
-            spacing={4}
-            justifyContent="center"
-            alignItems="center"
-            mt={2}
-            direction={{ xs: "column", sm: "row" }}
+          <Box
+            sx={{
+              maxWidth: "100%",
+              margin: "0 auto",
+              marginTop: "1rem",
+              position: "relative",
+              paddingBottom: "56.25%",
+              height: 0,
+              overflow: "hidden",
+              borderRadius: "8px",
+            }}
           >
-            {gameData.genres.map((genre) => (
-              <Item key={genre} sx={{ margin: "auto" }}>
-                {genre}
-              </Item>
-            ))}
-          </Stack>
-        </>
-      )}
+            <iframe
+              width="100%" // Make the iframe fill the container width
+              height="100%" // Make the iframe fill the container height
+              src={gameData.videos[0]}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+              }}
+            ></iframe>
+          </Box>
+        </Box>
+      ) : null}
     </Container>
   );
 }
 
 export default GameProfile;
-
-{
-  /* ) : gameData ? (
-        <>
-          <Typography variant="h4" component="h1" align="center" mt={4}>
-            {gameData.name}
-          </Typography>
-          {gameData.videos &&
-          gameData.videos.length > 1 &&
-          gameData.videos[0] ? (
-            <Box
-              sx={{
-                maxWidth: "800px",
-                margin: "0 auto",
-                marginTop: "2rem",
-              }}
-            >
-              <iframe
-                width="800"
-                height="450"
-                src={gameData.videos[0]}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-              ></iframe>
-            </Box>
-          ) : (
-            <Box sx={{ marginTop: "2rem" }}>
-              <Typography variant="h6" component="h2" align="center">
-                Screenshots
-              </Typography>
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{ marginTop: "1rem", justifyContent: "center" }}
-              >
-                {gameData.screenshots.map((screenshot, index) => (
-                  <img
-                    key={index}
-                    src={screenshot} // Assuming screenshots array has URLs
-                    alt={`Screenshot ${index + 1}`}
-                    style={{
-                      width: "100%", // Allows the image to take the full width of the container
-                      maxWidth: "200px", // Ensures the image doesn't exceed 500px in width
-                      height: "auto", // Maintains the aspect ratio
-                      maxHeight: "300px", // Ensures the image doesn't exceed 300px in height
-                      objectFit: "contain", // Ensures the entire image fits within the bounds without cropping
-                      borderRadius: "8px", // Adds rounded corners
-                    }}
-                  />
-                ))}
-              </Stack>
-            </Box>
-          )}
-
-          <Stack
-            direction="row"
-            spacing={3}
-            sx={{ margin: "2rem auto", justifyContent: "center" }}
-          >
-            <Item>Item 1</Item>
-            <Item>Item 2</Item>
-            <Item>Item 3</Item>
-          </Stack>
-          <Typography variant="h6" component="h2" mt={4}>
-            Game Data (for Debugging):
-          </Typography>
-          <pre>{JSON.stringify(gameData, null, 2)}</pre>
-        </>
-      ) : null */
-}
-// </Container>
-//   );
-// }
-
-// export default GameProfile;
