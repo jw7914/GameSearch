@@ -22,11 +22,10 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { getSpecificGame } from "../../../api/api";
 
-// Styled components for the game profile
 const CoverImage = styled("img")(({ theme }) => ({
   width: "100%",
   height: "auto",
-  maxWidth: "350px",
+  maxWidth: "250px",
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[3],
 }));
@@ -48,15 +47,10 @@ function GameProfile() {
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [storylineOpen, setStorylineOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const toggleExpand = () => {
+  const toogleStoryline = () => {
     setIsExpanded((prev) => !prev);
-  };
-
-  const toggleStoryline = () => {
-    setStorylineOpen((prev) => !prev);
   };
 
   useEffect(() => {
@@ -100,17 +94,13 @@ function GameProfile() {
       <Typography variant="h4" align="center" mt={4} gutterBottom>
         {gameData.name}
       </Typography>
-      <Box
-        display="flex"
-        flexDirection={{ xs: "column", md: "row" }}
-        gap={3}
-        mt={3}
-      >
-        <Box flexShrink={0}>
-          <CoverImage src={gameData.cover} alt="Game Cover" />
-        </Box>
-        <Box flexGrow={1}>
-          <InfoPanel elevation={3} isExpanded={isExpanded}>
+      <InfoPanel>
+        <Box display="flex" flexDirection={{ xs: "column", md: "row" }} gap={3}>
+          <Box flexShrink={0}>
+            <CoverImage src={gameData.cover} alt="Game Cover" />
+          </Box>
+
+          <Box flexGrow={1}>
             <Typography variant="h6" gutterBottom>
               Game Summary
             </Typography>
@@ -128,14 +118,16 @@ function GameProfile() {
                 <Chip key={genre} label={genre} variant="outlined" />
               ))}
             </Stack>
+
             <Box display="flex" alignItems="center" mb={2}>
               <Button
-                onClick={toggleExpand}
+                onClick={toogleStoryline}
                 startIcon={isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               >
                 {isExpanded ? "Hide Storyline" : "View Storyline"}
               </Button>
             </Box>
+
             <Collapse in={isExpanded} timeout="auto" unmountOnExit>
               <Typography variant="h6" gutterBottom>
                 Storyline
@@ -144,9 +136,9 @@ function GameProfile() {
                 {gameData.storyline || "No storyline available."}
               </Typography>
             </Collapse>
-          </InfoPanel>
+          </Box>
         </Box>
-      </Box>
+      </InfoPanel>
       {gameData.screenshots?.length > 0 && (
         <Box mt={4}>
           <Typography variant="h6" align="center" gutterBottom>
