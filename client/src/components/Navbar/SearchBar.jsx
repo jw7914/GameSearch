@@ -1,14 +1,40 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function SearchBar() {
   const [input, setInput] = useState("");
+  const [prevInput, setPrevInput] = useState(""); // State to track previous input
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.pathname.startsWith("/search")) {
+      setPrevInput("");
+    }
+  }, [location]);
+
+  function useQuery() {
+    return new URLSearchParams(location.search);
+  }
+
+  const query = useQuery();
 
   const handleSearch = (e) => {
     e.preventDefault();
+
+    if (input === prevInput) {
+      return;
+    }
+
     if (input) {
-      navigate(`/search?query=${encodeURIComponent(input)}`);
+      const params = new URLSearchParams();
+      params.set("query", encodeURIComponent(input));
+      params.set("page", "1");
+
+      navigate(`\search?${params.toString()}`);
+
+      // Update previous input after submission
+      setPrevInput(input);
     }
   };
 

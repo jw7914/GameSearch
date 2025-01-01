@@ -1,13 +1,27 @@
+// SearchResults Component
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { handleGameSearch } from "../../../api/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Container } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import GamesCard from "../GamesCard";
 import PaginationItem from "@mui/material/PaginationItem";
-import { TextField, Box, Button, Pagination, Stack } from "@mui/material";
+import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import {
+  TextField,
+  Box,
+  Button,
+  InputAdornment,
+  IconButton,
+  Pagination,
+  Stack,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -19,16 +33,16 @@ function SearchResults({ type }) {
   const [error, setError] = useState(null);
   const [pageError, setPageError] = useState(false);
   const query = useQuery();
+  const navigate = useNavigate();
   const currentPage = parseInt(query.get("page") || "1");
-  console.log(currentPage);
-  const [page, setPage] = useState(currentPage);
+  const [page, setPage] = useState(currentPage); // State to track the current page
   const gamesPerPage = 16;
   const totalPages = Math.ceil(games.length / gamesPerPage);
   const indexOfLastGame = page * gamesPerPage;
   const indexOfFirstGame = indexOfLastGame - gamesPerPage;
   const currentGames = games.slice(indexOfFirstGame, indexOfLastGame);
-  const [inputPage, setInputPage] = useState(currentPage);
-
+  const [inputPage, setInputPage] = useState("");
+  const [openModal, setOpenModal] = useState(false);
   const typeMap = {
     query: query.get("query"),
     genre: query.get("genre"),
@@ -36,6 +50,7 @@ function SearchResults({ type }) {
   const queryTerm = typeMap[type];
 
   useEffect(() => {
+    setPage(1);
     if (queryTerm && queryTerm.trim()) {
       handleGameSearch(queryTerm, type, setLoading, setGames, setError);
     }
@@ -45,10 +60,29 @@ function SearchResults({ type }) {
     const params = new URLSearchParams(query);
     params.set("page", newPage);
     setPage(newPage);
+    setInputPage("");
     window.scrollTo(0, 0);
   };
 
-  // Error checking if url is used to go to an page outside of bounds
+  const handlePageInput = () => {
+    const pageNumber = parseInt(inputPage, 10);
+    const params = new URLSearchParams(query);
+    params.set("page", pageNumber);
+    navigate(`?${params.toString()}`);
+    setPage(pageNumber);
+    setInputPage("");
+    window.scrollTo(0, 0);
+  };
+
+  const handlePageInputError = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  // Error checking if url is used to go to a page outside of bounds
   useEffect(() => {
     if (currentPage > totalPages && !loading && totalPages !== 0) {
       setPageError(true);
@@ -56,6 +90,7 @@ function SearchResults({ type }) {
       setPageError(false);
     }
   }, [currentPage, totalPages, loading]);
+
   if (pageError || error) {
     return (
       <Container sx={{ marginTop: "2rem", marginBottom: "5rem" }}>
@@ -160,6 +195,67 @@ function SearchResults({ type }) {
                   )}
                 />
               </Box>
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                mt={4}
+              >
+                <TextField
+                  label="Go to page"
+                  variant="outlined"
+                  size="small"
+                  sx={{ width: "250px" }}
+                  value={inputPage}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    if (/^\d*$/.test(value)) {
+                      setInputPage(value);
+                    }
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      if (
+                        inputPage.trim() === "" ||
+                        isNaN(inputPage) ||
+                        parseInt(inputPage, 10) <= 0 ||
+                        parseInt(inputPage, 10) > totalPages
+                      ) {
+                        handlePageInputError();
+                        return;
+                      }
+                      window.scrollTo(0, 0);
+                      handlePageInput();
+                    }
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          type="submit"
+                          color="primary"
+                          onClick={() => {
+                            if (
+                              inputPage.trim() === "" ||
+                              isNaN(inputPage) ||
+                              parseInt(inputPage, 10) <= 0 ||
+                              parseInt(inputPage, 10) > totalPages
+                            ) {
+                              handlePageInputError();
+                              return;
+                            }
+                            window.scrollTo(0, 0);
+                            handlePageInput();
+                          }}
+                        >
+                          <KeyboardReturnIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Box>
             </>
           ) : (
             <Stack sx={{ width: "100%" }} spacing={2}>
@@ -170,6 +266,18 @@ function SearchResults({ type }) {
           )}
         </>
       )}
+
+      <Dialog open={openModal} onClose={handleCloseModal}>
+        <DialogTitle color="red">Error</DialogTitle>
+        <DialogContent>
+          <p>Enter A Valid Page</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
