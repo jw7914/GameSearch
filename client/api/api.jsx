@@ -9,7 +9,7 @@ export const api = axios.create({
 });
 
 const endpointMap = {
-  search: `/games?search_term=`,
+  query: `/games?search_term=`,
   genre: `/genres?genre=`,
   // More maps for future API calls
 };

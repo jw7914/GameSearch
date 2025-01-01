@@ -12,7 +12,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route
         path="/search"
-        element={<Redirect element={<SearchResults type="search" />} />}
+        element={<Redirect element={<SearchResults type="query" />} />}
       />
       <Route
         path="/genre"

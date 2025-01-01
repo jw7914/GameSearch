@@ -4,12 +4,10 @@ import { Link, useLocation } from "react-router-dom";
 import { handleGameSearch } from "../../../api/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Container } from "@mui/material";
-import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
-import Stack from "@mui/material/Stack";
 import GamesCard from "../GamesCard";
-import Pagination from "@mui/material/Pagination";
 import PaginationItem from "@mui/material/PaginationItem";
+import { TextField, Box, Button, Pagination, Stack } from "@mui/material";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -29,9 +27,10 @@ function SearchResults({ type }) {
   const indexOfLastGame = page * gamesPerPage;
   const indexOfFirstGame = indexOfLastGame - gamesPerPage;
   const currentGames = games.slice(indexOfFirstGame, indexOfLastGame);
+  const [inputPage, setInputPage] = useState(currentPage);
 
   const typeMap = {
-    search: query.get("query"),
+    query: query.get("query"),
     genre: query.get("genre"),
   };
   const queryTerm = typeMap[type];
