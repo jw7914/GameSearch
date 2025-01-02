@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 function SearchBar() {
   const [input, setInput] = useState("");
-  const [prevInput, setPrevInput] = useState(""); // State to track previous input
+  const [prevInput, setPrevInput] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -12,12 +12,6 @@ function SearchBar() {
       setPrevInput("");
     }
   }, [location]);
-
-  function useQuery() {
-    return new URLSearchParams(location.search);
-  }
-
-  const query = useQuery();
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -33,7 +27,6 @@ function SearchBar() {
 
       navigate(`\search?${params.toString()}`);
 
-      // Update previous input after submission
       setPrevInput(input);
     }
   };

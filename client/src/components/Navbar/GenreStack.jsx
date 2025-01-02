@@ -53,7 +53,7 @@ function GenreStack() {
         {genres.map((el) => (
           <span data-bs-dismiss="offcanvas" key={el.id}>
             <Link
-              to={`/genre?genre=${encodeURIComponent(el.name)}`}
+              to={`/genre?genre=${encodeURIComponent(el.name)}&page=1`}
               style={{ textDecoration: "none" }}
               aria-label={`View games in ${el.name} genre`}
             >

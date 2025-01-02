@@ -21,6 +21,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Grid,
 } from "@mui/material";
 
 function useQuery() {
@@ -35,7 +36,8 @@ function SearchResults({ type }) {
   const query = useQuery();
   const navigate = useNavigate();
   const currentPage = parseInt(query.get("page") || "1");
-  const [page, setPage] = useState(currentPage); // State to track the current page
+  console.log(currentPage);
+  const [page, setPage] = useState(currentPage);
   const gamesPerPage = 16;
   const totalPages = Math.ceil(games.length / gamesPerPage);
   const indexOfLastGame = page * gamesPerPage;
@@ -50,7 +52,6 @@ function SearchResults({ type }) {
   const queryTerm = typeMap[type];
 
   useEffect(() => {
-    setPage(1);
     if (queryTerm && queryTerm.trim()) {
       handleGameSearch(queryTerm, type, setLoading, setGames, setError);
     }
@@ -82,7 +83,6 @@ function SearchResults({ type }) {
     setOpenModal(false);
   };
 
-  // Error checking if url is used to go to a page outside of bounds
   useEffect(() => {
     if (currentPage > totalPages && !loading && totalPages !== 0) {
       setPageError(true);
@@ -91,6 +91,11 @@ function SearchResults({ type }) {
     }
   }, [currentPage, totalPages, loading]);
 
+  useEffect(() => {
+    setPage(currentPage);
+    setInputPage("");
+  }, [currentPage, location.search]);
+
   if (pageError || error) {
     return (
       <Container sx={{ marginTop: "2rem", marginBottom: "5rem" }}>
@@ -98,14 +103,11 @@ function SearchResults({ type }) {
           style={{
             display: "flex",
             justifyContent: "center",
-            margin: "auto",
-            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
             marginBottom: "30px",
           }}
         >
           Search Results for: {queryTerm}
         </h2>
-
         {pageError && (
           <Stack sx={{ width: "100%" }} spacing={2}>
             <Alert variant="filled" severity="error">
@@ -113,7 +115,6 @@ function SearchResults({ type }) {
             </Alert>
           </Stack>
         )}
-
         {error && (
           <Stack sx={{ width: "100%", marginTop: "2rem" }} spacing={2}>
             <Alert variant="filled" severity="error">
@@ -126,16 +127,11 @@ function SearchResults({ type }) {
   }
 
   return (
-    <Container
-      sx={{ marginTop: "2rem", marginBottom: "5rem" }}
-      alignItems="center"
-    >
+    <Container sx={{ marginTop: "2rem", marginBottom: "5rem" }}>
       <h2
         style={{
           display: "flex",
           justifyContent: "center",
-          margin: "auto",
-          fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
           marginBottom: "30px",
         }}
       >
@@ -148,123 +144,105 @@ function SearchResults({ type }) {
         </Box>
       )}
 
-      {error && (
-        <Stack sx={{ width: "100%", marginBottom: "2rem" }} spacing={2}>
-          <Alert variant="filled" severity="error">
-            {error}
-          </Alert>
-        </Stack>
+      {!loading && games.length > 0 && (
+        <>
+          <Grid container spacing={3}>
+            {currentGames.map((game, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <GamesCard
+                  gameName={game.name}
+                  cover={game.cover}
+                  summary={game.summary}
+                  releaseDate={game.release}
+                  rating={game.rating}
+                  cardID={game.id}
+                />
+              </Grid>
+            ))}
+          </Grid>
+          <Box display="flex" justifyContent="center" my={4}>
+            <Pagination
+              siblingCount={0}
+              size="large"
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              renderItem={(item) => (
+                <PaginationItem
+                  component={Link}
+                  to={`?${type}=${queryTerm}&page=${item.page}`}
+                  {...item}
+                />
+              )}
+            />
+          </Box>
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            mt={4}
+          >
+            <TextField
+              label="Go to page"
+              variant="outlined"
+              size="small"
+              sx={{ width: "250px" }}
+              value={inputPage}
+              onChange={(event) => {
+                const value = event.target.value;
+                if (/^\d*$/.test(value)) {
+                  setInputPage(value);
+                }
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  if (
+                    inputPage.trim() === "" ||
+                    isNaN(inputPage) ||
+                    parseInt(inputPage, 10) <= 0 ||
+                    parseInt(inputPage, 10) > totalPages
+                  ) {
+                    handlePageInputError();
+                    return;
+                  }
+                  handlePageInput();
+                }
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      color="primary"
+                      onClick={() => {
+                        if (
+                          inputPage.trim() === "" ||
+                          isNaN(inputPage) ||
+                          parseInt(inputPage, 10) <= 0 ||
+                          parseInt(inputPage, 10) > totalPages
+                        ) {
+                          handlePageInputError();
+                          return;
+                        }
+                        handlePageInput();
+                      }}
+                    >
+                      <KeyboardReturnIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
+        </>
       )}
 
-      {!loading && (
-        <>
-          {games.length > 0 ? (
-            <>
-              <div className="container">
-                <div className="row">
-                  {currentGames.map((game, index) => (
-                    <div
-                      className="col-12 col-sm-6 col-md-4 col-lg-3 mb-5"
-                      key={index}
-                    >
-                      <GamesCard
-                        gameName={game.name}
-                        cover={game.cover}
-                        summary={game.summary}
-                        releaseDate={game.release}
-                        rating={game.rating}
-                        cardID={game.id}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <Box display="flex" justifyContent="center" my={4}>
-                <Pagination
-                  siblingCount={0}
-                  size="large"
-                  count={totalPages}
-                  page={page}
-                  onChange={handlePageChange}
-                  renderItem={(item) => (
-                    <PaginationItem
-                      component={Link}
-                      to={`?${type}=${queryTerm}&page=${item.page}`}
-                      {...item}
-                    />
-                  )}
-                />
-              </Box>
-              <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                mt={4}
-              >
-                <TextField
-                  label="Go to page"
-                  variant="outlined"
-                  size="small"
-                  sx={{ width: "250px" }}
-                  value={inputPage}
-                  onChange={(event) => {
-                    const value = event.target.value;
-                    if (/^\d*$/.test(value)) {
-                      setInputPage(value);
-                    }
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      event.preventDefault();
-                      if (
-                        inputPage.trim() === "" ||
-                        isNaN(inputPage) ||
-                        parseInt(inputPage, 10) <= 0 ||
-                        parseInt(inputPage, 10) > totalPages
-                      ) {
-                        handlePageInputError();
-                        return;
-                      }
-                      window.scrollTo(0, 0);
-                      handlePageInput();
-                    }
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          type="submit"
-                          color="primary"
-                          onClick={() => {
-                            if (
-                              inputPage.trim() === "" ||
-                              isNaN(inputPage) ||
-                              parseInt(inputPage, 10) <= 0 ||
-                              parseInt(inputPage, 10) > totalPages
-                            ) {
-                              handlePageInputError();
-                              return;
-                            }
-                            window.scrollTo(0, 0);
-                            handlePageInput();
-                          }}
-                        >
-                          <KeyboardReturnIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Box>
-            </>
-          ) : (
-            <Stack sx={{ width: "100%" }} spacing={2}>
-              <Alert variant="filled" severity="error">
-                No Results Found
-              </Alert>
-            </Stack>
-          )}
-        </>
+      {!loading && games.length === 0 && (
+        <Stack sx={{ width: "100%" }} spacing={2}>
+          <Alert variant="filled" severity="error">
+            No Results Found
+          </Alert>
+        </Stack>
       )}
 
       <Dialog open={openModal} onClose={handleCloseModal}>
