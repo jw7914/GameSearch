@@ -7,7 +7,7 @@ const Redirect = ({ element }) => {
   const genre = params.get("genre");
   const search = params.get("query");
 
-  // Redirect to home page if `/search` is missing `search_term` or `/genre` is missing `genre`
+  // Redirect to home page if `/search` is missing `query` or `/genre` is missing `genre`
   if (
     (location.pathname === "/search" && !search) ||
     (location.pathname === "/genre" && !genre)

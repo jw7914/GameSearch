@@ -24,6 +24,7 @@ import {
   Grid,
 } from "@mui/material";
 
+// Custom hook to get query parameters (page, query, genre)
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -51,12 +52,14 @@ function SearchResults({ type }) {
   };
   const queryTerm = typeMap[type];
 
+  // Fetch games based on query term
   useEffect(() => {
     if (queryTerm && queryTerm.trim()) {
       handleGameSearch(queryTerm, type, setLoading, setGames, setError);
     }
   }, [queryTerm, type]);
 
+  // Handle page change from pagination
   const handlePageChange = (event, newPage) => {
     const params = new URLSearchParams(query);
     params.set("page", newPage);
@@ -65,6 +68,7 @@ function SearchResults({ type }) {
     window.scrollTo(0, 0);
   };
 
+  // Handle page input from text field
   const handlePageInput = () => {
     const pageNumber = parseInt(inputPage, 10);
     const params = new URLSearchParams(query);
@@ -83,6 +87,7 @@ function SearchResults({ type }) {
     setOpenModal(false);
   };
 
+  // Check if page is out of bounds
   useEffect(() => {
     if (currentPage > totalPages && !loading && totalPages !== 0) {
       setPageError(true);
@@ -91,6 +96,7 @@ function SearchResults({ type }) {
     }
   }, [currentPage, totalPages, loading]);
 
+  // Update page state when query changes
   useEffect(() => {
     setPage(currentPage);
     setInputPage("");
