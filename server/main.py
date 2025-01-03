@@ -33,8 +33,8 @@ def fetch_gameid(id):
     else:
         response.raise_for_status()
 
-def fetch_lastest_games():
-    body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; sort release_dates.date desc;'
+def fetch_lastest_games(time):
+    body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, first_release_date, screenshots.url, total_rating, storyline, videos.video_id; limit 20; sort first_release_date desc; where first_release_date <= {time};'
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     
     if response.status_code == 200:
@@ -151,7 +151,8 @@ def fetch_genres():
 #create more routes for different end points
 @app.route('/', methods=['GET'])
 def latest():
-    game_data = fetch_lastest_games()
+    current_time = int(datetime.datetime.now().timestamp())
+    game_data = fetch_lastest_games(current_time)
     games = create_list_of_games(game_data)
     return jsonify(games)
 
