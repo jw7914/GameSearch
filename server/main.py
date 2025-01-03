@@ -195,6 +195,5 @@ def get_game_id(id):
     except requests.exceptions.HTTPError as err:
         return jsonify({"error": str(err)}), 500
 
-
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
