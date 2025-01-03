@@ -17,12 +17,14 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  GithubAuthProvider,
 } from "firebase/auth";
 import { firebaseapp } from "../../../firebase/firebaseConfig.jsx";
 import { useNavigate } from "react-router-dom";
 import GoogleIcon from "@mui/icons-material/Google";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import GitHubIcon from "@mui/icons-material/GitHub";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -31,6 +33,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const auth = getAuth(firebaseapp);
   const googleProvider = new GoogleAuthProvider();
+  const githubProvider = new GithubAuthProvider();
   const navigate = useNavigate();
 
   // Handle authentication (email and password or Google)
@@ -47,11 +50,17 @@ const LoginPage = () => {
   };
 
   // Handle Google login
-  const handleGoogleLogin = async () => {
+  const handleLogin = async (type) => {
     try {
-      await signInWithPopup(auth, googleProvider);
-      alert("Google login successful!");
-      navigate("/"); // Redirect to home page after successful Google login
+      if (type === "google") {
+        await signInWithPopup(auth, googleProvider);
+        alert("Google login successful!");
+        navigate("/"); // Redirect to home page after successful Google login
+      } else if (type === "github") {
+        await signInWithPopup(auth, githubProvider);
+        alert("GitHub login successful!");
+        navigate("/"); // Redirect to home page after successful GitHub login
+      }
     } catch (err) {
       setError(mapFirebaseErrorToMessage(err.code));
     }
@@ -99,17 +108,27 @@ const LoginPage = () => {
             justifyContent: "center",
           }}
         >
-          {/* Login with Google at the top */}
+          {/* Login with Google and GitHub */}
           <CardActions sx={{ flexDirection: "column", width: "100%", gap: 2 }}>
-            <Grid container spacing={2} direction="column">
+            <Grid container spacing={2} direction="column" alignItems="stretch">
               <Grid item xs={12}>
                 <Button
                   variant="outlined"
-                  onClick={handleGoogleLogin}
+                  onClick={handleLogin("google")}
                   fullWidth
                   startIcon={<GoogleIcon />}
                 >
                   Continue with Google
+                </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  variant="outlined"
+                  onClick={handleLogin("github")}
+                  fullWidth
+                  startIcon={<GitHubIcon />}
+                >
+                  Continue with GitHub
                 </Button>
               </Grid>
             </Grid>
