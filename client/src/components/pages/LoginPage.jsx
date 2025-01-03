@@ -36,55 +36,33 @@ const LoginPage = () => {
   const githubProvider = new GithubAuthProvider();
   const navigate = useNavigate();
 
-  // Handle authentication (email and password or Google)
+  // Handle authentication (email and password or Google/GitHub login)
   const handleAuth = async (e) => {
     e.preventDefault();
     setError(""); // Reset error state
     try {
       await signInWithEmailAndPassword(auth, email, password);
       alert("Login successful!");
-      navigate("/"); // Redirect to home page after successful login
+      navigate("/");
     } catch (err) {
       setError(mapFirebaseErrorToMessage(err.code));
     }
   };
 
-  // Handle Google login
-  const handleLogin = async (type) => {
+  // Handle social logins (Google, GitHub)
+  const handleLogin = async (providerType) => {
     try {
-      if (type === "google") {
+      if (providerType === "google") {
         await signInWithPopup(auth, googleProvider);
         alert("Google login successful!");
-        navigate("/"); // Redirect to home page after successful Google login
-      } else if (type === "github") {
+        navigate("/");
+      } else if (providerType === "github") {
         await signInWithPopup(auth, githubProvider);
         alert("GitHub login successful!");
-        navigate("/"); // Redirect to home page after successful GitHub login
+        navigate("/");
       }
     } catch (err) {
       setError(mapFirebaseErrorToMessage(err.code));
-    }
-  };
-
-  // Map Firebase error codes to user-friendly messages
-  const mapFirebaseErrorToMessage = (errorCode) => {
-    switch (errorCode) {
-      case "auth/invalid-email":
-        return "Please provide a valid email address.";
-      case "auth/user-disabled":
-        return "This user account has been disabled.";
-      case "auth/user-not-found":
-        return "No user found with this email address.";
-      case "auth/wrong-password":
-        return "Incorrect password. Please try again.";
-      case "auth/email-already-in-use":
-        return "An account with this email already exists. Please log in or use a different email.";
-      case "auth/weak-password":
-        return "Your password is too weak. Please choose a stronger password.";
-      case "auth/network-request-failed":
-        return "Network error. Please check your connection and try again.";
-      default:
-        return "An error occurred. Please try again later.";
     }
   };
 
@@ -114,7 +92,7 @@ const LoginPage = () => {
               <Grid item xs={12}>
                 <Button
                   variant="outlined"
-                  onClick={handleLogin("google")}
+                  onClick={() => handleLogin("google")}
                   fullWidth
                   startIcon={<GoogleIcon />}
                 >
@@ -124,7 +102,7 @@ const LoginPage = () => {
               <Grid item xs={12}>
                 <Button
                   variant="outlined"
-                  onClick={handleLogin("github")}
+                  onClick={() => handleLogin("github")}
                   fullWidth
                   startIcon={<GitHubIcon />}
                 >
