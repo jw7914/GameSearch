@@ -22,6 +22,7 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  Typography,
 } from "@mui/material";
 
 // Custom hook to get query parameters (page, query, genre)
@@ -134,15 +135,9 @@ function SearchResults({ type }) {
 
   return (
     <Container sx={{ marginTop: "2rem", marginBottom: "5rem" }}>
-      <h2
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginBottom: "30px",
-        }}
-      >
+      <Typography variant="h4" align="center" sx={{ marginBottom: "30px" }}>
         Search Results for: {queryTerm}
-      </h2>
+      </Typography>
 
       {loading && (
         <Box display="flex" justifyContent="center" alignItems="center" my={4}>

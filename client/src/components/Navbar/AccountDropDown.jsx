@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "../../../firebase/firebaseConfig.jsx"; // No need to import firebaseapp
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { auth } from "../../../firebase/firebaseConfig.jsx";
+import { useNavigate } from "react-router-dom";
 
 function AccountDropDown() {
   const [open, setOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-  const navigate = useNavigate(); // Initialize the navigate function
+  const navigate = useNavigate();
 
   // Track the user's auth state
   useEffect(() => {
@@ -35,6 +35,7 @@ function AccountDropDown() {
       setIsLoggedIn(false);
       setUser(null);
       alert("Logged out successfully!");
+      window.location.reload();
       navigate("/");
     } catch (error) {
       console.error("Error logging out: ", error);

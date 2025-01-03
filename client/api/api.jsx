@@ -49,6 +49,21 @@ export const getSpecificGame = async (
   }
 };
 
+export const getLatestGames = async (setLoading, setGames, setError) => {
+  try {
+    setError("");
+    setLoading(true);
+    const response = await api.get("/");
+    const data = response.data;
+    setGames(data);
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching latest games:", error);
+    setError("Failed to load latest games");
+    setLoading(false);
+  }
+};
+
 export const handleGameSearch = async (
   queryTerm,
   type,
