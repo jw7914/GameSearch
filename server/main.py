@@ -35,8 +35,8 @@ def fetch_gameid(id):
     else:
         response.raise_for_status()
 
-def fetch_lastest_games(time):
-    body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, first_release_date, screenshots.url, total_rating, storyline, videos.video_id; limit 20; sort first_release_date desc; where first_release_date <= {time};'
+def fetch_latest_games(time):
+    body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, first_release_date, screenshots.url, total_rating, storyline, videos.video_id; limit 100; sort first_release_date desc; where first_release_date <= {time};'
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     
     if response.status_code == 200:
@@ -158,9 +158,9 @@ def latest():
         access_token_data = get_access_token()
         access_token = access_token_data[0]
         access_token_expiry = access_token_data[1]
-    game_data = fetch_lastest_games(current_time)
+    game_data = fetch_latest_games(current_time)
     games = create_list_of_games(game_data)
-    return jsonify(games)
+    return jsonify(games[0:20])
 
 @app.route('/popular', methods=['GET'])
 def popular():

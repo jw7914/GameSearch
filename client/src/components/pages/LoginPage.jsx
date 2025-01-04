@@ -11,6 +11,10 @@ import {
   Grid,
   InputAdornment,
   IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import {
   getAuth,
@@ -31,6 +35,10 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [isRedirecting, setIsRedirecting] = useState(false); // Track if redirect is happening
   const auth = getAuth(firebaseapp);
   const googleProvider = new GoogleAuthProvider();
   const githubProvider = new GithubAuthProvider();
@@ -39,13 +47,18 @@ const LoginPage = () => {
   // Handle authentication (email and password or Google/GitHub login)
   const handleAuth = async (e) => {
     e.preventDefault();
-    setError(""); // Reset error state
+    setError("");
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      alert("Login successful!");
-      navigate("/");
+      setModalMessage("Login successful!");
+      setOpenSuccessModal(true);
+      setIsRedirecting(true);
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     } catch (err) {
-      setError(mapFirebaseErrorToMessage(err.code));
+      setModalMessage(mapFirebaseErrorToMessage(err.code));
+      setOpenErrorModal(true);
     }
   };
 
@@ -54,17 +67,85 @@ const LoginPage = () => {
     try {
       if (providerType === "google") {
         await signInWithPopup(auth, googleProvider);
-        alert("Google login successful!");
-        navigate("/");
+        setModalMessage("Google login successful!");
+        setOpenSuccessModal(true);
+        setIsRedirecting(true);
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
       } else if (providerType === "github") {
         await signInWithPopup(auth, githubProvider);
-        alert("GitHub login successful!");
-        navigate("/");
+        setModalMessage("GitHub login successful!");
+        setOpenSuccessModal(true);
+        setIsRedirecting(true);
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
       }
     } catch (err) {
-      setError(mapFirebaseErrorToMessage(err.code));
+      setModalMessage(mapFirebaseErrorToMessage(err.code));
+      setOpenErrorModal(true);
     }
   };
+
+  const handleModalClose = () => {
+    // Close modal and ensure redirect only happens once
+    if (!isRedirecting) {
+      setOpenErrorModal(false);
+      setOpenSuccessModal(false);
+    } else {
+      setOpenSuccessModal(false); // Close success modal only
+      if (isRedirecting) {
+        navigate("/"); // Redirect after modal close
+      }
+    }
+  };
+
+  // Map Firebase error codes to user-friendly messages
+  const mapFirebaseErrorToMessage = (errorCode) => {
+    switch (errorCode) {
+      case "auth/invalid-email":
+        return "The email address is not valid.";
+      case "auth/user-disabled":
+        return "This user account has been disabled.";
+      case "auth/user-not-found":
+        return "No user found with this email.";
+      case "auth/wrong-password":
+        return "Incorrect password.";
+      default:
+        return "An error occurred, please try again.";
+    }
+  };
+
+  // Success Modal
+  const SuccessModal = () => (
+    <Dialog open={openSuccessModal} onClose={handleModalClose}>
+      <DialogTitle>Success</DialogTitle>
+      <DialogContent>
+        <Typography>{modalMessage}</Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleModalClose} color="primary">
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  // Error Modal
+  const ErrorModal = () => (
+    <Dialog open={openErrorModal} onClose={handleModalClose}>
+      <DialogTitle color="red">Error</DialogTitle>
+      <DialogContent>
+        <Typography>{modalMessage}</Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleModalClose} color="primary">
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
 
   return (
     <Container
@@ -168,6 +249,10 @@ const LoginPage = () => {
           </CardActions>
         </Box>
       </Card>
+
+      {/* Modals */}
+      <SuccessModal />
+      <ErrorModal />
     </Container>
   );
 };

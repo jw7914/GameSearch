@@ -22,22 +22,8 @@ function App() {
         element={<Redirect element={<SearchResults type="genre" />} />}
       />
       <Route path="/gameprofile/:id" element={<GameProfile />}></Route>
-      <Route
-        path="/login"
-        element={
-          <ProtectedRoute>
-            <LoginPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <ProtectedRoute>
-            <RegisterPage />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

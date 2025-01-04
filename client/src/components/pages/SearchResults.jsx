@@ -8,6 +8,7 @@ import { Container } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import GamesCard from "../GamesCard";
 import PaginationItem from "@mui/material/PaginationItem";
+import CloseIcon from "@mui/icons-material/Close";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import {
   TextField,
@@ -138,13 +139,11 @@ function SearchResults({ type }) {
       <Typography variant="h4" align="center" sx={{ marginBottom: "30px" }}>
         Search Results for: {queryTerm}
       </Typography>
-
       {loading && (
         <Box display="flex" justifyContent="center" alignItems="center" my={4}>
           <CircularProgress size={50} />
         </Box>
       )}
-
       {!loading && games.length > 0 && (
         <>
           <Grid container spacing={3}>
@@ -237,7 +236,6 @@ function SearchResults({ type }) {
           </Box>
         </>
       )}
-
       {!loading && games.length === 0 && (
         <Stack sx={{ width: "100%" }} spacing={2}>
           <Alert variant="filled" severity="error">
@@ -245,14 +243,41 @@ function SearchResults({ type }) {
           </Alert>
         </Stack>
       )}
-
-      <Dialog open={openModal} onClose={handleCloseModal}>
-        <DialogTitle color="red">Error</DialogTitle>
-        <DialogContent>
-          <p>Enter A Valid Page</p>
+      <Dialog
+        open={openModal}
+        onClose={handleCloseModal}
+        maxWidth="sm"
+        fullWidth
+        sx={{
+          "& .MuiDialog-paper": {
+            borderRadius: "0.375rem",
+            paddingY: "20px",
+            backgroundColor: "#fff",
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            fontSize: "1.25rem",
+            fontWeight: "500",
+            color: "red",
+            borderBottom: "1px solid #dee2e6",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          Error
+        </DialogTitle>
+        <DialogContent sx={{ marginTop: "2rem", textAlign: "center" }}>
+          Enter a valid page number.
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="primary">
+        <DialogActions sx={{ justifyContent: "center" }}>
+          <Button
+            onClick={handleCloseModal}
+            color="primary"
+            variant="contained"
+          >
             Close
           </Button>
         </DialogActions>

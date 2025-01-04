@@ -14,7 +14,6 @@ const ProtectedRoute = ({ children }) => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setIsAuthenticated(true);
-        navigate("/"); // Redirect to home page if already logged in
       } else {
         setIsAuthenticated(false);
       }
@@ -22,13 +21,20 @@ const ProtectedRoute = ({ children }) => {
     });
 
     return () => unsubscribe();
-  }, [auth, navigate]);
+  }, [auth]);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  return isAuthenticated ? null : children;
+  // Redirect to home if logged in
+  if (isAuthenticated) {
+    navigate("/"); // Redirect to home page if already logged in
+    return null; // Render nothing while redirecting
+  }
+
+  // Render the protected route's children if not authenticated
+  return children;
 };
 
 export default ProtectedRoute;
