@@ -8,14 +8,16 @@ import urllib.parse
 import datetime
 
 
-# Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app, origins="*")
 
+#Inital boot up of the server get token details
+access_token_data = get_access_token()
+access_token, access_token_expiry = access_token_data[0], access_token_data[1]
+
 client_id = os.getenv('CLIENT_ID')
-access_token = get_access_token()
 base_url = "https://api.igdb.com/v4"
 headers = {
         'Client-ID': client_id,
@@ -148,10 +150,14 @@ def fetch_genres():
         print(f"Error fetching genres: {error}")
         return []
 
-#create more routes for different end points
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET']) 
 def latest():
-    current_time = int(datetime.datetime.now().timestamp())
+    global access_token, access_token_expiry
+    current_time = datetime.datetime.now().timestamp()
+    if current_time > access_token_expiry: #Root/homepage of frontend will call this route causing token to be refreshed if expired
+        access_token_data = get_access_token()
+        access_token = access_token_data[0]
+        access_token_expiry = access_token_data[1]
     game_data = fetch_lastest_games(current_time)
     games = create_list_of_games(game_data)
     return jsonify(games)
@@ -186,15 +192,14 @@ def get_genres_games():
     return jsonify(genres_data)
 
 @app.route('/<id>', methods=['GET'])
-def get_game_id(id):
+def get_game_id(id):    
     try:
         games = fetch_gameid(id)
         games_data = create_list_of_games(games)
-        print(games_data[0]['platforms'][0]['platform_logo'])
         games_data[0]['platforms'] = ["https:" + ((games_data[0]['platforms'][0]['platform_logo']['url']).replace("t_thumb", "t_cover_big"))]
         return jsonify(games_data)
     except requests.exceptions.HTTPError as err:
         return jsonify({"error": str(err)}), 500
-
+    
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
