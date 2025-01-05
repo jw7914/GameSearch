@@ -158,7 +158,7 @@ const LoginPage = () => {
         height: "100vh",
       }}
     >
-      <Card sx={{ width: "100%", padding: 2 }}>
+      <Card sx={{ width: "100%", padding: 2 }} elevation={12} >
         <Box
           sx={{
             display: "flex",

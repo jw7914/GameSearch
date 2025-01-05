@@ -5,7 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { Rating } from "@mui/material";
+import { CardActionArea, Rating } from "@mui/material";
 import { Link } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -55,6 +55,7 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
         marginX: "0.75rem",
       }}
     >
+      <CardActionArea>
       <CardMedia
         sx={{
           objectFit: "cover",
@@ -136,6 +137,7 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
           </Box>
         </Modal>
       </CardActions>
+      </CardActionArea>
     </Card>
   );
 }

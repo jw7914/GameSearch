@@ -8,6 +8,7 @@ import GameProfile from "./components/pages/GameProfile";
 import LoginPage from "./components/pages/LoginPage";
 import RegisterPage from "./components/pages/ResgisterPage";
 import ProtectedRoute from "./components/utility/ProtectedRoute";
+import UserProfilePage from "./components/pages/UserProfile";
 
 function App() {
   return (
@@ -22,8 +23,11 @@ function App() {
         element={<Redirect element={<SearchResults type="genre" />} />}
       />
       <Route path="/gameprofile/:id" element={<GameProfile />}></Route>
-      <Route path="/login" element={<LoginPage />} />
+      <ProtectedRoute>
+        <Route path="/login" element={<LoginPage />} />
+      </ProtectedRoute>
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/profile" element={<UserProfilePage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

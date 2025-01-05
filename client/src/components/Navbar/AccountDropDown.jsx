@@ -1,39 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "../../../firebase/firebaseConfig.jsx";
+import React, { useState } from "react";
+import { getAuth, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { getFirebaseUser } from "../../../firebase/firebaseUtility";
 
 function AccountDropDown() {
   const [open, setOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user, isLoggedIn } = getFirebaseUser();
   const navigate = useNavigate();
+  const auth = getAuth();
 
-  // Track the user's auth state
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setIsLoggedIn(true);
-        setUser(user);
-      } else {
-        setIsLoggedIn(false);
-        setUser(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const handleClick = () => {
-    setOpen(!open);
+  const handleToggle = () => {
+    setOpen((prev) => !prev);
   };
 
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
       await signOut(auth);
-      setIsLoggedIn(false);
-      setUser(null);
       alert("Logged out successfully!");
       window.location.reload();
       navigate("/");
@@ -45,18 +28,19 @@ function AccountDropDown() {
 
   return (
     <div className="dropdown">
-      <a
-        className="nav-link dropdown-toggle"
-        href="#"
+      <button
+        className="btn nav-link dropdown-toggle"
         id="accountDropdown"
         role="button"
-        aria-expanded={open ? "true" : "false"}
-        onClick={handleClick}
-        data-bs-toggle="dropdown"
+        aria-expanded={open}
+        onClick={handleToggle}
       >
-        {isLoggedIn ? `Hello, ${user.displayName || user.email}` : "Account"}
-      </a>
-      <ul className="dropdown-menu" aria-labelledby="accountDropdown">
+        {isLoggedIn ? `Hello, ${user?.displayName || user?.email}` : "Account"}
+      </button>
+      <ul
+        className={`dropdown-menu${open ? " show" : ""}`}
+        aria-labelledby="accountDropdown"
+      >
         {isLoggedIn ? (
           <>
             <li>
@@ -73,9 +57,9 @@ function AccountDropDown() {
               <hr className="dropdown-divider" />
             </li>
             <li>
-              <a className="dropdown-item" href="#" onClick={handleLogout}>
+              <button className="dropdown-item" onClick={handleLogout}>
                 Logout
-              </a>
+              </button>
             </li>
           </>
         ) : (
@@ -85,7 +69,9 @@ function AccountDropDown() {
                 Login
               </a>
             </li>
-            <hr className="dropdown-divider" />
+            <li>
+              <hr className="dropdown-divider" />
+            </li>
             <li>
               <a className="dropdown-item" href="/register">
                 Register
