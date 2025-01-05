@@ -10,6 +10,7 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
+import EmailIcon from "@mui/icons-material/Email";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -25,7 +26,9 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [errorEmail, setErrorEmail] = useState("");
+  const [errorPassword, setErrorPassword] = useState("");
+  const [errorConfirmPassword, setErrorConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const auth = getAuth(firebaseapp);
@@ -34,26 +37,47 @@ const RegisterPage = () => {
   // Handle user registration
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError(""); // Reset error state
+    let formIsValid = true;
 
+    // Reset error messages
+    setErrorEmail("");
+    setErrorPassword("");
+    setErrorConfirmPassword("");
+
+    // Check if passwords match
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
+      setErrorConfirmPassword("Passwords do not match.");
+      formIsValid = false;
     }
+
+    // Validate email
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setErrorEmail("Please enter a valid email address.");
+      formIsValid = false;
+    } else {
+      setErrorEmail("");
+    }
+
+    // Validate password
+    if (password.length < 6) {
+      setErrorPassword("Password must be at least 6 characters.");
+      formIsValid = false;
+    } else {
+      setErrorPassword("");
+    }
+
+    if (!formIsValid) return;
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      alert("Registration successful! You can now log in.");
-
       await signOut(auth);
-
       onAuthStateChanged(auth, (user) => {
         if (!user) {
           navigate("/login");
         }
       });
     } catch (err) {
-      setError(mapFirebaseErrorToMessage(err.code));
+      setErrorEmail(mapFirebaseErrorToMessage(err.code));
     }
   };
 
@@ -61,15 +85,15 @@ const RegisterPage = () => {
   const mapFirebaseErrorToMessage = (errorCode) => {
     switch (errorCode) {
       case "auth/invalid-email":
-        return "Please provide a valid email address.";
+        return "The email address is not valid.";
       case "auth/email-already-in-use":
-        return "An account with this email already exists. Please log in.";
+        return "The email address is already in use by another account.";
       case "auth/weak-password":
-        return "Your password is too weak. Please choose a stronger password.";
+        return "The password is too weak. Please choose a stronger password.";
       case "auth/network-request-failed":
         return "Network error. Please check your connection and try again.";
       default:
-        return "An error occurred. Please try again later.";
+        return "An unexpected error occurred. Please try again later.";
     }
   };
 
@@ -84,95 +108,97 @@ const RegisterPage = () => {
         height: "100vh",
       }}
     >
-      <Card sx={{ width: "100%", padding: 2 }}>
+      <Card sx={{ width: "100%", padding: 4 }}>
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{ marginBottom: "1.5rem", fontWeight: "bold" }}
+        >
+          Sign up with <EmailIcon fontSize="large" />
+        </Typography>
+
         <Box
+          component="form"
+          onSubmit={handleRegister}
+          noValidate
           sx={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+            gap: 2,
+            width: "100%",
           }}
         >
-          {/* Register Form */}
-          <Box
-            component="form"
-            onSubmit={handleRegister}
-            noValidate
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-              width: "100%",
+          <TextField
+            label="Email Address"
+            type="email"
+            required
+            fullWidth
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={!!errorEmail} // Error check for email field
+            helperText={errorEmail}
+          />
+          <TextField
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            required
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
             }}
-          >
-            <TextField
-              label="Email Address"
-              type="email"
-              required
-              fullWidth
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              required
-              fullWidth
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              label="Confirm Password"
-              type={showConfirmPassword ? "text" : "password"}
-              required
-              fullWidth
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowConfirmPassword((prev) => !prev)}
-                      edge="end"
-                    >
-                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
-              Register
-            </Button>
-          </Box>
-
-          {error && (
-            <Typography color="error" variant="body2" sx={{ mt: 2 }}>
-              {error}
-            </Typography>
-          )}
-
-          <CardActions sx={{ justifyContent: "center", width: "100%" }}>
-            <Typography variant="body2">
-              Already have an account?
-              <Button size="small" onClick={() => navigate("/login")}>
-                Login
-              </Button>
-            </Typography>
-          </CardActions>
+            error={!!errorPassword} // Error check for password field
+            helperText={errorPassword}
+          />
+          <TextField
+            label="Confirm Password"
+            type={showConfirmPassword ? "text" : "password"}
+            required
+            fullWidth
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    edge="end"
+                  >
+                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            error={!!errorConfirmPassword} // Error check for confirm password field
+            helperText={
+              errorConfirmPassword ||
+              (password !== confirmPassword && "Passwords do not match")
+            }
+          />
+          <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
+            Register
+          </Button>
         </Box>
+
+        <CardActions sx={{ justifyContent: "center", width: "100%" }}>
+          <Typography variant="body2">
+            Already have an account?{" "}
+            <Button size="small" onClick={() => navigate("/login")}>
+              Login
+            </Button>
+          </Typography>
+        </CardActions>
       </Card>
     </Container>
   );

@@ -1,7 +1,10 @@
+// Paths that shouldn't be able to be accessed when logged in
+
 import React, { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
 import { firebaseapp } from "../../../firebase/firebaseConfig.jsx";
 import { useNavigate } from "react-router-dom";
+import { CircularProgress } from "@mui/material";
 
 const ProtectedRoute = ({ children }) => {
   const [loading, setLoading] = useState(true);
@@ -10,7 +13,6 @@ const ProtectedRoute = ({ children }) => {
   const auth = getAuth(firebaseapp);
 
   useEffect(() => {
-    // Check if user is authenticated
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setIsAuthenticated(true);
@@ -24,16 +26,27 @@ const ProtectedRoute = ({ children }) => {
   }, [auth]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
   }
 
   // Redirect to home if logged in
-  if (isAuthenticated) {
-    navigate("/"); // Redirect to home page if already logged in
-    return null; // Render nothing while redirecting
+  if (!isAuthenticated) {
+    navigate("/login"); // Redirect to login page if not authenticated
+    return null;
   }
 
-  // Render the protected route's children if not authenticated
+  // Render the protected route's children if authenticated
   return children;
 };
 
