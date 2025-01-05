@@ -7,8 +7,9 @@ import SearchResults from "./components/pages/SearchResults";
 import GameProfile from "./components/pages/GameProfile";
 import LoginPage from "./components/pages/LoginPage";
 import RegisterPage from "./components/pages/ResgisterPage";
-import ProtectedRoute from "./components/utility/ProtectedRoute";
+import LoggedinRedirect from "./components/utility/LoggedinRedirect";
 import UserProfilePage from "./components/pages/UserProfile";
+import LoginProtected from "./components/utility/LoginProtected";
 
 function App() {
   return (
@@ -23,11 +24,35 @@ function App() {
         element={<Redirect element={<SearchResults type="genre" />} />}
       />
       <Route path="/gameprofile/:id" element={<GameProfile />}></Route>
-      <ProtectedRoute>
-        <Route path="/login" element={<LoginPage />} />
-      </ProtectedRoute>
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/profile" element={<UserProfilePage />} />
+
+      {/* Protected Routes (Logged in users can't access these routes) */}
+      <Route
+        path="/login"
+        element={
+          <LoggedinRedirect>
+            <LoginPage />
+          </LoggedinRedirect>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <LoggedinRedirect>
+            <RegisterPage />
+          </LoggedinRedirect>
+        }
+      />
+
+      {/* Protected Routes (Not logged in users can't access these routes) */}
+      <Route
+        path="/profile"
+        element={
+          <LoginProtected>
+            <UserProfilePage />
+          </LoginProtected>
+        }
+      />
+
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

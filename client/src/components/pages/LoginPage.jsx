@@ -36,9 +36,8 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
-  const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [isRedirecting, setIsRedirecting] = useState(false); // Track if redirect is happening
+  const [submitted, setSubmitted] = useState(false);
   const auth = getAuth(firebaseapp);
   const googleProvider = new GoogleAuthProvider();
   const githubProvider = new GithubAuthProvider();
@@ -47,18 +46,18 @@ const LoginPage = () => {
   // Handle authentication (email and password or Google/GitHub login)
   const handleAuth = async (e) => {
     e.preventDefault();
+    setSubmitted(true); // Mark as submitted
+
+    if (!email || !password) {
+      return;
+    }
+
     setError("");
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      setModalMessage("Login successful!");
-      setOpenSuccessModal(true);
-      setIsRedirecting(true);
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
     } catch (err) {
       setModalMessage(mapFirebaseErrorToMessage(err.code));
-      setOpenErrorModal(true);
+      setOpenErrorModal(true); // Show the error modal
     }
   };
 
@@ -67,20 +66,8 @@ const LoginPage = () => {
     try {
       if (providerType === "google") {
         await signInWithPopup(auth, googleProvider);
-        setModalMessage("Google login successful!");
-        setOpenSuccessModal(true);
-        setIsRedirecting(true);
-        setTimeout(() => {
-          navigate("/");
-        }, 1000);
       } else if (providerType === "github") {
         await signInWithPopup(auth, githubProvider);
-        setModalMessage("GitHub login successful!");
-        setOpenSuccessModal(true);
-        setIsRedirecting(true);
-        setTimeout(() => {
-          navigate("/");
-        }, 1000);
       }
     } catch (err) {
       setModalMessage(mapFirebaseErrorToMessage(err.code));
@@ -89,20 +76,12 @@ const LoginPage = () => {
   };
 
   const handleModalClose = () => {
-    // Close modal and ensure redirect only happens once
-    if (!isRedirecting) {
-      setOpenErrorModal(false);
-      setOpenSuccessModal(false);
-    } else {
-      setOpenSuccessModal(false); // Close success modal only
-      if (isRedirecting) {
-        navigate("/"); // Redirect after modal close
-      }
-    }
+    setOpenErrorModal(false);
   };
 
   // Map Firebase error codes to user-friendly messages
   const mapFirebaseErrorToMessage = (errorCode) => {
+    console.log(errorCode);
     switch (errorCode) {
       case "auth/invalid-email":
         return "The email address is not valid.";
@@ -112,40 +91,12 @@ const LoginPage = () => {
         return "No user found with this email.";
       case "auth/wrong-password":
         return "Incorrect password.";
+      case "auth/invalid-credential":
+        return "Invalid login credential.";
       default:
         return "An error occurred, please try again.";
     }
   };
-
-  // Success Modal
-  const SuccessModal = () => (
-    <Dialog open={openSuccessModal} onClose={handleModalClose}>
-      <DialogTitle>Success</DialogTitle>
-      <DialogContent>
-        <Typography>{modalMessage}</Typography>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleModalClose} color="primary">
-          Close
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-
-  // Error Modal
-  const ErrorModal = () => (
-    <Dialog open={openErrorModal} onClose={handleModalClose}>
-      <DialogTitle color="red">Error</DialogTitle>
-      <DialogContent>
-        <Typography>{modalMessage}</Typography>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleModalClose} color="primary">
-          Close
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
 
   return (
     <Container
@@ -158,7 +109,7 @@ const LoginPage = () => {
         height: "100vh",
       }}
     >
-      <Card sx={{ width: "100%", padding: 2 }} elevation={12} >
+      <Card sx={{ width: "100%", padding: 2 }}>
         <Box
           sx={{
             display: "flex",
@@ -212,7 +163,12 @@ const LoginPage = () => {
               required
               fullWidth
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (submitted) setSubmitted(false); // Reset the submitted state when the user types
+              }}
+              error={submitted && !email} // Set error if submitted and no email
+              helperText={submitted && !email ? "Email is required" : ""}
             />
             <TextField
               label="Password"
@@ -220,7 +176,10 @@ const LoginPage = () => {
               required
               fullWidth
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (submitted) setSubmitted(false); // Reset the submitted state when the user types
+              }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -233,6 +192,8 @@ const LoginPage = () => {
                   </InputAdornment>
                 ),
               }}
+              error={submitted && !password} // Set error if submitted and no password
+              helperText={submitted && !password ? "Password is required" : ""}
             />
             <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
               Login
@@ -250,9 +211,18 @@ const LoginPage = () => {
         </Box>
       </Card>
 
-      {/* Modals */}
-      <SuccessModal />
-      <ErrorModal />
+      {/* Error Modal */}
+      <Dialog open={openErrorModal} onClose={handleModalClose}>
+        <DialogTitle color="red">Error</DialogTitle>
+        <DialogContent>
+          <Typography>{modalMessage}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleModalClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
