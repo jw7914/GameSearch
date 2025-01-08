@@ -8,7 +8,6 @@ import { Container } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import GamesCard from "../GamesCard";
 import PaginationItem from "@mui/material/PaginationItem";
-import CloseIcon from "@mui/icons-material/Close";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import {
   TextField,
@@ -39,7 +38,6 @@ function SearchResults({ type }) {
   const query = useQuery();
   const navigate = useNavigate();
   const currentPage = parseInt(query.get("page") || "1");
-  console.log(currentPage);
   const [page, setPage] = useState(currentPage);
   const gamesPerPage = 16;
   const totalPages = Math.ceil(games.length / gamesPerPage);
@@ -52,7 +50,9 @@ function SearchResults({ type }) {
     query: query.get("query"),
     genre: query.get("genre"),
   };
-  const queryTerm = typeMap[type];
+  const queryTerm = typeMap[type]
+    ? decodeURIComponent(typeMap[type]).trim()
+    : "";
 
   // Fetch games based on query term
   useEffect(() => {
