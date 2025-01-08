@@ -90,16 +90,27 @@ def get_game_id(id):
         return jsonify(games_data)
     except requests.exceptions.HTTPError as err:
         return jsonify({"error": str(err)}), 500
+    
+@app.route('/register/<uid>', methods=['POST'])
+def register_user(uid):
+    try:
+        sqlCursor = connection.cursor()
+        # Check if the user already exists in the database
+        sqlCursor.execute("SELECT uid FROM users WHERE uid = %s", (uid,))
+        user = sqlCursor.fetchone()
+        
 
-# @app.route('/register/<uid>', methods=['GET'])
-# def register_user(uid):
-#     #if request comes from localhost or frontend url
-#     try:
-#         sqlCursor.execute(f"INSERT INTO users (uid) VALUES ('{uid}')")
-#         connection.commit()
-#         return jsonify({"success": "User registered successfully"})
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
+        if user:
+            return jsonify({"message": "User already exists, no action needed"}), 200
+        
+        # If user does not exist, insert the user into the database
+        sqlCursor.execute("INSERT INTO users (uid) VALUES (%s)", (uid,))
+        connection.commit()
+        return jsonify({"success": "User registered successfully"})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
     
 if __name__ == '__main__':
     app.run(debug=True, port=8080)

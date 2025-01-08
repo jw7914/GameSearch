@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -14,8 +14,8 @@ import EmailIcon from "@mui/icons-material/Email";
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  signOut,
   onAuthStateChanged,
+  signOut,
 } from "firebase/auth";
 import { firebaseapp } from "../../../firebase/firebaseConfig.jsx";
 import { useNavigate } from "react-router-dom";
@@ -33,6 +33,17 @@ const RegisterPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const auth = getAuth(firebaseapp);
   const navigate = useNavigate();
+
+  // Redirect if the user is already logged in
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate("/");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [auth, navigate]);
 
   // Handle user registration
   const handleRegister = async (e) => {
@@ -71,11 +82,9 @@ const RegisterPage = () => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       await signOut(auth);
-      onAuthStateChanged(auth, (user) => {
-        if (!user) {
-          navigate("/login");
-        }
-      });
+
+      // Navigate to the login page after successful registration and sign-out
+      navigate("/login");
     } catch (err) {
       setErrorEmail(mapFirebaseErrorToMessage(err.code));
     }

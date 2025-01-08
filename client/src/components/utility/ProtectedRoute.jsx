@@ -1,5 +1,3 @@
-// Paths that shouldn't be able to be accessed when logged in
-
 import React, { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
 import { firebaseapp } from "../../../firebase/firebaseConfig.jsx";
@@ -40,9 +38,9 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  // Redirect to home if logged in
+  // Redirect to login if not logged in
   if (!isAuthenticated) {
-    navigate("/login"); // Redirect to login page if not authenticated
+    navigate("/login");
     return null;
   }
 

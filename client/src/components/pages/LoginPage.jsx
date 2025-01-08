@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -15,6 +15,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  CircularProgress,
 } from "@mui/material";
 import {
   getAuth,
@@ -29,6 +30,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import { registerUser } from "../../../api/api.jsx";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -38,40 +40,88 @@ const LoginPage = () => {
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false); // Added loading state
   const auth = getAuth(firebaseapp);
   const googleProvider = new GoogleAuthProvider();
   const githubProvider = new GithubAuthProvider();
   const navigate = useNavigate();
 
-  // Handle authentication (email and password or Google/GitHub login)
+  // Redirect if the user is already logged in
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        navigate("/");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [auth, navigate]);
+
+  // Form validation
+  const validateForm = () => {
+    if (!email || !password) {
+      return "Email and Password are required!";
+    }
+
+    // Example email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      return "Please enter a valid email address.";
+    }
+
+    return null; // No errors
+  };
+
+  // Handle authentication (email and password login)
   const handleAuth = async (e) => {
     e.preventDefault();
-    setSubmitted(true); // Mark as submitted
-
-    if (!email || !password) {
+    setSubmitted(true);
+    const errorMessage = validateForm();
+    if (errorMessage) {
+      setModalMessage(errorMessage);
+      setOpenErrorModal(true);
       return;
     }
 
-    setError("");
+    setLoading(true); // Start loading
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const userId = userCredential.user.uid;
+      await registerUser(userId);
+      navigate("/");
     } catch (err) {
       setModalMessage(mapFirebaseErrorToMessage(err.code));
-      setOpenErrorModal(true); // Show the error modal
+      setOpenErrorModal(true);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
   // Handle social logins (Google, GitHub)
   const handleLogin = async (providerType) => {
+    setLoading(true); // Start loading
+
     try {
+      let userCredential;
       if (providerType === "google") {
-        await signInWithPopup(auth, googleProvider);
+        userCredential = await signInWithPopup(auth, googleProvider);
       } else if (providerType === "github") {
-        await signInWithPopup(auth, githubProvider);
+        userCredential = await signInWithPopup(auth, githubProvider);
       }
+
+      const userId = userCredential.user.uid;
+      await registerUser(userId);
+      navigate("/");
     } catch (err) {
       setModalMessage(mapFirebaseErrorToMessage(err.code));
       setOpenErrorModal(true);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -81,7 +131,6 @@ const LoginPage = () => {
 
   // Map Firebase error codes to user-friendly messages
   const mapFirebaseErrorToMessage = (errorCode) => {
-    console.log(errorCode);
     switch (errorCode) {
       case "auth/invalid-email":
         return "The email address is not valid.";
@@ -165,9 +214,9 @@ const LoginPage = () => {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                if (submitted) setSubmitted(false); // Reset the submitted state when the user types
+                if (submitted) setSubmitted(false);
               }}
-              error={submitted && !email} // Set error if submitted and no email
+              error={submitted && !email}
               helperText={submitted && !email ? "Email is required" : ""}
             />
             <TextField
@@ -178,7 +227,7 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                if (submitted) setSubmitted(false); // Reset the submitted state when the user types
+                if (submitted) setSubmitted(false);
               }}
               InputProps={{
                 endAdornment: (
@@ -192,11 +241,21 @@ const LoginPage = () => {
                   </InputAdornment>
                 ),
               }}
-              error={submitted && !password} // Set error if submitted and no password
+              error={submitted && !password}
               helperText={submitted && !password ? "Password is required" : ""}
             />
-            <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
-              Login
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{ mt: 2 }}
+              disabled={loading}
+            >
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Login"
+              )}
             </Button>
           </Box>
 

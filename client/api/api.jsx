@@ -100,3 +100,19 @@ export const handleGameSearch = async (
     setLoading(false);
   }
 };
+
+export const registerUser = async (userId) => {
+  try {
+    const response = await api.post(`/register/${userId}`, { userId });
+
+    // Check if the response is successful
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Registration failed");
+    }
+  } catch (error) {
+    console.error("Error during registration:", error);
+    throw error;
+  }
+};

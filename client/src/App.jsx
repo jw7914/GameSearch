@@ -7,9 +7,8 @@ import SearchResults from "./components/pages/SearchResults";
 import GameProfile from "./components/pages/GameProfile";
 import LoginPage from "./components/pages/LoginPage";
 import RegisterPage from "./components/pages/ResgisterPage";
-import LoggedinRedirect from "./components/utility/LoggedinRedirect";
 import UserProfilePage from "./components/pages/UserProfile";
-import LoginProtected from "./components/utility/LoginProtected";
+import ProtectedRoute from "./components/utility/ProtectedRoute";
 
 function App() {
   return (
@@ -26,30 +25,16 @@ function App() {
       <Route path="/gameprofile/:id" element={<GameProfile />}></Route>
 
       {/* Protected Routes (Logged in users can't access these routes) */}
-      <Route
-        path="/login"
-        element={
-          <LoggedinRedirect>
-            <LoginPage />
-          </LoggedinRedirect>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <LoggedinRedirect>
-            <RegisterPage />
-          </LoggedinRedirect>
-        }
-      />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
       {/* Protected Routes (Not logged in users can't access these routes) */}
       <Route
         path="/profile"
         element={
-          <LoginProtected>
+          <ProtectedRoute>
             <UserProfilePage />
-          </LoginProtected>
+          </ProtectedRoute>
         }
       />
 
