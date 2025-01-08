@@ -30,7 +30,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import { registerUser } from "../../../api/api.jsx";
+import { handleLoginVerification } from "../../../api/api.jsx";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -91,8 +91,8 @@ const LoginPage = () => {
         email,
         password
       );
-      const userId = userCredential.user.uid;
-      await registerUser(userId);
+      const idToken = await userCredential.user.getIdToken();
+      await handleLoginVerification(idToken);
       navigate("/");
     } catch (err) {
       setModalMessage(mapFirebaseErrorToMessage(err.code));
@@ -114,8 +114,8 @@ const LoginPage = () => {
         userCredential = await signInWithPopup(auth, githubProvider);
       }
 
-      const userId = userCredential.user.uid;
-      await registerUser(userId);
+      const idToken = await userCredential.user.getIdToken();
+      await handleLoginVerification(idToken);
       navigate("/");
     } catch (err) {
       setModalMessage(mapFirebaseErrorToMessage(err.code));

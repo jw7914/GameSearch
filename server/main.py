@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, session
 import pymysql.cursors
 from token_util import get_access_token
 import os
@@ -8,11 +8,17 @@ from flask_cors import CORS
 import urllib.parse
 import datetime
 from IGDB import *
+import firebase_admin
+from firebase_admin import credentials, auth
+
 
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
 cors = CORS(app, origins="*")
+cred = credentials.Certificate("firebase-adminsdk.json")
+firebase_admin.initialize_app(cred)
 
 timeout = 10
 connection = pymysql.connect(
@@ -90,27 +96,27 @@ def get_game_id(id):
         return jsonify(games_data)
     except requests.exceptions.HTTPError as err:
         return jsonify({"error": str(err)}), 500
-    
-@app.route('/register/<uid>', methods=['POST'])
-def register_user(uid):
+
+@app.route("/login", methods=['POST'])
+def login():
     try:
+        data = request.json
+        token = data.get("idToken")
+        decoded_token = auth.verify_id_token(token)
+        user_id = decoded_token['uid']
         sqlCursor = connection.cursor()
         # Check if the user already exists in the database
-        sqlCursor.execute("SELECT uid FROM users WHERE uid = %s", (uid,))
+        sqlCursor.execute("SELECT uid FROM users WHERE uid = %s", (user_id,))
         user = sqlCursor.fetchone()
         
-
-        if user:
-            return jsonify({"message": "User already exists, no action needed"}), 200
-        
-        # If user does not exist, insert the user into the database
-        sqlCursor.execute("INSERT INTO users (uid) VALUES (%s)", (uid,))
-        connection.commit()
-        return jsonify({"success": "User registered successfully"})
-
+        if not user:
+            sqlCursor.execute("INSERT INTO users (uid) VALUES (%s)", (user_id,))
+            connection.commit()
+            
+        return jsonify({"message": "Login successful", "user_id": user_id}), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
+        return jsonify({"error": str(e)}), 401
+    
     
 if __name__ == '__main__':
     app.run(debug=True, port=8080)

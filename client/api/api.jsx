@@ -101,18 +101,15 @@ export const handleGameSearch = async (
   }
 };
 
-export const registerUser = async (userId) => {
+export const handleLoginVerification = async (idToken) => {
   try {
-    const response = await api.post(`/register/${userId}`, { userId });
-
-    // Check if the response is successful
+    const response = await api.post("/login", { idToken });
     if (response.status === 200) {
-      return response.data;
+      console.log("Login successful!", response.data);
     } else {
-      throw new Error("Registration failed");
+      console.error("Login failed:", response.data);
     }
   } catch (error) {
-    console.error("Error during registration:", error);
-    throw error;
+    console.error("Login error:", error.response?.data || error.message);
   }
 };
