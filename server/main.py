@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort
+import pymysql.cursors
 from token_util import get_access_token
 import os
 import requests
@@ -7,11 +8,24 @@ from flask_cors import CORS
 import urllib.parse
 import datetime
 
-
 load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app, origins="*")
+
+timeout = 10
+connection = pymysql.connect(
+  charset="utf8mb4",
+  connect_timeout=timeout,
+  cursorclass=pymysql.cursors.DictCursor,
+  db="gamesearch",
+  host=os.getenv("DB_HOST"),
+  password=os.getenv("DB_PASSWORD"),
+  read_timeout=timeout,
+  port=11075,
+  user="avnadmin",
+  write_timeout=timeout,
+)
 
 #Inital boot up of the server get token details
 access_token_data = get_access_token()
@@ -200,6 +214,16 @@ def get_game_id(id):
         return jsonify(games_data)
     except requests.exceptions.HTTPError as err:
         return jsonify({"error": str(err)}), 500
+
+# @app.route('/register/<uid>', methods=['GET'])
+# def register_user(uid):
+#     #if request comes from localhost or frontend url
+#     try:
+#         sqlCursor.execute(f"INSERT INTO users (uid) VALUES ('{uid}')")
+#         connection.commit()
+#         return jsonify({"success": "User registered successfully"})
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
     
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
