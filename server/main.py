@@ -30,8 +30,6 @@ firebase_config = {
     "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL"),
     "universe_domain": os.getenv("FIREBASE_UNIVERSE_DOMAIN")
 }
-
-cred = credentials.Certificate(firebase_config)
 firebase_admin.initialize_app(cred)
 
 timeout = 10
@@ -110,7 +108,7 @@ def get_game_id(id):
         return jsonify(games_data)
     except requests.exceptions.HTTPError as err:
         return jsonify({"error": str(err)}), 500
-
+    
 @app.route("/login", methods=['POST'])
 def login():
     try:
