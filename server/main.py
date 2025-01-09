@@ -104,19 +104,97 @@ def login():
         token = data.get("idToken")
         decoded_token = auth.verify_id_token(token)
         user_id = decoded_token['uid']
+        session['uid'] = user_id
         sqlCursor = connection.cursor()
         # Check if the user already exists in the database
         sqlCursor.execute("SELECT uid FROM users WHERE uid = %s", (user_id,))
         user = sqlCursor.fetchone()
         
         if not user:
-            sqlCursor.execute("INSERT INTO users (uid) VALUES (%s)", (user_id,))
+            sqlCursor.execute("INSERT INTO users (uid, displayName) VALUES (%s, %s)", (user_id, decoded_token['name']))
             connection.commit()
             
         return jsonify({"message": "Login successful", "user_id": user_id}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 401
     
+@app.route("/addGame", methods=['POST'])
+def addGame():
+    try:
+        data = request.json
+        user_id = session['uid']
+        gameID = data.get("gameID")
+        gameName = data.get("name")
+        image = data.get("img")
+
+        sqlCursor = connection.cursor()
+
+        # Check if Game is already in the db
+        sqlCursor.execute("SELECT gameID FROM games WHERE gameID = %s", (gameID,))
+        game = sqlCursor.fetchone()
+
+        if not game:
+            sqlCursor.execute("INSERT INTO games (gameID, gameName, image) VALUES (%s, %s, %s)", (gameID, gameName, image))
+            connection.commit()
+
+        # Check if Game is already favorited by the User
+        sqlCursor.execute("SELECT uid, gameID FROM user_games WHERE uid = %s and gameID = %s", (user_id, gameID))
+        exists = sqlCursor.fetchone()
+
+        if not exists:
+            sqlCursor.execute("INSERT INTO user_games (uid, gameID) VALUE (%s, %s)", (user_id, gameID))
+            connection.commit()
+        
+        return jsonify({"message": "Game favorited successfully."}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 401
     
+@app.route("/removeGame", methods=['POST'])
+def removeGame():
+    try:
+        data = request.json
+        user_id = session['uid']
+        gameID = data.get("gameID")
+
+        sqlCursor = connection.cursor()
+
+        # Check if Game is  favorited by the User
+        sqlCursor.execute("SELECT uid, gameID FROM user_games WHERE uid = %s and gameID = %s", (user_id, gameID))
+        exists = sqlCursor.fetchone()
+
+        if exists:
+            sqlCursor.execute("DELETE FROM user_games where UID = %s and gameID = %s", (user_id, gameID))
+            connection.commit()
+        
+        return jsonify({"message": "Game favorited successfully."}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 402
+
+@app.route("/retrieveFavorited", methods=['GET', 'POST'])
+def retrieveFavorited():
+    try:
+        user_id = session['uid']
+
+        if not user_id:
+            return jsonify({"error": "User not authenticated"}), 401
+
+        sqlCursor = connection.cursor()
+
+        query = """
+            SELECT G.gameID, G.gameName, G.image 
+            FROM users_game UG
+            JOIN games G ON UG.gameID = G.gameID
+            where UG.UID = %s
+        """
+        sqlCursor.execute(query, (user_id))
+        result = sqlCursor.fetchall()
+
+        return jsonify(result)
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
