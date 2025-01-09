@@ -105,9 +105,9 @@ export const handleLoginVerification = async (idToken) => {
   try {
     const response = await api.post("/login", { idToken });
     if (response.status === 200) {
-      console.log("Login successful!", response.data);
+      console.log("Login successful!");
     } else {
-      console.error("Login failed:", response.data);
+      console.error("Login failed:");
     }
   } catch (error) {
     console.error("Login error:", error.response?.data || error.message);
