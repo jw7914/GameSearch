@@ -30,7 +30,8 @@ firebase_config = {
     "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL"),
     "universe_domain": os.getenv("FIREBASE_UNIVERSE_DOMAIN")
 }
-firebase_admin.initialize_app(cred)
+creds = credentials.Certificate(firebase_config)
+firebase_admin.initialize_app(creds)
 
 timeout = 10
 connection = pymysql.connect(

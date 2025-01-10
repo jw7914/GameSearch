@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-const RegisterPage = () => {
+function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -211,6 +211,6 @@ const RegisterPage = () => {
       </Card>
     </Container>
   );
-};
+}
 
 export default RegisterPage;

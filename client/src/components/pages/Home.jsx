@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useState, useEffect, useNavigate } from "react";
 import {
-  Container,
-  Typography,
   Card,
-  CardMedia,
   CardContent,
+  Typography,
+  CardMedia,
   Box,
+  Container,
   CircularProgress,
-  Alert,
-  Grid,
-  Stack,
 } from "@mui/material";
 import { getLatestGames } from "../../../api/api";
-import { useNavigate } from "react-router-dom";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 function Home() {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     getLatestGames(setLoading, setGames, setError);
@@ -42,56 +41,89 @@ function Home() {
     );
   }
 
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 4,
+    initialSlide: 0,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    cssEase: "linear",
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          infinite: true,
+          dots: true,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          initialSlide: 2,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
   return (
-    <Box
-      sx={{
-        padding: 4,
-        minHeight: "100vh",
-      }}
-    >
-      <Typography variant="h4" align="center" sx={{ marginBottom: "30px" }}>
+    <Box>
+      <Typography variant="h4" align="center" gutterBottom sx={{ mt: 3 }}>
         Latest Games
       </Typography>
-
-      {loading && <Typography>Loading...</Typography>}
-      {error && <Typography color="error">{error}</Typography>}
-      <Grid container spacing={3} justifyContent="center">
-        {games.map((game) => (
-          <Grid item key={game.id} xs={12} sm={6} md={3} lg={2.5}>
-            <Card
-              sx={{
-                backgroundColor: "white",
-                borderRadius: 2,
-                boxShadow: 4,
-                transition: "transform 0.3s",
-                "&:hover": { transform: "scale(1.05)" },
-                maxWidth: "100%",
-              }}
-              onClick={() => navigate(`/gameprofile/${game.id}`)}
-            >
-              <CardMedia
-                component="img"
-                height="280px"
-                width="100%"
-                image={game.cover}
-                alt={`${game.name} cover`}
-                sx={{
-                  objectFit: "cover",
+      <div
+        className="slider-container"
+        style={{
+          overflow: "hidden",
+          marginBottom: "2rem",
+          padding: "2rem 3rem",
+        }}
+      >
+        <Slider {...settings}>
+          {games.map((game) => (
+            <div key={game.id} className="px-4">
+              <div
+                className="card"
+                style={{
+                  transition: "transform 0.3s ease-in-out",
+                  transform: "scale(1)",
                 }}
-              />
-              <CardContent sx={{ textAlign: "center" }}>
-                <Typography
-                  variant="body2"
-                  fontWeight="bold"
-                  sx={{ marginTop: 1 }}
-                >
-                  {game.name}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.05)";
+                  e.currentTarget.style.cursor = "pointer";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
+              >
+                <img
+                  src={game.cover}
+                  alt={game.name}
+                  style={{ height: "300px", width: "100%" }}
+                />
+                <div className="card-body">
+                  <p className="card-text" style={{ textAlign: "center" }}>
+                    {game.name}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </Slider>
+      </div>
     </Box>
   );
 }

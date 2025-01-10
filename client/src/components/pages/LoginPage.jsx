@@ -32,7 +32,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import { handleLoginVerification } from "../../../api/api.jsx";
 
-const LoginPage = () => {
+function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -284,6 +284,6 @@ const LoginPage = () => {
       </Dialog>
     </Container>
   );
-};
+}
 
 export default LoginPage;
