@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect, useNavigate } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -11,6 +11,7 @@ import {
   Container,
   CircularProgress,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { getLatestGames } from "../../../api/api";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -20,6 +21,7 @@ function Home() {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getLatestGames(setLoading, setGames, setError);
@@ -96,7 +98,11 @@ function Home() {
       >
         <Slider {...settings}>
           {games.map((game) => (
-            <div key={game.id} className="px-4">
+            <div
+              key={game.id}
+              className="px-4"
+              onClick={() => navigate(`/gameprofile/${game.id}`)}
+            >
               <div
                 className="card"
                 style={{
