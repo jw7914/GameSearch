@@ -1,19 +1,8 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  Typography,
-  CardMedia,
-  Box,
-  Stack,
-  Alert,
-  Container,
-  CircularProgress,
-} from "@mui/material";
+import React, { useState, useEffect, useRef } from "react";
+import { Box, Typography, Stack, Alert, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { getLatestGames } from "../../../api/api";
 import Slider from "react-slick";
+import { getLatestGames } from "../../../api/api";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -21,37 +10,29 @@ function Home() {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const sliderRef = useRef(null);
   const navigate = useNavigate();
 
+  // Fetch latest games on component mount
   useEffect(() => {
-    getLatestGames(setLoading, setGames, setError);
+    const fetchGames = async () => {
+      try {
+        await getLatestGames(setLoading, setGames, setError);
+      } catch (err) {
+        setError(err.message || "Failed to fetch games.");
+        setLoading(false);
+      }
+    };
+    fetchGames();
   }, []);
 
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" my={4}>
-        <CircularProgress size={50} />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Stack sx={{ width: "100%" }} spacing={2}>
-        <Alert variant="filled" severity="error">
-          Error fetching latest games: {error}
-        </Alert>
-      </Stack>
-    );
-  }
-
-  const settings = {
+  // Slider settings
+  const sliderSettings = {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 4,
-    initialSlide: 0,
+    slidesToShow: 5,
+    slidesToScroll: 5,
     autoplay: true,
     autoplaySpeed: 5000,
     cssEase: "linear",
@@ -61,8 +42,6 @@ function Home() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 3,
-          infinite: true,
-          dots: true,
         },
       },
       {
@@ -70,7 +49,6 @@ function Home() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 2,
-          initialSlide: 2,
         },
       },
       {
@@ -78,43 +56,63 @@ function Home() {
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          dots: false,
         },
       },
     ],
   };
 
+  // Render loading state
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" my={4}>
+        <CircularProgress size={50} />
+      </Box>
+    );
+  }
+
+  // Render error state
+  if (error) {
+    return (
+      <Stack sx={{ width: "100%" }} spacing={2} my={4}>
+        <Alert variant="filled" severity="error">
+          Error fetching latest games: {error}
+        </Alert>
+      </Stack>
+    );
+  }
+
+  // Render the slider
   return (
     <Box>
       <Typography variant="h4" align="center" gutterBottom sx={{ mt: 3 }}>
         Latest Games
       </Typography>
-      <div
+      <Box
         className="slider-container"
-        style={{
+        sx={{
           overflow: "hidden",
-          marginBottom: "2rem",
-          padding: "2rem 3rem",
+          mb: 4,
+          px: { xs: 2, md: 4 },
+          py: 2,
         }}
       >
-        <Slider {...settings}>
+        <Slider ref={sliderRef} {...sliderSettings}>
           {games.map((game) => (
-            <div
+            <Box
               key={game.id}
-              className="px-4"
+              sx={{ px: 2, py: 2 }}
               onClick={() => navigate(`/gameprofile/${game.id}`)}
             >
-              <div
+              <Box
                 className="card"
-                style={{
+                sx={{
                   transition: "transform 0.3s ease-in-out",
                   transform: "scale(1)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "scale(1.05)";
-                  e.currentTarget.style.cursor = "pointer";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "scale(1)";
+                  "&:hover": {
+                    transform: "scale(1.05)",
+                    cursor: "pointer",
+                  },
                 }}
               >
                 <img
@@ -122,16 +120,18 @@ function Home() {
                   alt={game.name}
                   style={{ height: "300px", width: "100%" }}
                 />
-                <div className="card-body">
-                  <p className="card-text" style={{ textAlign: "center" }}>
-                    {game.name}
-                  </p>
-                </div>
-              </div>
-            </div>
+                <Typography
+                  variant="body2"
+                  align="center"
+                  sx={{ py: 2, fontWeight: "bold", fontSize: "1rem" }}
+                >
+                  {game.name}
+                </Typography>
+              </Box>
+            </Box>
           ))}
         </Slider>
-      </div>
+      </Box>
     </Box>
   );
 }
