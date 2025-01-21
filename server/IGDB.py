@@ -13,6 +13,7 @@ def fetch_gameid(headers, id):
         response.raise_for_status()
 
 def fetch_latest_games(headers, time):
+    time = int(time)
     body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, first_release_date, screenshots.url, total_rating, storyline, videos.video_id; limit 100; sort first_release_date desc; where first_release_date <= {time};'
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     
