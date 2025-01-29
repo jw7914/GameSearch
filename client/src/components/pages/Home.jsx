@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Typography, Stack, Alert, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Stack,
+  Alert,
+  CircularProgress,
+  Container,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import { getLatestGames, getPopularGames } from "../../../api/api";
@@ -10,90 +17,63 @@ function Home() {
   const [games, setGames] = useState([]);
   const [popularGames, setPopularGames] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [popularLoading, setPopularLoading] = useState(true);
   const [error, setError] = useState(null);
   const [popularError, setPopularError] = useState(null);
   const sliderRef = useRef(null);
   const navigate = useNavigate();
 
-  // Fetch latest games
   useEffect(() => {
-    const fetchGames = async () => {
+    const fetchData = async () => {
       try {
         await getLatestGames(setLoading, setGames, setError);
       } catch (err) {
         setError(err.message || "Failed to fetch latest games.");
         setLoading(false);
       }
-    };
-    fetchGames();
-  }, []);
-
-  // Fetch popular games
-  useEffect(() => {
-    const fetchPopularGames = async () => {
       try {
-        await getPopularGames(
-          setPopularLoading,
-          setPopularGames,
-          setPopularError
-        );
+        await getPopularGames(setLoading, setPopularGames, setPopularError);
       } catch (err) {
         setPopularError(err.message || "Failed to fetch popular games.");
-        setPopularLoading(false);
+        setLoading(false);
       }
     };
-    fetchPopularGames();
+    fetchData();
   }, []);
 
-  // Slider settings
   const sliderSettings = {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 5,
+    slidesToShow: 4,
+    slidesToScroll: 4,
     autoplay: true,
     autoplaySpeed: 5000,
     cssEase: "linear",
     pauseOnHover: true,
     responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-        },
-      },
+      { breakpoint: 1024, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+      { breakpoint: 600, settings: { slidesToShow: 2, slidesToScroll: 2 } },
       {
         breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          dots: false,
-        },
+        settings: { slidesToShow: 1, slidesToScroll: 1, dots: false },
       },
     ],
   };
 
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" my={4}>
+        <CircularProgress size={50} />
+      </Box>
+    );
+  }
+
   return (
-    <Box sx={{ marginY: "2rem" }}>
-      {/* Latest Games */}
+    <Container>
       <Typography variant="h4" align="center" gutterBottom sx={{ mt: 3 }}>
         Latest Games
       </Typography>
-      {loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" my={4}>
-          <CircularProgress size={50} />
-        </Box>
-      ) : error ? (
+      {error ? (
         <Stack sx={{ width: "100%" }} spacing={2} my={4}>
           <Alert variant="filled" severity="error">
             Error fetching latest games: {error}
@@ -106,20 +86,13 @@ function Home() {
         >
           <Slider ref={sliderRef} {...sliderSettings}>
             {games.map((game) => (
-              <Box
-                key={game.id}
-                sx={{ px: 2, py: 2 }}
-                onClick={() => navigate(`/gameprofile/${game.id}`)}
-              >
+              <Box key={game.id} sx={{ px: 2, py: 2 }}>
                 <Box
                   className="card"
                   sx={{
                     transition: "transform 0.3s ease-in-out",
                     transform: "scale(1)",
-                    "&:hover": {
-                      transform: "scale(1.05)",
-                      cursor: "pointer",
-                    },
+                    "&:hover": { transform: "scale(1.05)", cursor: "pointer" },
                   }}
                 >
                   <img
@@ -131,6 +104,7 @@ function Home() {
                     variant="body2"
                     align="center"
                     sx={{ py: 2, fontWeight: "bold", fontSize: "1rem" }}
+                    onClick={() => navigate(`/gameprofile/${game.id}`)}
                   >
                     {game.name}
                   </Typography>
@@ -141,15 +115,10 @@ function Home() {
         </Box>
       )}
 
-      {/* Popular Games */}
       <Typography variant="h4" align="center" gutterBottom sx={{ mt: 3 }}>
         Popular Games
       </Typography>
-      {popularLoading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" my={4}>
-          <CircularProgress size={50} />
-        </Box>
-      ) : popularError ? (
+      {popularError ? (
         <Stack sx={{ width: "100%" }} spacing={2} my={4}>
           <Alert variant="filled" severity="error">
             Error fetching popular games: {popularError}
@@ -172,10 +141,7 @@ function Home() {
                   sx={{
                     transition: "transform 0.3s ease-in-out",
                     transform: "scale(1)",
-                    "&:hover": {
-                      transform: "scale(1.05)",
-                      cursor: "pointer",
-                    },
+                    "&:hover": { transform: "scale(1.05)", cursor: "pointer" },
                   }}
                 >
                   <img
@@ -196,7 +162,7 @@ function Home() {
           </Slider>
         </Box>
       )}
-    </Box>
+    </Container>
   );
 }
 
