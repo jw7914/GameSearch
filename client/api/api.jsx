@@ -113,3 +113,18 @@ export const handleLoginVerification = async (idToken) => {
     console.error("Login error:", error.response?.data || error.message);
   }
 };
+
+export const getPopularGames = async (setLoading, setGames, setError) => {
+  try {
+    setError("");
+    setLoading(true);
+    const response = await api.get("/popular");
+    const data = response.data;
+    setGames(data);
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching popular games:", error);
+    setError("Failed to load popular games");
+    setLoading(false);
+  }
+};

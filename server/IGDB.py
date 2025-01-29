@@ -22,15 +22,6 @@ def fetch_latest_games(headers, time):
     else:
         response.raise_for_status()
 
-def fetch_popular_games(headers):
-    body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; sort total_rating desc;'
-    response = requests.post(f'{base_url}/games', headers=headers, data=body)
-    
-    if response.status_code == 200:
-        return response.json()
-    else:
-        response.raise_for_status()
-
 def fetch_searched_games(headers, search_term):
     body = f'fields id, name, cover.url, summary, rating_count, first_release_date, parent_game.name, genres.name, screenshots.url, total_rating, storyline, videos.video_id; limit 500; search "{search_term}";'
     
@@ -127,3 +118,37 @@ def fetch_genres(headers):
     except Exception as error:
         print(f"Error fetching genres: {error}")
         return []
+
+def fetch_popular_games(headers):
+    popular_body = "fields game_id, value, popularity_type; sort value desc; limit 20; where popularity_type = 2;"
+    popular_games = []
+    try:
+        popular_response = requests.post(f"{base_url}/popularity_primitives", headers=headers, data=popular_body)
+        popular_response.raise_for_status()  # Raise an exception for HTTP errors
+        popular = popular_response.json()
+        for x in popular:
+            game_id = x["game_id"]
+            popular_games.append(game_id)   
+    except requests.exceptions.HTTPError as error:
+        print(f"HTTP error: {error}")
+        return []
+    except Exception as error:
+        print(f"Error fetching games: {error}")
+        return []
+    
+    games_to_fetch = "(" + ", ".join(map(str, popular_games)) + ")"
+    body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, first_release_date, screenshots.url, total_rating, storyline, videos.video_id; where id = {games_to_fetch}; limit 20;'
+
+    try:
+        response = requests.post(f'{base_url}/games', headers=headers, data=body)
+        response.raise_for_status()  
+        return response.json()
+    except requests.exceptions.HTTPError as error:
+        print(f"HTTP error: {error}")
+        return []
+
+
+        
+    
+    
+
