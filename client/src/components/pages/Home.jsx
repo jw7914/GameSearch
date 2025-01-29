@@ -36,6 +36,7 @@ function Home() {
     autoplay: true,
     autoplaySpeed: 5000,
     cssEase: "linear",
+    pauseOnHover: true,
     responsive: [
       {
         breakpoint: 1024,
@@ -84,7 +85,7 @@ function Home() {
 
   // Render the slider
   return (
-    <Box>
+    <Box sx={{ marginY: "2rem" }}>
       <Typography variant="h4" align="center" gutterBottom sx={{ mt: 3 }}>
         Latest Games
       </Typography>
