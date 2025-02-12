@@ -127,7 +127,6 @@ def login():
             return jsonify({"error": "Invalid token"}), 401
         
         user_id = decoded_token['uid']
-        session['uid'] = user_id
 
         # Reference Firestore collection
         user_ref = db.collection("users").document(user_id)
@@ -150,30 +149,45 @@ def login():
 @app.route("/addGame", methods=['POST'])
 def addGame():
     try:
-        if 'uid' not in session:
-            return jsonify({"error": "User not authenticated"}), 401
-
         data = request.json
-        user_id = session['uid']
+        token = data.get("idToken")
         gameID = data.get("gameID")
         gameName = data.get("gameName")
-        image = data.get("image")
+        gameCover = data.get("gameCover")
 
-        sqlCursor = connection.cursor()
+        try:
+            decoded_token = auth.verify_id_token(token)
+        except exceptions.FirebaseError as e:
+            return jsonify({"error": "Invalid token"}), 401
 
-        # Check if Game is already favorited by the User
-        sqlCursor.execute("SELECT uid, gameID FROM user_games WHERE uid = %s and gameID = %s", (user_id, gameID))
-        exists = sqlCursor.fetchone()
+        user_id = decoded_token['uid']
 
-        if not exists:
-            sqlCursor.execute("INSERT INTO user_games (uid, gameID, gameName, image) VALUES (%s, %s, %s, %s)", (user_id, gameID, gameName, image))
-            connection.commit()
-        
+        # Reference Firestore collection
+        user_ref = db.collection("users").document(user_id)
+        user_doc = user_ref.get()
+
+        if not user_doc.exists:
+            return jsonify({"error": "User not found"}), 404
+
+        user_data = user_doc.to_dict()
+        user_games = user_data.get("games", [])
+
+        # Add the new game to the user's games list
+        new_game = {
+            "gameID": gameID,
+            "gameName": gameName,
+            "gameCover": gameCover,
+        }
+        user_games.append(new_game)
+
+        # Update the user's Firestore document with the new game list
+        user_ref.update({"games": user_games})
+
         return jsonify({"message": "Game added to favorites successfully."}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-        
+
     
 @app.route("/removeGame", methods=['POST'])
 def removeGame():
