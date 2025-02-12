@@ -9,8 +9,7 @@ import urllib.parse
 import datetime
 from IGDB import *
 import firebase_admin
-from firebase_admin import credentials, auth
-
+from firebase_admin import credentials, auth, firestore, exceptions
 
 load_dotenv()
 
@@ -32,6 +31,8 @@ firebase_config = {
 }
 creds = credentials.Certificate(firebase_config)
 firebase_admin.initialize_app(creds)
+db = firestore.client()
+
 
 timeout = 10
 connection = pymysql.connect(
@@ -109,59 +110,70 @@ def get_game_id(id):
         return jsonify(games_data)
     except requests.exceptions.HTTPError as err:
         return jsonify({"error": str(err)}), 500
-    
+
+# Initalizes connection to firestore and verifies user for future actions
 @app.route("/login", methods=['POST'])
 def login():
     try:
         data = request.json
         token = data.get("idToken")
-        decoded_token = auth.verify_id_token(token)
+        if not token:
+            return jsonify({"error": "ID token is missing"}), 400
+
+        # Verify ID Token
+        try:
+            decoded_token = auth.verify_id_token(token)
+        except exceptions.FirebaseError as e:
+            return jsonify({"error": "Invalid token"}), 401
+        
         user_id = decoded_token['uid']
         session['uid'] = user_id
-        sqlCursor = connection.cursor()
-        # Check if the user already exists in the database
-        sqlCursor.execute("SELECT uid FROM users WHERE uid = %s", (user_id,))
-        user = sqlCursor.fetchone()
-        
-        if not user:
-            sqlCursor.execute("INSERT INTO users (uid, displayName) VALUES (%s, %s)", (user_id, decoded_token['name']))
-            connection.commit()
-            
+
+        # Reference Firestore collection
+        user_ref = db.collection("users").document(user_id)
+        user_doc = user_ref.get()
+
+        if not user_doc.exists:
+            user_ref.set({
+                "uid": user_id,
+                "games": [],
+            })
+
         return jsonify({"message": "Login successful", "user_id": user_id}), 200
-    except Exception as e:
+
+    except exceptions.FirebaseError as e:
         return jsonify({"error": str(e)}), 401
-    
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/addGame", methods=['POST'])
 def addGame():
     try:
+        if 'uid' not in session:
+            return jsonify({"error": "User not authenticated"}), 401
+
         data = request.json
         user_id = session['uid']
         gameID = data.get("gameID")
-        gameName = data.get("name")
-        image = data.get("img")
+        gameName = data.get("gameName")
+        image = data.get("image")
 
         sqlCursor = connection.cursor()
-
-        # Check if Game is already in the db
-        sqlCursor.execute("SELECT gameID FROM games WHERE gameID = %s", (gameID,))
-        game = sqlCursor.fetchone()
-
-        if not game:
-            sqlCursor.execute("INSERT INTO games (gameID, gameName, image) VALUES (%s, %s, %s)", (gameID, gameName, image))
-            connection.commit()
 
         # Check if Game is already favorited by the User
         sqlCursor.execute("SELECT uid, gameID FROM user_games WHERE uid = %s and gameID = %s", (user_id, gameID))
         exists = sqlCursor.fetchone()
 
         if not exists:
-            sqlCursor.execute("INSERT INTO user_games (uid, gameID) VALUE (%s, %s)", (user_id, gameID))
+            sqlCursor.execute("INSERT INTO user_games (uid, gameID, gameName, image) VALUES (%s, %s, %s, %s)", (user_id, gameID, gameName, image))
             connection.commit()
         
-        return jsonify({"message": "Game favorited successfully."}), 200
+        return jsonify({"message": "Game added to favorites successfully."}), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 401
+        return jsonify({"error": str(e)}), 500
+        
     
 @app.route("/removeGame", methods=['POST'])
 def removeGame():
