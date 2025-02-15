@@ -91,7 +91,7 @@ function GameProfile() {
 
   return (
     <Container>
-      <Typography variant="h4" align="center" mt={4} gutterBottom>
+      <Typography variant="h2" align="left" mt={4} gutterBottom>
         {gameData.name}
       </Typography>
       <InfoPanel>
@@ -100,7 +100,7 @@ function GameProfile() {
             <CoverImage src={gameData.cover} alt="Game Cover" />
           </Box>
 
-          <Box flexGrow={1}>
+          <Box flexGrow={2}>
             <Typography variant="h6" gutterBottom>
               Game Summary
             </Typography>

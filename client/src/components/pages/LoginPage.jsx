@@ -159,6 +159,14 @@ function LoginPage() {
       }}
     >
       <Card sx={{ width: "100%", padding: 2 }}>
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{ marginBottom: "1.5rem", fontWeight: "bold" }}
+        >
+          Login
+        </Typography>
         <Box
           sx={{
             display: "flex",

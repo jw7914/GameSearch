@@ -1,4 +1,3 @@
-// SearchResults Component
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -23,6 +22,10 @@ import {
   DialogTitle,
   Grid,
   Typography,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 
 // Custom hook to get query parameters (page, query, genre)
@@ -34,12 +37,11 @@ function SearchResults({ type }) {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [pageError, setPageError] = useState(false);
   const query = useQuery();
   const navigate = useNavigate();
   const currentPage = parseInt(query.get("page") || "1");
   const [page, setPage] = useState(currentPage);
-  const gamesPerPage = 16;
+  const [gamesPerPage, setGamesPerPage] = useState(24); // Added state for games per page
   const totalPages = Math.ceil(games.length / gamesPerPage);
   const indexOfLastGame = page * gamesPerPage;
   const indexOfFirstGame = indexOfLastGame - gamesPerPage;
@@ -92,11 +94,11 @@ function SearchResults({ type }) {
   // Check if page is out of bounds
   useEffect(() => {
     if (currentPage > totalPages && !loading && totalPages !== 0) {
-      setPageError(true);
-    } else {
-      setPageError(false);
+      const params = new URLSearchParams(query);
+      params.set("page", 1); // Set the page to 1
+      navigate(`?${params.toString()}`);
     }
-  }, [currentPage, totalPages, loading]);
+  }, [currentPage, totalPages, loading, query, navigate]);
 
   // Update page state when query changes
   useEffect(() => {
@@ -104,7 +106,14 @@ function SearchResults({ type }) {
     setInputPage("");
   }, [currentPage, location.search]);
 
-  if (pageError || error) {
+  // Handle changes in the number of games per page
+  const handleGamesPerPageChange = (event) => {
+    const newGamesPerPage = event.target.value;
+    setGamesPerPage(newGamesPerPage);
+    setPage(1); // Reset to the first page
+  };
+
+  if (error) {
     return (
       <Container sx={{ marginTop: "2rem", marginBottom: "5rem" }}>
         <h2
@@ -116,13 +125,6 @@ function SearchResults({ type }) {
         >
           Search Results for: {queryTerm}
         </h2>
-        {pageError && (
-          <Stack sx={{ width: "100%" }} spacing={2}>
-            <Alert variant="filled" severity="error">
-              Page not found.
-            </Alert>
-          </Stack>
-        )}
         {error && (
           <Stack sx={{ width: "100%", marginTop: "2rem" }} spacing={2}>
             <Alert variant="filled" severity="error">
@@ -136,16 +138,40 @@ function SearchResults({ type }) {
 
   return (
     <Container sx={{ marginTop: "2rem", marginBottom: "5rem" }}>
-      <Typography variant="h4" align="center" sx={{ marginBottom: "30px" }}>
-        Search Results for: {queryTerm}
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "30px",
+        }}
+      >
+        <Typography variant="h4">Search Results for: {queryTerm}</Typography>
+        <FormControl sx={{ minWidth: 120 }}>
+          <InputLabel id="games-per-page-label">Cards per Page</InputLabel>
+          <Select
+            labelId="games-per-page-label"
+            value={gamesPerPage}
+            label="Cards per Page"
+            onChange={handleGamesPerPageChange}
+          >
+            <MenuItem value={12}>12</MenuItem>
+            <MenuItem value={24}>24</MenuItem>
+            <MenuItem value={36}>36</MenuItem>
+            <MenuItem value={48}>48</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+
       {loading && (
         <Box display="flex" justifyContent="center" alignItems="center" my={4}>
           <CircularProgress size={50} />
         </Box>
       )}
+
       {!loading && games.length > 0 && (
         <>
+          {/* Grid for displaying the games */}
           <Grid container spacing={3}>
             {currentGames.map((game, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
@@ -160,6 +186,8 @@ function SearchResults({ type }) {
               </Grid>
             ))}
           </Grid>
+
+          {/* Pagination */}
           <Box display="flex" justifyContent="center" my={4}>
             <Pagination
               siblingCount={0}
@@ -176,6 +204,8 @@ function SearchResults({ type }) {
               )}
             />
           </Box>
+
+          {/* Page input field */}
           <Box
             display="flex"
             justifyContent="center"
@@ -243,6 +273,8 @@ function SearchResults({ type }) {
           </Alert>
         </Stack>
       )}
+
+      {/* Error Modal */}
       <Dialog
         open={openModal}
         onClose={handleCloseModal}
@@ -274,9 +306,9 @@ function SearchResults({ type }) {
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center" }}>
           <Button
-            onClick={handleCloseModal}
-            color="primary"
             variant="contained"
+            sx={{ backgroundColor: "#3f51b5", color: "#fff" }}
+            onClick={handleCloseModal}
           >
             Close
           </Button>
