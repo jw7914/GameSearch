@@ -16,7 +16,9 @@ function FavoriteButton({ gameID, gameName, cover }) {
   const { isLoggedIn, user } = getFirebaseUser();
   const navigate = useNavigate();
 
-  const editFavoriteStatus = () => {
+  // Edit favorite status
+  const editFavoriteStatus = (e) => {
+    e.stopPropagation(); // Prevents the event from propagating to the parent CardActionArea
     if (isLoggedIn && user) {
       if (!liked) {
         setLiked(true);
@@ -51,10 +53,10 @@ function FavoriteButton({ gameID, gameName, cover }) {
 
   return (
     <IconButton
-      onClick={() => editFavoriteStatus()}
+      onClick={(e) => editFavoriteStatus(e)} // Pass the event object to stop propagation
       sx={{
         "&:hover": {
-          backgroundColor: "white",
+          backgroundColor: "#D3D3D3", // Light grey color on hover
         },
         backgroundColor: "white",
         borderRadius: "50%",

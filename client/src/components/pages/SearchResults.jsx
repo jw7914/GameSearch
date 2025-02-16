@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { handleGameSearch } from "../../../api/api";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Container } from "@mui/material";
+import { Container, Chip } from "@mui/material";
 import Alert from "@mui/material/Alert";
-import GamesCard from "../GamesCard";
+import GamesCard from "../GameCard/GamesCard";
 import PaginationItem from "@mui/material/PaginationItem";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import {
@@ -93,7 +93,11 @@ function SearchResults({ type }) {
 
   // Check if page is out of bounds
   useEffect(() => {
-    if (currentPage > totalPages && !loading && totalPages !== 0) {
+    if (
+      (currentPage > totalPages || currentPage < 0) &&
+      !loading &&
+      totalPages !== 0
+    ) {
       const params = new URLSearchParams(query);
       params.set("page", 1); // Set the page to 1
       navigate(`?${params.toString()}`);
@@ -123,7 +127,7 @@ function SearchResults({ type }) {
             marginBottom: "30px",
           }}
         >
-          Search Results for: {queryTerm}
+          Results for: {queryTerm}
         </h2>
         {error && (
           <Stack sx={{ width: "100%", marginTop: "2rem" }} spacing={2}>
@@ -144,10 +148,44 @@ function SearchResults({ type }) {
           justifyContent: "space-between",
           alignItems: "center",
           marginBottom: "30px",
+          width: "100%",
+          flexDirection: { xs: "column", sm: "row" }, // Change layout on smaller screens
         }}
       >
-        <Typography variant="h4">Search Results for: {queryTerm}</Typography>
-        <FormControl sx={{ minWidth: 120 }}>
+        <Chip
+          label={
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: "bold",
+                color: "white",
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+              }}
+            >
+              Results for: {queryTerm}
+            </Typography>
+          }
+          sx={{
+            bgcolor: "black",
+            color: "white",
+            borderRadius: "30px",
+            px: 4,
+            py: 2,
+            height: "auto",
+            width: "fit-content",
+            boxShadow: "0px 4px 10px rgba(0,0,0,0.3)",
+            maxWidth: "75%",
+          }}
+        />
+
+        <FormControl
+          sx={{
+            minWidth: 120,
+            marginTop: { xs: "1rem", sm: 0 },
+            maxWidth: "25%",
+          }}
+        >
           <InputLabel id="games-per-page-label">Cards per Page</InputLabel>
           <Select
             labelId="games-per-page-label"
@@ -174,7 +212,15 @@ function SearchResults({ type }) {
           {/* Grid for displaying the games */}
           <Grid container spacing={3}>
             {currentGames.map((game, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={3}
+                key={index}
+                sx={{ paddingLeft: 1, paddingRight: 1 }}
+              >
+                {" "}
                 <GamesCard
                   gameName={game.name}
                   cover={game.cover}
