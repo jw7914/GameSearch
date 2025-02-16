@@ -151,13 +151,12 @@ def login():
 def addGame():
     try:
         data = request.json
-        print(data)
         gameID = data.get("gameID")
         gameName = data.get("gameName")
         gameCover = data.get("cover")
         token = data.get("idToken")
 
-        imageURL = "gameCover[0]"
+        imageURL = gameCover[0]
 
         try:
             decoded_token = auth.verify_id_token(token)
@@ -178,9 +177,9 @@ def addGame():
 
         # Add the new game to the user's games list
         new_game = {
-            "gameID": "test",
-            "gameName": "test",
-            "gameCover" : "Test",
+            "gameID": gameID,
+            "gameName": gameName,
+            "gameCover" : imageURL,
         }
         user_games.append(new_game)
 
