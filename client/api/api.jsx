@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const isLocal = window.location.hostname === "localhost";
+const isLocal =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1";
 
 export const api = axios.create({
   baseURL: isLocal
@@ -138,12 +140,40 @@ export const addFavoriteGame = async ({ user, gameID, gameName, cover }) => {
       gameName,
       cover,
     });
-    console.log(response);
     if (response.status === 200) {
       console.log("Game Favorited successful!");
     } else {
       console.error("Game Favorited failed");
     }
+  } catch (error) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
+
+export const removeFavoriteGame = async ({ user, gameID }) => {
+  try {
+    const idToken = await user.getIdToken();
+    const response = await axios.post("/removeGame", {
+      idToken,
+      gameID,
+    });
+    if (response.status === 200) {
+      console.log("Game Removed successful!");
+    } else {
+      console.error("Game Removed failed");
+    }
+  } catch (error) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};
+
+export const retrieveFavorites = async ({ user, setFavorite }) => {
+  try {
+    const idToken = await user.getIdToken();
+    const response = await axios.post("/retrieveFavorite", {
+      idToken,
+    });
+    setFavorite(response.data);
   } catch (error) {
     console.error("Error:", error.response?.data || error.message);
   }

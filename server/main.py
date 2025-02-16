@@ -126,7 +126,6 @@ def login():
         except exceptions.FirebaseError as e:
             return jsonify({"error": "Invalid token"}), 401
         
-        session["token"] = token
         user_id = decoded_token['uid']
 
         # Reference Firestore collection
@@ -191,50 +190,72 @@ def addGame():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-    
+
+
 @app.route("/removeGame", methods=['POST'])
 def removeGame():
     try:
         data = request.json
-        user_id = session['uid']
         gameID = data.get("gameID")
+        token = data.get("idToken")
 
-        sqlCursor = connection.cursor()
+        try:
+            decoded_token = auth.verify_id_token(token)
+        except exceptions.FirebaseError as e:
+            return jsonify({"error": "Invalid token"}), 401
 
-        # Check if Game is  favorited by the User
-        sqlCursor.execute("SELECT uid, gameID FROM user_games WHERE uid = %s and gameID = %s", (user_id, gameID))
-        exists = sqlCursor.fetchone()
+        user_id = decoded_token['uid']
+        print(user_id)
 
-        if exists:
-            sqlCursor.execute("DELETE FROM user_games where UID = %s and gameID = %s", (user_id, gameID))
-            connection.commit()
-        
-        return jsonify({"message": "Game favorited successfully."}), 200
+        # Reference Firestore collection
+        user_ref = db.collection("users").document(user_id)
+        user_doc = user_ref.get()
+
+        if not user_doc.exists:
+            return jsonify({"error": "User not found"}), 404
+
+        # Get current game list
+        user_data = user_doc.to_dict()
+        games = user_data.get("games", [])
+
+        # Remove the game by filtering out the gameID
+        updated_games = [game for game in games if game.get("gameID") != gameID]
+
+        # Update Firestore with the modified array
+        user_ref.update({"games": updated_games})
+
+        return jsonify({"message": "Game removed from favorites successfully."}), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 402
+        return jsonify({"error": str(e)}), 500
 
-@app.route("/retrieveFavorited", methods=['GET', 'POST'])
+
+@app.route("/retrieveFavorite", methods=['POST'])
 def retrieveFavorited():
     try:
-        user_id = session['uid']
+        data = request.json
+        token = data.get("idToken")
 
-        if not user_id:
-            return jsonify({"error": "User not authenticated"}), 401
+        try:
+            decoded_token = auth.verify_id_token(token)
+        except exceptions.FirebaseError as e:
+            return jsonify({"error": "Invalid token"}), 401
 
-        sqlCursor = connection.cursor()
+        user_id = decoded_token['uid']
 
-        query = """
-            SELECT G.gameID, G.gameName, G.image 
-            FROM users_game UG
-            JOIN games G ON UG.gameID = G.gameID
-            where UG.UID = %s
-        """
-        sqlCursor.execute(query, (user_id))
-        result = sqlCursor.fetchall()
+        # Reference Firestore collection
+        user_ref = db.collection("users").document(user_id)
+        user_doc = user_ref.get()
 
-        return jsonify(result)
-    
+        if not user_doc.exists:
+            return jsonify({"error": "User not found"}), 404
+
+        # Get current game list
+        user_data = user_doc.to_dict()
+        games = user_data.get("games", [])
+
+        return jsonify(games)
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

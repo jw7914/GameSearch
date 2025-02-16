@@ -2,12 +2,17 @@ import { React, useState } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import IconButton from "@mui/material/IconButton";
-import { addFavoriteGame } from "../../../api/api";
+import {
+  addFavoriteGame,
+  removeFavoriteGame,
+  retrieveFavorites,
+} from "../../../api/api";
 import { getFirebaseUser } from "../../../firebase/firebaseUtility";
 import { useNavigate } from "react-router-dom";
 
 function FavoriteButton({ gameID, gameName, cover }) {
   const [liked, setLiked] = useState(false);
+  const [favoriteGame, setFavorite] = useState([]);
   const { isLoggedIn, user } = getFirebaseUser();
 
   const navigate = useNavigate();
@@ -16,14 +21,18 @@ function FavoriteButton({ gameID, gameName, cover }) {
       if (!liked) {
         setLiked(true);
         addFavoriteGame({ user, gameID, gameName, cover });
-        console.log("successful");
       } else {
         setLiked(false);
+        removeFavoriteGame({ user, gameID });
       }
     } else {
       navigate("/login");
     }
   };
+
+  useEffect(() => {
+    retrieveFavorites({ user });
+  }, [liked]);
 
   return (
     <IconButton
