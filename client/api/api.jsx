@@ -128,3 +128,23 @@ export const getPopularGames = async (setLoading, setGames, setError) => {
     setLoading(false);
   }
 };
+
+export const addFavoriteGame = async ({ user, gameID, gameName, cover }) => {
+  try {
+    const idToken = await user.getIdToken();
+    const response = await api.post("/addGame", {
+      idToken,
+      gameID,
+      gameName,
+      cover,
+    });
+    console.log(response);
+    if (response.status === 200) {
+      console.log("Game Favorited successful!");
+    } else {
+      console.error("Game Favorited failed");
+    }
+  } catch (error) {
+    console.error("Error:", error.response?.data || error.message);
+  }
+};

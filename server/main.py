@@ -126,6 +126,7 @@ def login():
         except exceptions.FirebaseError as e:
             return jsonify({"error": "Invalid token"}), 401
         
+        session["token"] = token
         user_id = decoded_token['uid']
 
         # Reference Firestore collection
@@ -150,10 +151,13 @@ def login():
 def addGame():
     try:
         data = request.json
-        token = data.get("idToken")
+        print(data)
         gameID = data.get("gameID")
         gameName = data.get("gameName")
-        gameCover = data.get("gameCover")
+        gameCover = data.get("cover")
+        token = data.get("idToken")
+
+        imageURL = "gameCover[0]"
 
         try:
             decoded_token = auth.verify_id_token(token)
@@ -174,9 +178,9 @@ def addGame():
 
         # Add the new game to the user's games list
         new_game = {
-            "gameID": gameID,
-            "gameName": gameName,
-            "gameCover": gameCover,
+            "gameID": "test",
+            "gameName": "test",
+            "gameCover" : "Test",
         }
         user_games.append(new_game)
 
