@@ -15,7 +15,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
-cors = CORS(app, origins=["http://localhost:5173", "https://gamesearching.vercel.app/"])
+cors = CORS(app, origins=["http://localhost:5173", "https://gamesearching.vercel.app"])
 firebase_config = {
     "type": os.getenv("FIREBASE_TYPE"),
     "project_id": os.getenv("FIREBASE_PROJECT_ID"),
