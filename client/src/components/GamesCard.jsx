@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -6,16 +6,17 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 
 const cardStyle = {
   maxWidth: 300,
   borderRadius: "8px",
-  overflow: "hidden",
+  overflow: "visible", // Allow overflow for the summary box to be visible
   color: "white",
   position: "relative",
+  transition: "all 0.3s ease", // Smooth transition for hover effect
 };
 
 const style = {
@@ -30,8 +31,38 @@ const style = {
   p: 2,
 };
 
-function GamesCard({ gameName, cover, cardID }) {
-  const [openShareModal, setOpenShareModal] = React.useState(false);
+// Blurb appearance
+const summaryStyle = {
+  position: "absolute",
+  top: "100%",
+  left: "0%",
+  transform: "translateX(-50%) translateY(20px)",
+  backgroundColor: "rgba(0, 0, 0, 0.9)",
+  color: "white",
+  padding: "10px 15px",
+  borderRadius: "4px",
+  width: "100%",
+  opacity: 0,
+  pointerEvents: "none",
+  zIndex: 1, // Ensure it's above the card content
+  transition: "transform 0.3s ease, opacity 0.3s ease",
+  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.75)",
+};
+
+const imageStyle = {
+  height: 160,
+  objectFit: "cover",
+  backgroundPosition: "center",
+  position: "relative",
+  "&:hover + .summaryBox": {
+    opacity: 1,
+    transform: "translateY(0)",
+  },
+};
+
+function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
+  const navigate = useNavigate();
+  const [openShareModal, setOpenShareModal] = useState(false);
 
   const handleShareOpen = () => {
     setOpenShareModal(true);
@@ -43,18 +74,20 @@ function GamesCard({ gameName, cover, cardID }) {
   const handleShareClose = () => setOpenShareModal(false);
 
   return (
-    <Card sx={cardStyle}>
+    <Card
+      sx={cardStyle}
+      onClick={() => {
+        navigate(`/gameprofile/${cardID}`);
+      }}
+    >
       <CardActionArea disableRipple>
         <Box sx={{ position: "relative" }}>
-          <CardMedia
-            sx={{
-              height: 160,
-              objectFit: "cover",
-              backgroundPosition: "center",
-            }}
-            image={cover}
-            title={gameName}
-          />
+          <CardMedia sx={imageStyle} image={cover} title={gameName} />
+
+          {/* Summary Box with additional info */}
+          <Box sx={summaryStyle} className="summaryBox">
+            <Typography variant="body2">{summary}</Typography>
+          </Box>
         </Box>
 
         <CardContent>

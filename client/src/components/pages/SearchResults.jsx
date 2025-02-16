@@ -93,7 +93,11 @@ function SearchResults({ type }) {
 
   // Check if page is out of bounds
   useEffect(() => {
-    if (currentPage > totalPages && !loading && totalPages !== 0) {
+    if (
+      (currentPage > totalPages || currentPage < 0) &&
+      !loading &&
+      totalPages !== 0
+    ) {
       const params = new URLSearchParams(query);
       params.set("page", 1); // Set the page to 1
       navigate(`?${params.toString()}`);
