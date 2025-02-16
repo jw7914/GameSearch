@@ -30,9 +30,9 @@ function FavoriteButton({ gameID, gameName, cover }) {
     }
   };
 
-  useEffect(() => {
-    retrieveFavorites({ user });
-  }, [liked]);
+  // useEffect(() => {
+  //   retrieveFavorites({ user });
+  // }, [liked]);
 
   return (
     <IconButton

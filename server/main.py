@@ -196,6 +196,7 @@ def addGame():
 def removeGame():
     try:
         data = request.json
+        print(data)
         gameID = data.get("gameID")
         token = data.get("idToken")
 

@@ -135,10 +135,10 @@ export const addFavoriteGame = async ({ user, gameID, gameName, cover }) => {
   try {
     const idToken = await user.getIdToken();
     const response = await api.post("/addGame", {
-      idToken,
-      gameID,
-      gameName,
-      cover,
+      idToken: idToken,
+      gameID: gameID,
+      gameName: gameName,
+      cover: cover,
     });
     if (response.status === 200) {
       console.log("Game Favorited successful!");
@@ -153,9 +153,9 @@ export const addFavoriteGame = async ({ user, gameID, gameName, cover }) => {
 export const removeFavoriteGame = async ({ user, gameID }) => {
   try {
     const idToken = await user.getIdToken();
-    const response = await axios.post("/removeGame", {
-      idToken,
-      gameID,
+    const response = await api.post("/removeGame", {
+      idToken: idToken,
+      gameID: gameID,
     });
     if (response.status === 200) {
       console.log("Game Removed successful!");
