@@ -167,13 +167,13 @@ export const removeFavoriteGame = async ({ user, gameID }) => {
   }
 };
 
-export const retrieveFavorites = async ({ user, setFavorite }) => {
+export const retrieveFavorites = async ({ user, setFavoriteGames }) => {
   try {
     const idToken = await user.getIdToken();
-    const response = await axios.post("/retrieveFavorite", {
+    const response = await api.post("/retrieveFavorite", {
       idToken,
     });
-    setFavorite(response.data);
+    setFavoriteGames(response.data);
   } catch (error) {
     console.error("Error:", error.response?.data || error.message);
   }

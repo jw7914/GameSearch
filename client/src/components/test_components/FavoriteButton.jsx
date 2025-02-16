@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import IconButton from "@mui/material/IconButton";
@@ -12,12 +12,12 @@ import { useNavigate } from "react-router-dom";
 
 function FavoriteButton({ gameID, gameName, cover }) {
   const [liked, setLiked] = useState(false);
-  const [favoriteGame, setFavorite] = useState([]);
+  const [favoriteGames, setFavoriteGames] = useState({});
   const { isLoggedIn, user } = getFirebaseUser();
-
   const navigate = useNavigate();
+
   const editFavoriteStatus = () => {
-    if (isLoggedIn) {
+    if (isLoggedIn && user) {
       if (!liked) {
         setLiked(true);
         addFavoriteGame({ user, gameID, gameName, cover });
@@ -30,9 +30,24 @@ function FavoriteButton({ gameID, gameName, cover }) {
     }
   };
 
-  // useEffect(() => {
-  //   retrieveFavorites({ user });
-  // }, [liked]);
+  // Fetch favorite games when user is available
+  useEffect(() => {
+    if (user) {
+      const fetchFavorites = async () => {
+        await retrieveFavorites({ user, setFavoriteGames });
+      };
+      fetchFavorites();
+    }
+  }, [user]);
+
+  // Check if the current game is in the favorites list
+  useEffect(() => {
+    if (favoriteGames && favoriteGames[String(gameID)] !== undefined) {
+      setLiked(true);
+    } else {
+      setLiked(false);
+    }
+  }, [favoriteGames, gameID]);
 
   return (
     <IconButton

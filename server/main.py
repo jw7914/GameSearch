@@ -135,7 +135,7 @@ def login():
         if not user_doc.exists:
             user_ref.set({
                 "uid": user_id,
-                "games": [],
+                "games": {},
             })
 
         return jsonify({"message": "Login successful", "user_id": user_id}), 200
@@ -157,12 +157,16 @@ def addGame():
 
         imageURL = gameCover[0]
 
+        # Verify the token
         try:
             decoded_token = auth.verify_id_token(token)
         except exceptions.FirebaseError as e:
             return jsonify({"error": "Invalid token"}), 401
 
-        user_id = decoded_token['uid']
+        user_id = decoded_token.get('uid')
+
+        if not user_id:
+            return jsonify({"error": "Invalid token, UID not found"}), 401
 
         # Reference Firestore collection
         user_ref = db.collection("users").document(user_id)
@@ -172,15 +176,12 @@ def addGame():
             return jsonify({"error": "User not found"}), 404
 
         user_data = user_doc.to_dict()
-        user_games = user_data.get("games", [])
+
+        # Initialize user_games if it doesn't exist
+        user_games = user_data.get("games", {})
 
         # Add the new game to the user's games list
-        new_game = {
-            "gameID": gameID,
-            "gameName": gameName,
-            "gameCover" : imageURL,
-        }
-        user_games.append(new_game)
+        user_games[str(gameID)] = {"gameName": gameName, "gameCover": imageURL}
 
         # Update the user's Firestore document with the new game list
         user_ref.update({"games": user_games})
@@ -191,12 +192,10 @@ def addGame():
         return jsonify({"error": str(e)}), 500
 
 
-
 @app.route("/removeGame", methods=['POST'])
 def removeGame():
     try:
         data = request.json
-        print(data)
         gameID = data.get("gameID")
         token = data.get("idToken")
 
@@ -206,7 +205,6 @@ def removeGame():
             return jsonify({"error": "Invalid token"}), 401
 
         user_id = decoded_token['uid']
-        print(user_id)
 
         # Reference Firestore collection
         user_ref = db.collection("users").document(user_id)
@@ -217,13 +215,14 @@ def removeGame():
 
         # Get current game list
         user_data = user_doc.to_dict()
-        games = user_data.get("games", [])
+        games = user_data.get("games", {})
 
-        # Remove the game by filtering out the gameID
-        updated_games = [game for game in games if game.get("gameID") != gameID]
+        # Remove the game 
+        if str(gameID) in games:
+            del games[str(gameID)]
 
         # Update Firestore with the modified array
-        user_ref.update({"games": updated_games})
+        user_ref.update({"games": games})
 
         return jsonify({"message": "Game removed from favorites successfully."}), 200
 
@@ -253,7 +252,7 @@ def retrieveFavorited():
 
         # Get current game list
         user_data = user_doc.to_dict()
-        games = user_data.get("games", [])
+        games = user_data.get("games", {})
 
         return jsonify(games)
 
