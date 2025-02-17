@@ -209,7 +209,11 @@ function SearchResults({ type }) {
 
       {!loading && games.length > 0 && (
         <>
-          <Grid container spacing={3}>
+          <Grid
+            container
+            spacing={3}
+            sx={{ marginLeft: { xs: "10%", sm: "0" } }}
+          >
             {currentGames.map((game, index) => (
               <Grid
                 item
@@ -220,7 +224,6 @@ function SearchResults({ type }) {
                 sx={{
                   paddingLeft: 1,
                   paddingRight: 1,
-                  left: { xs: "5rem", sm: "0" },
                 }}
               >
                 <GamesCard
