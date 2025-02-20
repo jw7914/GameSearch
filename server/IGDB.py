@@ -14,7 +14,7 @@ def fetch_gameid(headers, id):
 
 def fetch_latest_games(headers, time):
     time = int(time)
-    body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, first_release_date, screenshots.url, total_rating, storyline, videos.video_id; limit 100; sort first_release_date desc; where first_release_date <= {time};'
+    body = f'fields id, name, cover.url, artworks.url, summary, rating_count, genres.name, parent_game.name, first_release_date, screenshots.url, storyline; limit 100; sort first_release_date desc; where first_release_date <= {time};'
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     
     if response.status_code == 200:
@@ -70,6 +70,10 @@ def create_list_of_games(games):
             timestamp_in_seconds = game["first_release_date"]
             date = datetime.datetime.fromtimestamp(timestamp_in_seconds)
             game["first_release_date"] = date.strftime("%m/%d/%Y")
+        
+        if game.get("artworks"):
+            game["artworks"] = clean_data(game["artworks"], "artworks", "url")
+            
        
         if all(key in game for key in required_keys):
             game["screenshots"] = clean_data(game["screenshots"], "screenshots", "url")
@@ -90,6 +94,8 @@ def clean_data(listFromJSON, listName, keyName):
                 result.append("https:" + item[keyName].replace("t_thumb", "t_cover_big"))
             elif "t_thumb" in item[keyName] and listName == "screenshots":
                 result.append("https:" + item[keyName].replace("t_thumb", "t_screenshot_big"))
+            elif "t_thumb" in item[keyName] and listName == "artworks":
+                result.append("https:" + item[keyName].replace("t_thumb", "t_1080p"))
             elif listName == "videos":
                 # Build YouTube video link
                 result.append("https://www.youtube.com/embed/" + item[keyName])
@@ -137,7 +143,7 @@ def fetch_popular_games(headers):
         return []
     
     games_to_fetch = "(" + ", ".join(map(str, popular_games)) + ")"
-    body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, first_release_date, screenshots.url, total_rating, storyline, videos.video_id; where id = {games_to_fetch}; limit 20;'
+    body = f'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, first_release_date, screenshots.url, total_rating, storyline, videos.video_id, artworks.url; where id = {games_to_fetch}; limit 20;'
 
     try:
         response = requests.post(f'{base_url}/games', headers=headers, data=body)

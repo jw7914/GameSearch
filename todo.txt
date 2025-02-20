@@ -1,3 +1,1 @@
-Figure out rendering lastest games
-?? make static genre pages so query is not based on url params
-Potentially remove learn more button and make whole game card clickable to view full details about game
+Update home page to use bootstrap caresoul -> use artworks.url and convert to t_1080p
