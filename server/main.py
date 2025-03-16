@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request, abort, session
-import pymysql.cursors
 from token_util import get_access_token
 import os
 import requests
@@ -33,20 +32,6 @@ creds = credentials.Certificate(firebase_config)
 firebase_admin.initialize_app(creds)
 db = firestore.client()
 
-
-timeout = 10
-connection = pymysql.connect(
-  charset="utf8mb4",
-  connect_timeout=timeout,
-  cursorclass=pymysql.cursors.DictCursor,
-  db="gamesearch",
-  host=os.getenv("DB_HOST"),
-  password=os.getenv("DB_PASSWORD"),
-  read_timeout=timeout,
-  port=11075,
-  user="avnadmin",
-  write_timeout=timeout,
-)
 
 #Inital boot up of the server get token details
 access_token_data = get_access_token()
