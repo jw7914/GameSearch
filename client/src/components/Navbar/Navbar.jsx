@@ -42,12 +42,6 @@ function Navbar() {
                 </a>
               </li>
               <li className="nav-item mx-1">
-                {" "}
-                <a className="nav-link" href="#">
-                  Features
-                </a>
-              </li>
-              <li className="nav-item mx-1">
                 <AccountDropDown />
               </li>
             </ul>

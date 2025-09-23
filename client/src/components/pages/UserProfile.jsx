@@ -123,7 +123,6 @@ function UserProfilePage() {
                 <Stack spacing={2}>
                   {Object.keys(favoriteGames).map((gameId) => (
                     <Card
-                      onClick={() => handleCardClick(gameId)}
                       key={gameId}
                       sx={{
                         backgroundColor: "white",
@@ -138,13 +137,15 @@ function UserProfilePage() {
                     >
                       {/* CardActionArea now wraps both the image and the title, making them one clickable section */}
                       <CardActionArea
+                        onClick={() => handleCardClick(gameId)}
                         disableRipple // Added to remove the ripple effect on click
                         sx={{
                           display: "flex",
                           alignItems: "center",
                           flexGrow: 1,
+                          // Removed the default hover background color
                           "&:hover": {
-                            backgroundColor: "white",
+                            backgroundColor: "transparent",
                           },
                         }}
                       >

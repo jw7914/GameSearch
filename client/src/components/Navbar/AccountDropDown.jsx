@@ -49,11 +49,6 @@ function AccountDropDown() {
               </a>
             </li>
             <li>
-              <a className="dropdown-item" href="/settings">
-                Settings
-              </a>
-            </li>
-            <li>
               <hr className="dropdown-divider" />
             </li>
             <li>
