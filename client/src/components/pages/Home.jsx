@@ -83,15 +83,15 @@ function Home() {
 
   useEffect(() => {
     // Add Bootstrap carousel event listener for latest games
-    const carousel = document.getElementById('latestGamesCarousel');
+    const carousel = document.getElementById("latestGamesCarousel");
     if (carousel) {
       const handleSlide = (event) => {
         setLatestGamesCurrentSlide(event.to);
       };
-      carousel.addEventListener('slid.bs.carousel', handleSlide);
-      
+      carousel.addEventListener("slid.bs.carousel", handleSlide);
+
       return () => {
-        carousel.removeEventListener('slid.bs.carousel', handleSlide);
+        carousel.removeEventListener("slid.bs.carousel", handleSlide);
       };
     }
   }, [games]);
@@ -300,7 +300,7 @@ function Home() {
             Latest Releases
           </Typography>
           <Typography variant="h6" color="text.secondary">
-            Discover the newest games everyone's talking about
+            Discover the newest games
           </Typography>
         </Box>
 
@@ -556,14 +556,19 @@ function Home() {
                         borderRadius: "50%",
                         border: "2px solid",
                         borderColor: "primary.main",
-                        bgcolor: index === latestGamesCurrentSlide ? "primary.main" : "transparent",
+                        bgcolor:
+                          index === latestGamesCurrentSlide
+                            ? "primary.main"
+                            : "transparent",
                         cursor: "pointer",
                         transition: "all 0.3s ease-in-out",
                         padding: 0,
                         margin: 0,
                         "&:hover": {
                           bgcolor:
-                            index === latestGamesCurrentSlide ? "primary.dark" : "primary.light",
+                            index === latestGamesCurrentSlide
+                              ? "primary.dark"
+                              : "primary.light",
                           transform: "scale(1.2)",
                           boxShadow: "0 2px 8px rgba(25, 118, 210, 0.3)",
                         },

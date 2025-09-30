@@ -14,12 +14,15 @@ import {
   Grid,
   Divider,
   Fade,
+  Dialog,
+  IconButton,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import CategoryIcon from "@mui/icons-material/Category";
+import CloseIcon from "@mui/icons-material/Close";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import { styled } from "@mui/material/styles";
@@ -129,15 +132,60 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
 }));
 
+const ImageModal = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialog-paper": {
+    background: "transparent",
+    boxShadow: "none",
+    maxWidth: "90vw",
+    maxHeight: "90vh",
+    overflow: "hidden",
+  },
+  "& .MuiBackdrop-root": {
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
+  },
+}));
+
+const ModalImage = styled("img")(({ theme }) => ({
+  maxWidth: "100%",
+  maxHeight: "90vh",
+  objectFit: "contain",
+  borderRadius: "8px",
+  boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+}));
+
+const CloseButton = styled(IconButton)(({ theme }) => ({
+  position: "absolute",
+  top: 16,
+  right: 16,
+  backgroundColor: "rgba(0, 0, 0, 0.6)",
+  color: "white",
+  "&:hover": {
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+  },
+  zIndex: 1,
+}));
+
 function GameProfile() {
   const { id } = useParams();
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const toggleStoryline = () => {
     setIsExpanded((prev) => !prev);
+  };
+
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedImage(null);
   };
 
   useEffect(() => {
@@ -388,15 +436,18 @@ function GameProfile() {
                       component="img"
                       src={screenshot}
                       alt={`Screenshot ${index + 1}`}
+                      onClick={() => handleImageClick(screenshot)}
                       sx={{
                         width: "100%",
                         height: "300px",
                         objectFit: "cover",
                         borderRadius: 3,
                         boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
-                        transition: "transform 0.3s ease-in-out",
+                        transition: "transform 0.3s ease-in-out, cursor 0.2s",
+                        cursor: "pointer",
                         "&:hover": {
                           transform: "scale(1.05)",
+                          boxShadow: "0 15px 40px rgba(0,0,0,0.4)",
                         },
                       }}
                     />
@@ -447,6 +498,42 @@ function GameProfile() {
             </CardContent>
           </StyledCard>
         )}
+
+        {/* Image Modal */}
+        <ImageModal
+          open={modalOpen}
+          onClose={handleCloseModal}
+          onClick={handleCloseModal}
+          aria-labelledby="image-modal-title"
+          aria-describedby="image-modal-description"
+        >
+          <Box
+            sx={{
+              position: "relative",
+              outline: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <CloseButton
+              onClick={handleCloseModal}
+              aria-label="close"
+              size="large"
+            >
+              <CloseIcon />
+            </CloseButton>
+            {selectedImage && (
+              <ModalImage
+                src={selectedImage}
+                alt="Enlarged screenshot"
+                onClick={(e) => e.stopPropagation()}
+              />
+            )}
+          </Box>
+        </ImageModal>
       </Container>
     </Box>
   );
