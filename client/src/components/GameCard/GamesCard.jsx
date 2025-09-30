@@ -5,10 +5,20 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { CardActionArea, Rating } from "@mui/material";
+import {
+  CardActionArea,
+  Rating,
+  Fade,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
+import ShareIcon from "@mui/icons-material/Share";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CloseIcon from "@mui/icons-material/Close";
 import FavoriteButton from "./FavoriteButton";
 
 const cardStyle = {
@@ -52,17 +62,40 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
   const navigate = useNavigate();
   const convertedRating = rating / 10 / 2;
   const [openShareModal, setOpenShareModal] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleCardClick = () => {
     navigate(`/gameprofile/${cardID}`);
   };
 
-  const handleShareOpen = (e) => {
+  const shareLink = `${window.location.origin}/gameprofile/${cardID}`;
+
+  const handleShareOpen = async (e) => {
     e.stopPropagation();
     setOpenShareModal(true);
-    const shareLink = `${window.location.origin}/gameprofile/${cardID}`;
-    navigator.clipboard.writeText(shareLink);
-    setTimeout(() => setOpenShareModal(false), 3000);
+
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false);
+        setOpenShareModal(false);
+      }, 2000);
+    } catch (err) {
+      console.warn("Failed to copy to clipboard:", err);
+      // Modal will still show for manual copying
+    }
+  };
+
+  const handleCopyClick = async (e) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.warn("Failed to copy to clipboard:", err);
+    }
   };
 
   return (
@@ -145,33 +178,169 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
             pb: 2,
           }}
         >
-          <Button
-            size="small"
-            variant="contained"
-            onClick={handleShareOpen}
-            sx={{ bgcolor: "#13151A" }}
-          >
-            Share
-          </Button>
+          <Tooltip title="Share this game">
+            <Button
+              size="small"
+              variant="contained"
+              startIcon={<ShareIcon />}
+              onClick={handleShareOpen}
+              sx={{
+                bgcolor: "#13151A",
+                color: "white",
+                textTransform: "none",
+                fontWeight: "medium",
+                borderRadius: "8px",
+                px: 2,
+                "&:hover": {
+                  bgcolor: "#2d3748",
+                  transform: "translateY(-1px)",
+                  boxShadow: "0 4px 12px rgba(19, 21, 26, 0.4)",
+                },
+                transition: "all 0.2s ease",
+              }}
+            >
+              Share
+            </Button>
+          </Tooltip>
           <FavoriteButton gameID={cardID} gameName={gameName} cover={cover} />
         </CardActions>
       </CardActionArea>
-      <Modal open={openShareModal} onClose={() => setOpenShareModal(false)}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 350,
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
-            p: 2,
-          }}
-        >
-          <Typography>The link has been copied to your clipboard!</Typography>
-        </Box>
+      <Modal
+        open={openShareModal}
+        onClose={() => setOpenShareModal(false)}
+        closeAfterTransition
+      >
+        <Fade in={openShareModal}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: { xs: 340, sm: 450 },
+              bgcolor: "background.paper",
+              borderRadius: "16px",
+              boxShadow: "0 25px 50px rgba(0, 0, 0, 0.25)",
+              p: 0,
+              outline: "none",
+              overflow: "hidden",
+            }}
+          >
+            {/* Header */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                p: 3,
+                pb: 2,
+                borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <ShareIcon sx={{ color: "#1976d2", fontSize: 28 }} />
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: "600",
+                    color: "#1a202c",
+                  }}
+                >
+                  Share Game
+                </Typography>
+              </Box>
+              <IconButton
+                onClick={() => setOpenShareModal(false)}
+                sx={{
+                  color: "#64748b",
+                  "&:hover": { bgcolor: "#f1f5f9" },
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </Box>
+
+            {/* Content */}
+            <Box sx={{ p: 3 }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: "#374151",
+                  mb: 3,
+                  textAlign: "center",
+                }}
+              >
+                Share "{gameName}" with your friends!
+              </Typography>
+
+              {/* Link Box */}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  bgcolor: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "12px",
+                  p: 2,
+                  mb: 3,
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{
+                    flex: 1,
+                    color: "#475569",
+                    wordBreak: "break-all",
+                    fontSize: "0.875rem",
+                    fontFamily: "monospace",
+                  }}
+                >
+                  {shareLink}
+                </Typography>
+                <Tooltip title={copied ? "Copied!" : "Copy link"}>
+                  <IconButton
+                    onClick={handleCopyClick}
+                    sx={{
+                      ml: 1,
+                      color: copied ? "#10b981" : "#6b7280",
+                      "&:hover": {
+                        bgcolor: copied ? "#ecfdf5" : "#f3f4f6",
+                      },
+                    }}
+                  >
+                    {copied ? <CheckCircleIcon /> : <ContentCopyIcon />}
+                  </IconButton>
+                </Tooltip>
+              </Box>
+
+              {/* Status Message */}
+              {copied && (
+                <Fade in={copied}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 1,
+                      p: 2,
+                      bgcolor: "#ecfdf5",
+                      borderRadius: "8px",
+                      border: "1px solid #d1fae5",
+                    }}
+                  >
+                    <CheckCircleIcon sx={{ color: "#10b981", fontSize: 20 }} />
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "#065f46", fontWeight: "medium" }}
+                    >
+                      Link copied to clipboard!
+                    </Typography>
+                  </Box>
+                </Fade>
+              )}
+            </Box>
+          </Box>
+        </Fade>
       </Modal>
     </Card>
   );
