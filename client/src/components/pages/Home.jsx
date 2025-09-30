@@ -32,6 +32,7 @@ function Home() {
   const [error, setError] = useState(null);
   const [popularError, setPopularError] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [latestGamesCurrentSlide, setLatestGamesCurrentSlide] = useState(0);
   const sliderRef = useRef(null);
   const popularSliderRef = useRef(null);
   const navigate = useNavigate();
@@ -79,6 +80,21 @@ function Home() {
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    // Add Bootstrap carousel event listener for latest games
+    const carousel = document.getElementById('latestGamesCarousel');
+    if (carousel) {
+      const handleSlide = (event) => {
+        setLatestGamesCurrentSlide(event.to);
+      };
+      carousel.addEventListener('slid.bs.carousel', handleSlide);
+      
+      return () => {
+        carousel.removeEventListener('slid.bs.carousel', handleSlide);
+      };
+    }
+  }, [games]);
 
   if (loading) {
     return (
@@ -533,28 +549,23 @@ function Home() {
                       data-bs-target="#latestGamesCarousel"
                       data-bs-slide-to={index}
                       aria-label={`Slide ${index + 1}`}
+                      onClick={() => setLatestGamesCurrentSlide(index)}
                       sx={{
                         width: 14,
                         height: 14,
                         borderRadius: "50%",
                         border: "2px solid",
                         borderColor: "primary.main",
-                        bgcolor: index === 0 ? "primary.main" : "transparent",
+                        bgcolor: index === latestGamesCurrentSlide ? "primary.main" : "transparent",
                         cursor: "pointer",
                         transition: "all 0.3s ease-in-out",
                         padding: 0,
                         margin: 0,
                         "&:hover": {
                           bgcolor:
-                            index === 0 ? "primary.dark" : "primary.light",
+                            index === latestGamesCurrentSlide ? "primary.dark" : "primary.light",
                           transform: "scale(1.2)",
                           boxShadow: "0 2px 8px rgba(25, 118, 210, 0.3)",
-                        },
-                        "&.active": {
-                          bgcolor: "primary.main",
-                        },
-                        "&:not(.active)": {
-                          bgcolor: "transparent",
                         },
                       }}
                     />
