@@ -23,8 +23,8 @@ import FavoriteButton from "./FavoriteButton";
 
 const cardStyle = {
   maxWidth: 300,
-  borderRadius: "8px",
-  overflow: "visible",
+  borderRadius: "16px",
+  overflow: "hidden",
   color: "white",
   position: "relative",
   transition: "transform 0.3s ease, box-shadow 0.3s ease",
@@ -52,6 +52,7 @@ const imageStyle = {
   objectFit: "cover",
   backgroundPosition: "center",
   position: "relative",
+  borderRadius: "16px 16px 0 0",
   "&:hover + .summaryBox": {
     opacity: 1,
     transform: "translateY(0)",
@@ -101,7 +102,12 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
   return (
     <Card sx={cardStyle}>
       <CardActionArea disableRipple onClick={handleCardClick}>
-        <Box sx={{ position: "relative" }}>
+        <Box
+          sx={{
+            position: "relative",
+            borderRadius: "16px 16px 0 0",
+          }}
+        >
           <CardMedia sx={imageStyle} image={cover} title={gameName} />
           <Box sx={summaryStyle} className="summaryBox">
             <Typography gutterBottom variant="h5" component="div">
