@@ -33,8 +33,12 @@ function Home() {
   const [popularError, setPopularError] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [latestGamesCurrentSlide, setLatestGamesCurrentSlide] = useState(0);
+
+  // Refs
   const sliderRef = useRef(null);
   const popularSliderRef = useRef(null);
+  const latestGamesCarouselRef = useRef(null); // Added ref for reliable DOM access
+
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -81,20 +85,24 @@ function Home() {
     fetchData();
   }, []);
 
+  // Sync Latest Games Carousel State
   useEffect(() => {
-    // Add Bootstrap carousel event listener for latest games
-    const carousel = document.getElementById("latestGamesCarousel");
-    if (carousel) {
+    const carouselElement = latestGamesCarouselRef.current;
+
+    if (carouselElement) {
       const handleSlide = (event) => {
+        // 'event.to' contains the index of the slide being transitioned to
         setLatestGamesCurrentSlide(event.to);
       };
-      carousel.addEventListener("slid.bs.carousel", handleSlide);
+
+      // Changed to 'slide.bs.carousel' (fires immediately) instead of 'slid.bs.carousel' (fires after animation)
+      carouselElement.addEventListener("slide.bs.carousel", handleSlide);
 
       return () => {
-        carousel.removeEventListener("slid.bs.carousel", handleSlide);
+        carouselElement.removeEventListener("slide.bs.carousel", handleSlide);
       };
     }
-  }, [games]);
+  }, [games]); // Re-run when games are loaded so the ref is valid
 
   if (loading) {
     return (
@@ -236,7 +244,7 @@ function Home() {
               ))}
             </Slider>
 
-            {/* Custom indicators */}
+            {/* Custom indicators for Hero */}
             <Box
               sx={{
                 position: "absolute",
@@ -312,9 +320,10 @@ function Home() {
           <Box
             sx={{ position: "relative", maxWidth: "85%", mx: "auto", px: 8 }}
           >
-            {/* Bootstrap Carousel */}
+            {/* Bootstrap Carousel with REF */}
             <div
               id="latestGamesCarousel"
+              ref={latestGamesCarouselRef} // Attach Ref Here
               className="carousel slide"
               data-bs-ride="carousel"
             >
@@ -478,6 +487,9 @@ function Home() {
                       border: "2px solid #1976d2",
                       zIndex: 10,
                       transition: "all 0.3s ease",
+                      outline: "none",
+                      boxShadow: "none",
+                      userSelect: "none",
                     }}
                     onMouseEnter={(e) => {
                       e.target.style.background = "#1976d2";
@@ -487,6 +499,7 @@ function Home() {
                       e.target.style.background = "rgba(25, 118, 210, 0.8)";
                       e.target.style.transform = "translateY(-50%) scale(1)";
                     }}
+                    onFocus={(e) => (e.target.style.boxShadow = "none")}
                   >
                     <span
                       className="carousel-control-prev-icon"
@@ -510,6 +523,9 @@ function Home() {
                       border: "2px solid #1976d2",
                       zIndex: 10,
                       transition: "all 0.3s ease",
+                      outline: "none",
+                      boxShadow: "none",
+                      userSelect: "none",
                     }}
                     onMouseEnter={(e) => {
                       e.target.style.background = "#1976d2";
@@ -519,6 +535,7 @@ function Home() {
                       e.target.style.background = "rgba(25, 118, 210, 0.8)";
                       e.target.style.transform = "translateY(-50%) scale(1)";
                     }}
+                    onFocus={(e) => (e.target.style.boxShadow = "none")}
                   >
                     <span
                       className="carousel-control-next-icon"
@@ -549,7 +566,7 @@ function Home() {
                       data-bs-target="#latestGamesCarousel"
                       data-bs-slide-to={index}
                       aria-label={`Slide ${index + 1}`}
-                      onClick={() => setLatestGamesCurrentSlide(index)}
+                      // Removed manual onClick handler to let the event listener handle state
                       sx={{
                         width: 14,
                         height: 14,
@@ -564,6 +581,10 @@ function Home() {
                         transition: "all 0.3s ease-in-out",
                         padding: 0,
                         margin: 0,
+                        outline: "none",
+                        "&:focus": {
+                          outline: "none",
+                        },
                         "&:hover": {
                           bgcolor:
                             index === latestGamesCurrentSlide
