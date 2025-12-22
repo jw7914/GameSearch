@@ -318,7 +318,7 @@ function Home() {
           </Alert>
         ) : (
           <Box
-            sx={{ position: "relative", maxWidth: "85%", mx: "auto", px: 8 }}
+            sx={{ position: "relative", maxWidth: "90%", mx: "auto", px: 8 }}
           >
             {/* Bootstrap Carousel with REF */}
             <div
@@ -467,7 +467,6 @@ function Home() {
                   );
                 })}
               </div>
-
               {/* Bootstrap Carousel Controls */}
               {games.length > cardsPerView && (
                 <>
@@ -491,6 +490,7 @@ function Home() {
                       boxShadow: "none",
                       userSelect: "none",
                     }}
+                    onMouseDown={(e) => e.preventDefault()}
                     onMouseEnter={(e) => {
                       e.target.style.background = "#1976d2";
                       e.target.style.transform = "translateY(-50%) scale(1.1)";
@@ -504,6 +504,7 @@ function Home() {
                     <span
                       className="carousel-control-prev-icon"
                       aria-hidden="true"
+                      style={{ userSelect: "none", pointerEvents: "none" }} // Fix for inner icon
                     ></span>
                     <span className="visually-hidden">Previous</span>
                   </button>
