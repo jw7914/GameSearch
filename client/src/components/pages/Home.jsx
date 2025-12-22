@@ -323,7 +323,7 @@ function Home() {
             {/* Bootstrap Carousel with REF */}
             <div
               id="latestGamesCarousel"
-              ref={latestGamesCarouselRef} // Attach Ref Here
+              ref={latestGamesCarouselRef}
               className="carousel slide"
               data-bs-ride="carousel"
             >
@@ -345,7 +345,7 @@ function Home() {
                         slideIndex === 0 ? "active" : ""
                       }`}
                     >
-                      <Grid container spacing={2} sx={{ px: 1 }}>
+                      <Grid container spacing={2} sx={{ px: 1, py: 3 }}>
                         {slideGames.map((game) => (
                           <Grid
                             item
@@ -548,58 +548,6 @@ function Home() {
                     <span className="visually-hidden">Next</span>
                   </button>
                 </>
-              )}
-
-              {/* Custom Carousel Indicators - Hidden on Mobile */}
-              {games.length > cardsPerView && !isMobile && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    mt: 4,
-                    gap: 1,
-                  }}
-                >
-                  {Array.from({
-                    length: Math.ceil(games.length / cardsPerView),
-                  }).map((_, index) => (
-                    <Box
-                      key={index}
-                      component="button"
-                      type="button"
-                      data-bs-target="#latestGamesCarousel"
-                      data-bs-slide-to={index}
-                      aria-label={`Slide ${index + 1}`}
-                      sx={{
-                        width: 14,
-                        height: 14,
-                        borderRadius: "50%",
-                        border: "2px solid",
-                        borderColor: "primary.main",
-                        bgcolor:
-                          index === latestGamesCurrentSlide
-                            ? "primary.main"
-                            : "transparent",
-                        cursor: "pointer",
-                        transition: "all 0.3s ease-in-out",
-                        padding: 0,
-                        margin: 0,
-                        outline: "none",
-                        "&:focus": {
-                          outline: "none",
-                        },
-                        "&:hover": {
-                          bgcolor:
-                            index === latestGamesCurrentSlide
-                              ? "primary.dark"
-                              : "primary.light",
-                          transform: "scale(1.2)",
-                          boxShadow: "0 2px 8px rgba(25, 118, 210, 0.3)",
-                        },
-                      }}
-                    />
-                  ))}
-                </Box>
               )}
             </div>
           </Box>
