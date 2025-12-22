@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   Container,
   Typography,
@@ -81,22 +81,6 @@ const StyledCard = styled(Card)(({ theme }) => ({
   "&:hover": {
     transform: "translateY(-4px)",
     boxShadow: "0 16px 48px rgba(0,0,0,0.15)",
-  },
-}));
-
-const GenreChip = styled(Chip)(({ theme }) => ({
-  background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
-  color: theme.palette.primary.contrastText,
-  fontWeight: 600,
-  fontSize: "0.85rem",
-  height: "36px",
-  margin: "4px",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-  border: "none",
-  transition: "all 0.3s ease-in-out",
-  "&:hover": {
-    transform: "translateY(-2px)",
-    boxShadow: "0 6px 16px rgba(0,0,0,0.2)",
   },
 }));
 
@@ -275,15 +259,6 @@ function GameProfile() {
                   >
                     {gameData.name}
                   </Typography>
-
-                  {/* Genres in Hero */}
-                  <Box sx={{ mb: 3 }}>
-                    <Stack direction="row" spacing={1} flexWrap="wrap">
-                      {gameData.genres?.slice(0, 4).map((genre) => (
-                        <GenreChip key={genre} label={genre} size="medium" />
-                      ))}
-                    </Stack>
-                  </Box>
                 </Box>
               </Fade>
             </Grid>
@@ -378,17 +353,28 @@ function GameProfile() {
                     </Typography>
                     <Stack direction="row" spacing={1} flexWrap="wrap">
                       {gameData.genres?.map((genre) => (
-                        <Chip
+                        <Link
                           key={genre}
-                          label={genre}
-                          variant="outlined"
-                          size="small"
-                          sx={{
-                            borderRadius: 2,
-                            fontWeight: 500,
-                            margin: "2px",
-                          }}
-                        />
+                          to={`/genre?genre=${genre}`}
+                          style={{ textDecoration: "none" }} // Removes the blue underline from Link
+                        >
+                          <Chip
+                            label={genre}
+                            clickable // Makes the Chip show a pointer cursor and hover effect
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                              borderRadius: 2,
+                              fontWeight: 500,
+                              margin: "2px",
+                              // Optional: Custom hover styles if default isn't enough
+                              "&:hover": {
+                                backgroundColor: "rgba(25, 118, 210, 0.1)",
+                                borderColor: "primary.main",
+                              },
+                            }}
+                          />
+                        </Link>
                       ))}
                     </Stack>
                   </Box>
