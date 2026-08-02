@@ -10,7 +10,7 @@ import {
 import { getFirebaseUser } from "../../../firebase/firebaseUtility";
 import { useNavigate } from "react-router-dom";
 
-function FavoriteButton({ gameID, gameName, cover }) {
+function FavoriteButton({ gameID, gameName, cover, releaseDate }) {
   const [liked, setLiked] = useState(false);
   const [favoriteGames, setFavoriteGames] = useState({});
   const { isLoggedIn, user } = getFirebaseUser();
@@ -22,7 +22,7 @@ function FavoriteButton({ gameID, gameName, cover }) {
     if (isLoggedIn && user) {
       if (!liked) {
         setLiked(true);
-        addFavoriteGame({ user, gameID, gameName, cover });
+        addFavoriteGame({ user, gameID, gameName, cover, releaseDate });
       } else {
         setLiked(false);
         removeFavoriteGame({ user, gameID });

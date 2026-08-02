@@ -161,7 +161,7 @@ export const getPopularGames = async (setLoading, setGames, setError) => {
   }
 };
 
-export const addFavoriteGame = async ({ user, gameID, gameName, cover }) => {
+export const addFavoriteGame = async ({ user, gameID, gameName, cover, releaseDate }) => {
   try {
     const idToken = await user.getIdToken();
     const response = await api.post("/addGame", {
@@ -169,6 +169,7 @@ export const addFavoriteGame = async ({ user, gameID, gameName, cover }) => {
       gameID: gameID,
       gameName: gameName,
       cover: cover,
+      releaseDate: releaseDate || null,
     });
     if (response.status === 200) {
       console.log("Game Favorited successful!");
@@ -206,5 +207,63 @@ export const retrieveFavorites = async ({ user, setFavoriteGames }) => {
     setFavoriteGames(response.data);
   } catch (error) {
     console.error("Error:", error.response?.data || error.message);
+  }
+};
+
+export const updateUserProfile = async ({ user, bio, genres, displayName, avatar, isPublic }) => {
+  try {
+    const idToken = await user.getIdToken();
+    const response = await api.post("/updateProfile", {
+      idToken,
+      bio,
+      genres,
+      displayName,
+      avatar,
+      isPublic,
+    });
+    if (response.status === 200) {
+      console.log("Profile updated successfully!");
+    } else {
+      console.error("Profile update failed");
+    }
+  } catch (error) {
+    console.error("Error updating profile:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const getUserProfile = async ({ user, setBio, setGenres, setDisplayName, setAvatar, setIsPublic }) => {
+  try {
+    const idToken = await user.getIdToken();
+    const response = await api.post("/getProfile", {
+      idToken,
+    });
+    setBio(response.data.bio || "");
+    setGenres(response.data.genres || []);
+    setDisplayName(response.data.displayName || "");
+    setAvatar(response.data.avatar || "");
+    if (setIsPublic) setIsPublic(response.data.isPublic || false);
+  } catch (error) {
+    console.error("Error retrieving profile:", error.response?.data || error.message);
+  }
+};
+
+export const getPublicUserProfile = async ({ uid, setBio, setGenres, setDisplayName, setAvatar, setFavoriteGames, setError }) => {
+  try {
+    const response = await api.get(`/getPublicProfile/${uid}`);
+    setBio(response.data.bio || "");
+    setGenres(response.data.genres || []);
+    setDisplayName(response.data.displayName || "");
+    setAvatar(response.data.avatar || "");
+    setFavoriteGames(response.data.games || {});
+  } catch (error) {
+    console.error("Error retrieving public profile:", error.response?.data || error.message);
+    if (error.response?.status === 403) {
+      setError("This profile is private.");
+    } else if (error.response?.status === 404) {
+      setError("User not found.");
+    } else {
+      setError("Failed to load profile.");
+    }
   }
 };

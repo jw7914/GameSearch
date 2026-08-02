@@ -163,9 +163,10 @@ def addGame():
         gameID = data.get("gameID")
         gameName = data.get("gameName")
         gameCover = data.get("cover")
+        releaseDate = data.get("releaseDate")
         token = data.get("idToken")
 
-        imageURL = gameCover[0]
+        imageURL = gameCover[0] if isinstance(gameCover, list) else gameCover
 
         # Verify the token
         try:
@@ -191,7 +192,11 @@ def addGame():
         user_games = user_data.get("games", {})
 
         # Add the new game to the user's games list
-        user_games[str(gameID)] = {"gameName": gameName, "gameCover": imageURL}
+        user_games[str(gameID)] = {
+            "gameName": gameName, 
+            "gameCover": imageURL,
+            "releaseDate": releaseDate
+        }
 
         # Update the user's Firestore document with the new game list
         user_ref.update({"games": user_games})
@@ -268,7 +273,116 @@ def retrieveFavorited():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+        
+@app.route("/updateProfile", methods=['POST'])
+def updateProfile():
+    try:
+        data = request.json
+        token = data.get("idToken")
+        bio = data.get("bio", "")
+        genres = data.get("genres", [])
+        display_name = data.get("displayName", "")
+        avatar = data.get("avatar", "")
+        is_public = data.get("isPublic", False)
+
+        try:
+            decoded_token = auth.verify_id_token(token)
+        except exceptions.FirebaseError as e:
+            return jsonify({"error": "Invalid token"}), 401
+
+        user_id = decoded_token['uid']
+
+        # Reference Firestore collection
+        user_ref = db.collection("users").document(user_id)
+        user_doc = user_ref.get()
+
+        if not user_doc.exists:
+            # Create if doesn't exist
+            user_ref.set({
+                "uid": user_id,
+                "games": {},
+                "bio": bio,
+                "genres": genres,
+                "displayName": display_name,
+                "avatar": avatar,
+                "isPublic": is_public
+            })
+        else:
+            # Update fields
+            user_ref.update({
+                "bio": bio,
+                "genres": genres,
+                "displayName": display_name,
+                "avatar": avatar,
+                "isPublic": is_public
+            })
+
+        return jsonify({"message": "Profile updated successfully.", "bio": bio, "genres": genres, "displayName": display_name, "avatar": avatar, "isPublic": is_public}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/getProfile", methods=['POST'])
+def getProfile():
+    try:
+        data = request.json
+        token = data.get("idToken")
+
+        try:
+            decoded_token = auth.verify_id_token(token)
+        except exceptions.FirebaseError as e:
+            return jsonify({"error": "Invalid token"}), 401
+
+        user_id = decoded_token['uid']
+
+        # Reference Firestore collection
+        user_ref = db.collection("users").document(user_id)
+        user_doc = user_ref.get()
+
+        if not user_doc.exists:
+            return jsonify({"bio": "", "genres": [], "displayName": "", "avatar": "", "isPublic": False}), 200
+
+        user_data = user_doc.to_dict()
+        bio = user_data.get("bio", "")
+        genres = user_data.get("genres", [])
+        display_name = user_data.get("displayName", "")
+        avatar = user_data.get("avatar", "")
+        is_public = user_data.get("isPublic", False)
+
+        return jsonify({"bio": bio, "genres": genres, "displayName": display_name, "avatar": avatar, "isPublic": is_public}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/getPublicProfile/<uid>", methods=['GET'])
+def getPublicProfile(uid):
+    try:
+        user_ref = db.collection("users").document(uid)
+        user_doc = user_ref.get()
+
+        if not user_doc.exists:
+            return jsonify({"error": "User not found"}), 404
+
+        user_data = user_doc.to_dict()
+        is_public = user_data.get("isPublic", False)
+
+        if not is_public:
+            return jsonify({"error": "This profile is private."}), 403
+
+        # Only return safe public data
+        public_data = {
+            "displayName": user_data.get("displayName", ""),
+            "avatar": user_data.get("avatar", ""),
+            "bio": user_data.get("bio", ""),
+            "genres": user_data.get("genres", []),
+            "games": user_data.get("games", {})
+        }
+
+        return jsonify(public_data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)

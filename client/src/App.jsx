@@ -28,15 +28,8 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
-      {/* Protected Routes (Not logged in users can't access these routes) */}
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <UserProfilePage />
-          </ProtectedRoute>
-        }
-      />
+      {/* User Profile (Handles its own auth and public views) */}
+      <Route path="/profile/:userId?" element={<UserProfilePage />} />
 
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

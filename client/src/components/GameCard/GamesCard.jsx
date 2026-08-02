@@ -332,7 +332,12 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
             Share
           </Button>
         </Tooltip>
-        <FavoriteButton gameID={cardID} gameName={gameName} cover={cover} />
+        <FavoriteButton 
+          gameID={cardID} 
+          gameName={gameName} 
+          cover={cover} 
+          releaseDate={releaseDate} 
+        />
       </CardActions>
       <Modal
         open={openShareModal}

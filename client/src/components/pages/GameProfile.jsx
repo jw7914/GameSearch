@@ -230,6 +230,7 @@ function GameProfile() {
                         gameID={gameData.id}
                         gameName={gameData.name}
                         cover={gameData.cover}
+                        releaseDate={gameData.first_release_date}
                       />
                     </Box>
                   </Box>
