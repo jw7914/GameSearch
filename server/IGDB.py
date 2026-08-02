@@ -153,8 +153,30 @@ def fetch_popular_games(headers):
         print(f"HTTP error: {error}")
         return []
 
+def fetch_top_rated_games(headers):
+    # Fetch games with highest total_rating, ensuring they have a significant number of ratings to be valid top games
+    body = 'fields id, name, cover.url, summary, rating_count, genres.name, parent_game.name, first_release_date, screenshots.url, total_rating, storyline, videos.video_id, artworks.url; where rating_count > 100; sort total_rating desc; limit 20;'
+    try:
+        response = requests.post(f'{base_url}/games', headers=headers, data=body)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.HTTPError as error:
+        print(f"HTTP error: {error}")
+        return []
+    except Exception as error:
+        print(f"Error fetching top rated games: {error}")
+        return []
 
-        
-    
-    
-
+def fetch_upcoming_games(headers, time):
+    # Fetch upcoming games by filtering first_release_date > current time
+    body = f'fields id, name, cover.url, artworks.url, summary, rating_count, genres.name, parent_game.name, first_release_date, screenshots.url, storyline, hypes; where first_release_date > {int(time)} & hypes > 5; sort first_release_date asc; limit 20;'
+    try:
+        response = requests.post(f'{base_url}/games', headers=headers, data=body)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.HTTPError as error:
+        print(f"HTTP error: {error}")
+        return []
+    except Exception as error:
+        print(f"Error fetching upcoming games: {error}")
+        return []
