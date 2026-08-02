@@ -4,7 +4,7 @@ import datetime
 base_url = "https://api.igdb.com/v4"
 
 def fetch_gameid(headers, id):
-    body = f'fields id, name, cover.url, summary, rating_count, platforms.platform_logo.url, genres.name, player_perspectives.name, themes.name, screenshots.url, total_rating, storyline, videos.video_id; where id = {id};'
+    body = f'fields id, name, cover.url, summary, rating_count, platforms.name, platforms.platform_logo.url, genres.name, player_perspectives.name, themes.name, screenshots.url, total_rating, storyline, videos.video_id, first_release_date; where id = {id};'
 
     response = requests.post(f'{base_url}/games', headers=headers, data=body)
     if response.status_code == 200:

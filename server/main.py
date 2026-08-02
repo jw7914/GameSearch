@@ -116,7 +116,16 @@ def get_game_id(id):
     try:
         games = fetch_gameid(headers, id)
         games_data = create_list_of_games(games)
-        games_data[0]['platforms'] = ["https:" + ((games_data[0]['platforms'][0]['platform_logo']['url']).replace("t_thumb", "t_cover_big"))]
+        
+        if games_data and 'platforms' in games_data[0]:
+            formatted_platforms = []
+            for p in games_data[0]['platforms']:
+                platform_info = {"name": p.get("name", "Unknown")}
+                if "platform_logo" in p and "url" in p["platform_logo"]:
+                    platform_info["logo"] = "https:" + p["platform_logo"]["url"].replace("t_thumb", "t_cover_big")
+                formatted_platforms.append(platform_info)
+            games_data[0]['platforms'] = formatted_platforms
+            
         return jsonify(games_data)
     except requests.exceptions.HTTPError as err:
         return jsonify({"error": str(err)}), 500

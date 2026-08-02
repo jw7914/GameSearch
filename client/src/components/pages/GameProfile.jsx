@@ -26,6 +26,7 @@ import CategoryIcon from "@mui/icons-material/Category";
 import CloseIcon from "@mui/icons-material/Close";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VideogameAssetIcon from "@mui/icons-material/VideogameAsset";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import { styled } from "@mui/material/styles";
@@ -35,7 +36,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css/effect-coverflow";
-import { getSpecificGame } from "../../../api/api";
+import { getSpecificGame, getUserProfile } from "../../../api/api";
+import { getFirebaseUser } from "../../../firebase/firebaseUtility";
 import FavoriteButton from "../GameCard/FavoriteButton";
 // --- Styled Components ---
 
@@ -131,6 +133,9 @@ function GameProfile() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
+  const [userGenres, setUserGenres] = useState([]);
+  const { isLoggedIn, user } = getFirebaseUser();
+
   const toggleStoryline = () => setIsExpanded((prev) => !prev);
 
   const handleImageClick = (imageUrl) => {
@@ -142,6 +147,19 @@ function GameProfile() {
     setModalOpen(false);
     setSelectedImage(null);
   };
+
+  useEffect(() => {
+    if (isLoggedIn && user) {
+      getUserProfile({
+        user,
+        setBio: () => {},
+        setGenres: setUserGenres,
+        setDisplayName: () => {},
+        setAvatar: () => {},
+        setIsPublic: () => {}
+      });
+    }
+  }, [isLoggedIn, user]);
 
   useEffect(() => {
     const fetchGameData = async () => {
@@ -237,18 +255,21 @@ function GameProfile() {
 
                   {/* Quick Metadata in Hero */}
                   <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
-                    {gameData.genres?.slice(0, 3).map((genre) => (
+                    {gameData.genres?.slice(0, 3).map((genre) => {
+                      const isFav = userGenres.includes(genre);
+                      return (
                       <Chip
                         key={genre}
                         label={genre}
                         sx={{
-                          bgcolor: "rgba(255,255,255,0.15)",
+                          bgcolor: isFav ? "secondary.main" : "rgba(255,255,255,0.15)",
                           color: "white",
                           backdropFilter: "blur(4px)",
                           fontWeight: 600,
+                          boxShadow: isFav ? (theme) => `0 0 10px ${theme.palette.secondary.main}` : "none",
                         }}
                       />
-                    ))}
+                    )})}
                   </Stack>
                 </Box>
               </Fade>
@@ -488,7 +509,7 @@ function GameProfile() {
 
                   {/* Genres */}
                   {gameData.genres?.length > 0 && (
-                    <Box>
+                    <Box sx={{ mb: 3 }}>
                       <Typography
                         variant="subtitle2"
                         color="text.secondary"
@@ -500,7 +521,9 @@ function GameProfile() {
                         <CategoryIcon fontSize="small" /> Genres
                       </Typography>
                       <Stack direction="row" flexWrap="wrap" gap={1}>
-                        {gameData.genres.map((genre) => (
+                        {gameData.genres.map((genre) => {
+                          const isFav = userGenres.includes(genre);
+                          return (
                           <Link
                             key={genre}
                             to={`/genre?genre=${genre}`}
@@ -509,13 +532,87 @@ function GameProfile() {
                             <Chip
                               label={genre}
                               clickable
-                              color="primary"
+                              color={isFav ? "secondary" : "primary"}
                               variant="filled"
                               size="small"
+                              sx={isFav ? { boxShadow: (theme) => `0 0 10px ${theme.palette.secondary.main}` } : {}}
                             />
                           </Link>
+                        )})}
+                      </Stack>
+                    </Box>
+                  )}
+
+                  {/* Themes */}
+                  {gameData.themes?.length > 0 && (
+                    <Box sx={{ mb: 3 }}>
+                      <Typography
+                        variant="subtitle2"
+                        color="text.secondary"
+                        gutterBottom
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
+                      >
+                        <CategoryIcon fontSize="small" /> Themes
+                      </Typography>
+                      <Stack direction="row" flexWrap="wrap" gap={1}>
+                        {gameData.themes.map((theme, index) => (
+                          <Chip
+                            key={index}
+                            label={theme.name || theme}
+                            size="small"
+                            variant="outlined"
+                            sx={{ borderColor: "primary.light" }}
+                          />
                         ))}
                       </Stack>
+                    </Box>
+                  )}
+
+                  {/* Platforms */}
+                  {gameData.platforms?.length > 0 && (
+                    <Box sx={{ mb: 3 }}>
+                      <Typography
+                        variant="subtitle2"
+                        color="text.secondary"
+                        gutterBottom
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
+                      >
+                        <VideogameAssetIcon fontSize="small" /> Platforms
+                      </Typography>
+                      <Stack direction="row" flexWrap="wrap" gap={1}>
+                        {gameData.platforms.map((p, index) => (
+                          <Chip
+                            key={index}
+                            label={p.name || p}
+                            size="small"
+                            variant="outlined"
+                            sx={{ borderColor: "secondary.light" }}
+                          />
+                        ))}
+                      </Stack>
+                    </Box>
+                  )}
+
+                  {/* Release Date */}
+                  {gameData.first_release_date && (
+                    <Box>
+                      <Typography
+                        variant="subtitle2"
+                        color="text.secondary"
+                        gutterBottom
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
+                      >
+                        <CalendarTodayIcon fontSize="small" /> Release Date
+                      </Typography>
+                      <Typography variant="body2" color="text.primary" fontWeight="600" sx={{ ml: 3 }}>
+                        {gameData.first_release_date}
+                      </Typography>
                     </Box>
                   )}
                 </CardContent>
