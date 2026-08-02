@@ -14,30 +14,35 @@ import {
   Paper,
   useTheme,
   useMediaQuery,
-  Grid,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
-import { getLatestGames, getPopularGames } from "../../../api/api";
+import { getLatestGames, getPopularGames, getTopRatedGames, getUpcomingGames } from "../../../api/api";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import NewReleasesIcon from "@mui/icons-material/NewReleases";
+import StarIcon from "@mui/icons-material/Star";
+import EventIcon from "@mui/icons-material/Event";
+import GameCarousel from "../GameCarousel";
+import GameGrid from "../GameGrid";
 
 function Home() {
   const [games, setGames] = useState([]);
   const [popularGames, setPopularGames] = useState([]);
+  const [topRatedGames, setTopRatedGames] = useState([]);
+  const [upcomingGames, setUpcomingGames] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [popularError, setPopularError] = useState(null);
+  const [topRatedError, setTopRatedError] = useState(null);
+  const [upcomingError, setUpcomingError] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [latestGamesCurrentSlide, setLatestGamesCurrentSlide] = useState(0);
 
   // Refs
-  const sliderRef = useRef(null);
   const popularSliderRef = useRef(null);
-  const latestGamesCarouselRef = useRef(null); // Added ref for reliable DOM access
 
   const navigate = useNavigate();
   const theme = useTheme();
@@ -81,28 +86,21 @@ function Home() {
         setPopularError(err.message || "Failed to fetch popular games.");
         setLoading(false);
       }
+      try {
+        await getTopRatedGames(setLoading, setTopRatedGames, setTopRatedError);
+      } catch (err) {
+        setTopRatedError(err.message || "Failed to fetch top rated games.");
+        setLoading(false);
+      }
+      try {
+        await getUpcomingGames(setLoading, setUpcomingGames, setUpcomingError);
+      } catch (err) {
+        setUpcomingError(err.message || "Failed to fetch upcoming games.");
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);
-
-  // Sync Latest Games Carousel State
-  useEffect(() => {
-    const carouselElement = latestGamesCarouselRef.current;
-
-    if (carouselElement) {
-      const handleSlide = (event) => {
-        // 'event.to' contains the index of the slide being transitioned to
-        setLatestGamesCurrentSlide(event.to);
-      };
-
-      // Changed to 'slide.bs.carousel' (fires immediately) instead of 'slid.bs.carousel' (fires after animation)
-      carouselElement.addEventListener("slide.bs.carousel", handleSlide);
-
-      return () => {
-        carouselElement.removeEventListener("slide.bs.carousel", handleSlide);
-      };
-    }
-  }, [games]); // Re-run when games are loaded so the ref is valid
 
   if (loading) {
     return (
@@ -126,7 +124,7 @@ function Home() {
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", color: "text.primary" }}>
       {/* Hero Section - Featured/Popular Games */}
       <Box sx={{ position: "relative", mb: 6 }}>
         {popularError ? (
@@ -288,271 +286,37 @@ function Home() {
       </Box>
 
       {/* Latest Games Section */}
-      <Container maxWidth="xl" sx={{ pb: 6 }}>
-        <Box sx={{ mb: 4, textAlign: "center" }}>
-          <Typography
-            variant="h3"
-            component="h2"
-            sx={{
-              fontWeight: "bold",
-              mb: 1,
-              background: "linear-gradient(45deg, #1976d2, #42a5f5)",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            <NewReleasesIcon
-              sx={{ mr: 1, verticalAlign: "middle", fontSize: "inherit" }}
-            />
-            Latest Releases
-          </Typography>
-          <Typography variant="h6" color="text.secondary">
-            Discover the newest games
-          </Typography>
-        </Box>
+      <Box sx={{ bgcolor: "background.default" }}>
+        <GameCarousel
+          title="Latest Releases"
+          subtitle="Discover the newest games"
+          icon={NewReleasesIcon}
+          games={games}
+          error={error}
+          cardsPerView={cardsPerView}
+        />
+      </Box>
 
-        {error ? (
-          <Alert severity="error" sx={{ borderRadius: 2, mb: 4 }}>
-            Error fetching latest games: {error}
-          </Alert>
-        ) : (
-          <Box
-            sx={{ position: "relative", maxWidth: "90%", mx: "auto", px: 8 }}
-          >
-            {/* Bootstrap Carousel with REF */}
-            <div
-              id="latestGamesCarousel"
-              ref={latestGamesCarouselRef}
-              className="carousel slide"
-              data-bs-ride="carousel"
-            >
-              <div className="carousel-inner">
-                {Array.from({
-                  length: Math.ceil(games.length / cardsPerView),
-                }).map((_, slideIndex) => {
-                  const startIndex = slideIndex * cardsPerView;
-                  const endIndex = Math.min(
-                    startIndex + cardsPerView,
-                    games.length
-                  );
-                  const slideGames = games.slice(startIndex, endIndex);
+      {/* Top Rated Games Section (Using Grid) */}
+      <GameGrid
+        title="Top Rated"
+        subtitle="Highest rated games of all time"
+        icon={StarIcon}
+        games={topRatedGames}
+        error={topRatedError}
+      />
 
-                  return (
-                    <div
-                      key={slideIndex}
-                      className={`carousel-item ${
-                        slideIndex === 0 ? "active" : ""
-                      }`}
-                    >
-                      <Grid container spacing={2} sx={{ px: 1, py: 3 }}>
-                        {slideGames.map((game) => (
-                          <Grid
-                            item
-                            xs={12}
-                            md={12 / cardsPerView}
-                            key={game.id}
-                          >
-                            <Card
-                              elevation={0}
-                              sx={{
-                                height: 420,
-                                display: "flex",
-                                flexDirection: "column",
-                                cursor: "pointer",
-                                transition:
-                                  "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                                border: "2px solid",
-                                borderColor: "transparent",
-                                borderRadius: 4,
-                                overflow: "hidden",
-                                position: "relative",
-                                "&:hover": {
-                                  transform: "scale(1.03) translateY(-5px)",
-                                  boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
-                                  borderColor: "primary.main",
-                                  "& .game-image": {
-                                    transform: "scale(1.1)",
-                                  },
-                                  "& .game-overlay": {
-                                    opacity: 1,
-                                  },
-                                },
-                              }}
-                              onClick={() =>
-                                navigate(`/gameprofile/${game.id}`)
-                              }
-                            >
-                              <Box
-                                sx={{
-                                  position: "relative",
-                                  overflow: "hidden",
-                                }}
-                              >
-                                <CardMedia
-                                  className="game-image"
-                                  component="img"
-                                  height="300"
-                                  image={game.cover}
-                                  alt={game.name}
-                                  sx={{
-                                    objectFit: "cover",
-                                    transition: "transform 0.4s ease",
-                                  }}
-                                />
-                                <Box
-                                  className="game-overlay"
-                                  sx={{
-                                    position: "absolute",
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    bottom: 0,
-                                    background:
-                                      "linear-gradient(135deg, rgba(25, 118, 210, 0.8), rgba(66, 165, 245, 0.8))",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    opacity: 0,
-                                    transition: "opacity 0.3s ease",
-                                  }}
-                                >
-                                  <Button
-                                    variant="contained"
-                                    size="large"
-                                    startIcon={<PlayArrowIcon />}
-                                    sx={{
-                                      bgcolor: "white",
-                                      color: "primary.main",
-                                      "&:hover": {
-                                        bgcolor: "grey.100",
-                                      },
-                                    }}
-                                  >
-                                    View Game
-                                  </Button>
-                                </Box>
-                              </Box>
-                              <CardContent
-                                sx={{
-                                  flexGrow: 1,
-                                  p: 3,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  textAlign: "center",
-                                }}
-                              >
-                                <Typography
-                                  variant="h6"
-                                  component="h3"
-                                  sx={{
-                                    fontWeight: 700,
-                                    lineHeight: 1.3,
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: "vertical",
-                                    overflow: "hidden",
-                                    color: "text.primary",
-                                  }}
-                                >
-                                  {game.name}
-                                </Typography>
-                              </CardContent>
-                            </Card>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </div>
-                  );
-                })}
-              </div>
-              {/* Bootstrap Carousel Controls */}
-              {games.length > cardsPerView && (
-                <>
-                  <button
-                    className="carousel-control-prev"
-                    type="button"
-                    data-bs-target="#latestGamesCarousel"
-                    data-bs-slide="prev"
-                    style={{
-                      background: "rgba(25, 118, 210, 0.8)",
-                      borderRadius: "50%",
-                      width: "45px",
-                      height: "45px",
-                      left: "-60px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      border: "2px solid #1976d2",
-                      zIndex: 10,
-                      transition: "all 0.3s ease",
-                      outline: "none",
-                      boxShadow: "none",
-                      userSelect: "none",
-                    }}
-                    // Prevent focus on mouse down
-                    onMouseDown={(e) => e.preventDefault()}
-                    onMouseEnter={(e) => {
-                      e.target.style.background = "#1976d2";
-                      e.target.style.transform = "translateY(-50%) scale(1.1)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.background = "rgba(25, 118, 210, 0.8)";
-                      e.target.style.transform = "translateY(-50%) scale(1)";
-                    }}
-                    onFocus={(e) => (e.target.style.boxShadow = "none")}
-                  >
-                    <span
-                      className="carousel-control-prev-icon"
-                      aria-hidden="true"
-                      style={{ userSelect: "none", pointerEvents: "none" }} // Fix for inner icon
-                    ></span>
-                    <span className="visually-hidden">Previous</span>
-                  </button>
-                  <button
-                    className="carousel-control-next"
-                    type="button"
-                    data-bs-target="#latestGamesCarousel"
-                    data-bs-slide="next"
-                    style={{
-                      background: "rgba(25, 118, 210, 0.8)",
-                      borderRadius: "50%",
-                      width: "45px",
-                      height: "45px",
-                      right: "-60px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      border: "2px solid #1976d2",
-                      zIndex: 10,
-                      transition: "all 0.3s ease",
-                      outline: "none",
-                      boxShadow: "none",
-                    }}
-                    // Prevent focus on mouse down
-                    onMouseDown={(e) => e.preventDefault()}
-                    onMouseEnter={(e) => {
-                      e.target.style.background = "#1976d2";
-                      e.target.style.transform = "translateY(-50%) scale(1.1)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.background = "rgba(25, 118, 210, 0.8)";
-                      e.target.style.transform = "translateY(-50%) scale(1)";
-                    }}
-                    onFocus={(e) => (e.target.style.boxShadow = "none")}
-                  >
-                    <span
-                      className="carousel-control-next-icon"
-                      aria-hidden="true"
-                      style={{ userSelect: "none", pointerEvents: "none" }} // Fix for inner icon
-                    ></span>
-                    <span className="visually-hidden">Next</span>
-                  </button>
-                </>
-              )}
-            </div>
-          </Box>
-        )}
-      </Container>
+      {/* Upcoming Games Section */}
+      <Box sx={{ bgcolor: "background.default" }}>
+        <GameCarousel
+          title="Upcoming Games"
+          subtitle="Games you don't want to miss"
+          icon={EventIcon}
+          games={upcomingGames}
+          error={upcomingError}
+          cardsPerView={cardsPerView}
+        />
+      </Box>
     </Box>
   );
 }

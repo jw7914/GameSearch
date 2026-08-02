@@ -3,3 +3,4 @@ myenv
 .venv
 .DS_Store
 firebase-adminsdk.json
+__pycache__
