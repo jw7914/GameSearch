@@ -510,51 +510,67 @@ function UserProfilePage() {
                 {bio || "No bio added yet. Click 'Edit Profile' to tell the world about your gaming journey!"}
               </Typography>
 
-              {genres.length > 0 && (
-                <Box sx={{ mb: 3 }}>
-                  <Typography 
-                    variant="subtitle2" 
-                    color="text.secondary" 
-                    sx={{ 
-                      mb: 1, 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: 1, 
-                      justifyContent: { xs: "center", sm: "flex-start" },
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px'
-                    }}
-                  >
-                    <FavoriteIcon fontSize="small" color="secondary" /> Favorite Genres
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      gap: 1,
-                      flexWrap: "wrap",
-                      justifyContent: { xs: "center", sm: "flex-start" },
-                    }}
-                  >
-                    {genres.map((g) => (
-                      <Chip 
-                        key={g} 
-                        label={g} 
-                        size="small" 
-                        color="secondary" 
-                        variant="outlined"
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+                <Box sx={{ flex: 1, minWidth: '200px' }}>
+                  {genres.length > 0 && (
+                    <>
+                      <Typography 
+                        variant="subtitle2" 
+                        color="text.secondary" 
                         sx={{ 
+                          mb: 1, 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: 1, 
+                          justifyContent: { xs: "center", sm: "flex-start" },
                           fontWeight: 600,
-                          borderWidth: '2px',
-                          '&:hover': {
-                            backgroundColor: 'rgba(255, 105, 180, 0.1)',
-                          }
-                        }} 
-                      />
-                    ))}
-                  </Box>
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px'
+                        }}
+                      >
+                        <FavoriteIcon fontSize="small" color="secondary" /> Favorite Genres
+                      </Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: 1,
+                          flexWrap: "wrap",
+                          justifyContent: { xs: "center", sm: "flex-start" },
+                        }}
+                      >
+                        {genres.map((g) => (
+                          <Chip 
+                            key={g} 
+                            label={g} 
+                            size="small" 
+                            color="secondary" 
+                            variant="outlined"
+                            sx={{ 
+                              fontWeight: 600,
+                              borderWidth: '2px',
+                              '&:hover': {
+                                backgroundColor: 'rgba(255, 105, 180, 0.1)',
+                              }
+                            }} 
+                          />
+                        ))}
+                      </Box>
+                    </>
+                  )}
                 </Box>
-              )}
+                <Box sx={{ display: 'flex', justifyContent: { xs: 'center', sm: 'flex-end' }, width: { xs: '100%', sm: 'auto' } }}>
+                  <Chip
+                    icon={<GamepadIcon />}
+                    label={`${Object.keys(favoriteGames).length} Favorite Games`}
+                    variant="outlined"
+                    sx={{
+                      color: "text.primary",
+                      borderColor: "divider",
+                      "&:hover": { backgroundColor: "action.hover" },
+                    }}
+                  />
+                </Box>
+              </Box>
 
               <Box
                 sx={{
@@ -604,18 +620,7 @@ function UserProfilePage() {
                     </Button>
                   </>
                 )}
-                
-                <Chip
-                  icon={<GamepadIcon />}
-                  label={`${Object.keys(favoriteGames).length} Favorites`}
-                  variant="outlined"
-                  sx={{
-                    ml: { sm: "auto" },
-                    color: "text.primary",
-                    borderColor: "divider",
-                    "&:hover": { backgroundColor: "action.hover" },
-                  }}
-                />
+
               </Box>
             </Box>
           </Box>
