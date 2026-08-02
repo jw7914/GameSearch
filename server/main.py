@@ -45,6 +45,13 @@ headers = {
         'Content-Type': 'application/json'
     }
 
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
+
 @app.route('/', methods=['GET']) 
 def latest():
     global access_token, access_token_expiry
@@ -60,6 +67,24 @@ def latest():
 @app.route('/popular', methods=['GET'])
 def popular():
     game_data = fetch_popular_games(headers)
+    games = create_list_of_games(game_data)
+    return jsonify(games)
+
+@app.route('/top-rated', methods=['GET'])
+def top_rated():
+    game_data = fetch_top_rated_games(headers)
+    games = create_list_of_games(game_data)
+    return jsonify(games)
+
+@app.route('/upcoming', methods=['GET'])
+def upcoming():
+    global access_token, access_token_expiry
+    current_time = datetime.datetime.now().timestamp()
+    if current_time > access_token_expiry:
+        access_token_data = get_access_token()
+        access_token = access_token_data[0]
+        access_token_expiry = access_token_data[1]
+    game_data = fetch_upcoming_games(headers, current_time)
     games = create_list_of_games(game_data)
     return jsonify(games)
 
