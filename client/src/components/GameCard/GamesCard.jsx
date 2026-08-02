@@ -292,7 +292,7 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
             overflow: "hidden",
             textOverflow: "ellipsis",
             fontWeight: "600",
-            color: "#1a1a1a",
+            color: "text.primary",
           }}
         >
           {gameName}
@@ -372,7 +372,7 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
                   variant="h6"
                   sx={{
                     fontWeight: "600",
-                    color: "#1a202c",
+                    color: "text.primary",
                   }}
                 >
                   Share Game
@@ -381,8 +381,8 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
               <IconButton
                 onClick={() => setOpenShareModal(false)}
                 sx={{
-                  color: "#64748b",
-                  "&:hover": { bgcolor: "#f1f5f9" },
+                  color: "text.secondary",
+                  "&:hover": { bgcolor: "action.hover" },
                 }}
               >
                 <CloseIcon />
@@ -394,7 +394,7 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
               <Typography
                 variant="body1"
                 sx={{
-                  color: "#374151",
+                  color: "text.primary",
                   mb: 3,
                   textAlign: "center",
                 }}
@@ -407,8 +407,9 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  bgcolor: "#f8fafc",
-                  border: "1px solid #e2e8f0",
+                  bgcolor: "background.default",
+                  border: 1,
+                  borderColor: "divider",
                   borderRadius: "12px",
                   p: 2,
                   mb: 3,
@@ -418,7 +419,7 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
                   variant="body2"
                   sx={{
                     flex: 1,
-                    color: "#475569",
+                    color: "text.secondary",
                     wordBreak: "break-all",
                     fontSize: "0.875rem",
                     fontFamily: "monospace",
@@ -431,9 +432,9 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
                     onClick={handleCopyClick}
                     sx={{
                       ml: 1,
-                      color: copied ? "#10b981" : "#6b7280",
+                      color: copied ? "#10b981" : "text.secondary",
                       "&:hover": {
-                        bgcolor: copied ? "#ecfdf5" : "#f3f4f6",
+                        bgcolor: copied ? "rgba(16, 185, 129, 0.1)" : "action.hover",
                       },
                     }}
                   >
@@ -452,15 +453,15 @@ function GamesCard({ gameName, cover, rating, releaseDate, summary, cardID }) {
                       justifyContent: "center",
                       gap: 1,
                       p: 2,
-                      bgcolor: "#ecfdf5",
+                      bgcolor: "rgba(16, 185, 129, 0.1)",
                       borderRadius: "8px",
-                      border: "1px solid #d1fae5",
+                      border: "1px solid rgba(16, 185, 129, 0.2)",
                     }}
                   >
                     <CheckCircleIcon sx={{ color: "#10b981", fontSize: 20 }} />
                     <Typography
                       variant="body2"
-                      sx={{ color: "#065f46", fontWeight: "medium" }}
+                      sx={{ color: "#10b981", fontWeight: "medium" }}
                     >
                       Link copied to clipboard!
                     </Typography>

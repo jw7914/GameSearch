@@ -56,12 +56,16 @@ function FavoriteButton({ gameID, gameName, cover }) {
       onClick={(e) => editFavoriteStatus(e)} // Pass the event object to stop propagation
       sx={{
         "&:hover": {
-          backgroundColor: "#D3D3D3", // Light grey color on hover
+          backgroundColor: "action.hover",
+          transform: "scale(1.05)",
         },
-        backgroundColor: "white",
+        backgroundColor: "background.default",
+        border: 1,
+        borderColor: "divider",
         borderRadius: "50%",
-        padding: "5px",
+        padding: "8px",
         margin: "5px",
+        transition: "all 0.2s ease",
       }}
     >
       {liked ? (

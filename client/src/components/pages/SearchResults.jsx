@@ -126,18 +126,18 @@ function SearchResults({ type }) {
       <Box
         sx={{
           minHeight: "100vh",
-          backgroundColor: "#f8fafc",
+          bgcolor: "background.default",
           paddingTop: "2rem",
           paddingBottom: "5rem",
         }}
       >
         <Box
           sx={{
-            backgroundColor: "white",
+            bgcolor: "background.paper",
             borderRadius: "16px",
             padding: "2rem",
             textAlign: "center",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.5)",
             margin: "0 2rem",
           }}
         >
@@ -145,7 +145,7 @@ function SearchResults({ type }) {
             variant="h4"
             sx={{
               fontWeight: "700",
-              color: "#1e293b",
+              color: "text.primary",
               marginBottom: "2rem",
             }}
           >
@@ -171,7 +171,7 @@ function SearchResults({ type }) {
     <Box
       sx={{
         minHeight: "100vh",
-        backgroundColor: "#f8fafc",
+        bgcolor: "background.default",
         paddingTop: "2rem",
         paddingBottom: "5rem",
       }}
@@ -179,11 +179,12 @@ function SearchResults({ type }) {
       {/* Header Section */}
       <Box
         sx={{
-          backgroundColor: "white",
+          bgcolor: "background.paper",
           borderRadius: "16px 16px 0 0",
           padding: "2rem",
-          borderBottom: "1px solid #e2e8f0",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+          borderBottom: 1,
+          borderColor: "divider",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.5)",
           margin: "0 2rem",
         }}
       >
@@ -203,7 +204,7 @@ function SearchResults({ type }) {
             variant="h4"
             sx={{
               fontWeight: "700",
-              color: "#1e293b",
+              color: "text.primary",
               textAlign: { xs: "center", sm: "left" },
             }}
           >
@@ -278,16 +279,17 @@ function SearchResults({ type }) {
             {games.length > 0 && (
               <Box
                 sx={{
-                  backgroundColor: "#f1f5f9",
+                  bgcolor: "background.default",
                   padding: "8px 16px",
                   borderRadius: "8px",
-                  border: "1px solid #e2e8f0",
+                  border: 1,
+                  borderColor: "divider",
                 }}
               >
                 <Typography
                   variant="body2"
                   sx={{
-                    color: "#1e293b",
+                    color: "text.primary",
                     fontWeight: "600",
                     fontSize: "0.875rem",
                   }}
@@ -340,9 +342,10 @@ function SearchResults({ type }) {
           justifyContent="center"
           alignItems="center"
           sx={{
-            backgroundColor: "white",
+            bgcolor: "background.paper",
             padding: "4rem 2rem",
-            borderTop: "1px solid #e2e8f0",
+            borderTop: 1,
+            borderColor: "divider",
             margin: "0 2rem",
           }}
         >
@@ -360,9 +363,10 @@ function SearchResults({ type }) {
         <>
           <Box
             sx={{
-              backgroundColor: "white",
+              bgcolor: "background.paper",
               padding: "2rem",
-              borderTop: "1px solid #e2e8f0",
+              borderTop: 1,
+              borderColor: "divider",
               margin: "0 2rem",
             }}
           >
@@ -385,11 +389,12 @@ function SearchResults({ type }) {
           {/* Pagination Section */}
           <Box
             sx={{
-              backgroundColor: "white",
+              bgcolor: "background.paper",
               borderRadius: "0 0 16px 16px",
               padding: { xs: "1rem", sm: "2rem" },
-              borderTop: "1px solid #e2e8f0",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+              borderTop: 1,
+              borderColor: "divider",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.5)",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -411,13 +416,13 @@ function SearchResults({ type }) {
                   minWidth: { xs: "32px", sm: "40px" },
                   height: { xs: "32px", sm: "40px" },
                   "&:hover": {
-                    backgroundColor: "#f1f5f9",
+                    backgroundColor: "action.hover",
                   },
                   "&.Mui-selected": {
-                    backgroundColor: "#3b82f6",
+                    backgroundColor: "primary.main",
                     color: "white",
                     "&:hover": {
-                      backgroundColor: "#2563eb",
+                      backgroundColor: "primary.dark",
                     },
                   },
                 },
@@ -504,10 +509,10 @@ function SearchResults({ type }) {
                       <IconButton
                         size="small"
                         sx={{
-                          color: "#3b82f6",
+                          color: "primary.main",
                           padding: "4px",
                           "&:hover": {
-                            backgroundColor: "#f1f5f9",
+                            backgroundColor: "action.hover",
                           },
                         }}
                         onClick={() => {
@@ -538,12 +543,13 @@ function SearchResults({ type }) {
       {!loading && games.length === 0 && (
         <Box
           sx={{
-            backgroundColor: "white",
+            bgcolor: "background.paper",
             borderRadius: "0 0 16px 16px",
             padding: "4rem 2rem",
             textAlign: "center",
-            borderTop: "1px solid #e2e8f0",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+            borderTop: 1,
+            borderColor: "divider",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.5)",
             margin: "0 2rem",
           }}
         >
@@ -571,8 +577,8 @@ function SearchResults({ type }) {
           "& .MuiDialog-paper": {
             borderRadius: "16px",
             padding: "1rem",
-            backgroundColor: "white",
-            boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+            bgcolor: "background.paper",
+            boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
           },
         }}
       >
