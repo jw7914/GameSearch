@@ -385,6 +385,49 @@ function UserProfilePage() {
     );
   }
 
+  // Error state for private or non-existent profiles
+  if (error === "This profile is private." || error === "User not found.") {
+    const isPrivate = error === "This profile is private.";
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          bgcolor: "background.default",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Container maxWidth="lg" sx={{ py: 8, flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <Paper
+            elevation={3}
+            sx={{
+              p: 6,
+              textAlign: "center",
+              bgcolor: "background.paper",
+              borderRadius: 3,
+              maxWidth: 500,
+              width: "100%",
+            }}
+          >
+            {isPrivate ? (
+              <LockIcon sx={{ fontSize: 80, color: "text.secondary", mb: 2 }} />
+            ) : (
+              <PersonIcon sx={{ fontSize: 80, color: "text.secondary", mb: 2 }} />
+            )}
+            <Typography variant="h4" gutterBottom color="text.primary" fontWeight="bold">
+              {isPrivate ? "Private Profile" : "User Not Found"}
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              {isPrivate 
+                ? "This user has chosen to keep their profile private." 
+                : "The profile you are looking for does not exist."}
+            </Typography>
+          </Paper>
+        </Container>
+      </Box>
+    );
+  }
+
   return (
     <Box
       sx={{
@@ -549,8 +592,8 @@ function UserProfilePage() {
 
       {/* Main Content */}
       <Container maxWidth="lg" sx={{ pb: 4 }}>
-        {/* Error Alert */}
-        {error && (
+        {/* Generic Error Alert for other errors */}
+        {error && error !== "This profile is private." && error !== "User not found." && (
           <Fade in={!!error}>
             <Alert
               severity="error"
