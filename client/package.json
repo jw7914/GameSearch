@@ -25,7 +25,7 @@
     "react-slick": "^0.30.3",
     "react-window": "^1.8.10",
     "slick-carousel": "^1.8.1",
-    "swiper": "^11.1.15"
+    "swiper": "^14.0.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
