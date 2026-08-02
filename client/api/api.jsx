@@ -66,6 +66,36 @@ export const getLatestGames = async (setLoading, setGames, setError) => {
   }
 };
 
+export const getTopRatedGames = async (setLoading, setGames, setError) => {
+  try {
+    setError("");
+    setLoading(true);
+    const response = await api.get("/top-rated");
+    const data = response.data;
+    setGames(data);
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching top rated games:", error);
+    setError("Failed to load top rated games");
+    setLoading(false);
+  }
+};
+
+export const getUpcomingGames = async (setLoading, setGames, setError) => {
+  try {
+    setError("");
+    setLoading(true);
+    const response = await api.get("/upcoming");
+    const data = response.data;
+    setGames(data);
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching upcoming games:", error);
+    setError("Failed to load upcoming games");
+    setLoading(false);
+  }
+};
+
 export const handleGameSearch = async (
   queryTerm,
   type,
