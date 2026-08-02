@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { getAuth, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { getFirebaseUser } from "../../../firebase/firebaseUtility";
@@ -13,8 +13,20 @@ function AccountDropDown() {
   const [dbDisplayName, setDbDisplayName] = useState("");
   const [logoutMessage, setLogoutMessage] = useState("");
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
     const fetchProfile = () => {
       if (isLoggedIn && user) {
         getUserProfile({
@@ -61,7 +73,7 @@ function AccountDropDown() {
   };
 
   return (
-    <div className="dropdown">
+    <div className="dropdown" ref={dropdownRef}>
       <button
         className="btn nav-link dropdown-toggle"
         id="accountDropdown"
@@ -72,7 +84,7 @@ function AccountDropDown() {
         {isLoggedIn ? `Hello, ${displayNameToUse}` : "Account"}
       </button>
       <ul
-        className={`dropdown-menu${open ? " show" : ""}`}
+        className={`dropdown-menu dropdown-menu-dark${open ? " show" : ""}`}
         aria-labelledby="accountDropdown"
       >
         {isLoggedIn ? (
